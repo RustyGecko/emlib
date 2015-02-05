@@ -25,8 +25,8 @@ SRCS = \
   $(LIB_PATH)/emdrv/gpiointerrupt/src/gpiointerrupt.c
 
 SRCS +=\
-	src/emlib/gpio.c \
-	src/emlib/chip.c \
+	src/gpio/gpio.c \
+	src/chip/chip.c \
 	src/emdrv/gpiointerrupt.c \
 
 ASMS += $(LIB_PATH)/Device/SiliconLabs/EFM32GG/Source/GCC/startup_efm32gg.S
