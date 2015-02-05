@@ -1,5 +1,7 @@
 DEVICE=EFM32GG990F1024
 TARGET=thumbv7m-none-eabi
+
+PROJ_FILE=lib
 PROJ_NAME=buttons_int
 
 -include Makefile.user
@@ -16,7 +18,7 @@ OUT     = $(OUT_DIR)/$(PROJ_NAME)
 
 .PHONY: proj
 all:    proj
-proj:   $(OUT).elf $(OUT).hex $(OUT).bin 
+proj:   $(OUT).elf $(OUT).hex $(OUT).bin
 
 
 include Makefile.emlib
@@ -33,7 +35,7 @@ RUSTFLAGS += -L . -L $(LIB_DIR) --verbose
 FLASHFLAGS = --verify --reset
 
 
-%.elf: $(PROJ_NAME).rs $(LIB_DIR)/libcompiler-rt.a $(LIB_DIR)/libcore.rlib
+%.elf: src/$(PROJ_FILE).rs $(LIB_DIR)/libcompiler-rt.a $(LIB_DIR)/libcore.rlib
 	$(RUSTC) $(RUSTFLAGS) $< -o $@
 
 %.hex: %.elf
