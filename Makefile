@@ -1,7 +1,7 @@
 DEVICE=EFM32GG990F1024
 TARGET=thumbv7m-none-eabi
 
-PROJ_FILE=example/main
+PROJ_DIR=examples
 PROJ_NAME=buttons_int
 
 -include Makefile.user
@@ -38,7 +38,7 @@ RUSTFLAGS += -L . -L $(LIB_DIR) --verbose
 FLASHFLAGS = --verify --reset
 
 
-%.elf: $(PROJ_FILE).rs $(LIB_DIR)/libcompiler-rt.a $(LIB_DIR)/libcore.rlib $(LIB_DIR)/libemlib.rlib
+%.elf: $(PROJ_DIR)/$(PROJ_NAME).rs $(LIB_DIR)/libcompiler-rt.a $(LIB_DIR)/libcore.rlib $(LIB_DIR)/libemlib.rlib
 	$(RUSTC) $(RUSTFLAGS) $< -o $@
 
 %.hex: %.elf
