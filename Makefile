@@ -54,5 +54,6 @@ flash: all
 
 .PHONY:clean
 clean:
-	rm out/* lib/*
+	@rm -rf lib
+	@rm -rf lib
 

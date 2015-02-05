@@ -1,6 +1,4 @@
 #![no_std]
-#![no_main]
-#![allow(warnings)]
 #![allow(unstable)]
 #![feature(lang_items)]
 
