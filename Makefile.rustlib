@@ -1,0 +1,6 @@
+
+RUSTLIBFLAGS  = -O -g --target $(TARGET)
+RUSTLIBFLAGS += -L $(LIB_DIR) --cfg stage0
+
+$(LIB_DIR)/libcore.rlib: $(RUST_SRC_HOME)/libcore/lib.rs
+	$(RUSTC) $(RUSTLIBFLAGS) $< -o $@

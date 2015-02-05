@@ -1,0 +1,51 @@
+CC      = arm-none-eabi-gcc
+AR      = arm-none-eabi-ar
+AS      = arm-none-eabi-as
+OBJCOPY = arm-none-eabi-objcopy
+
+INCLUDEPATHS += \
+-I$(LIB_PATH)/CMSIS/Include \
+-I$(LIB_PATH)/Device/SiliconLabs/EFM32GG/Include \
+-I$(LIB_PATH)/emlib/inc \
+-I$(LIB_PATH)/kits/common/drivers \
+-I$(LIB_PATH)/kits/common/bsp \
+-I$(LIB_PATH)/kits/EFM32GG_STK3700/config \
+-I$(LIB_PATH)/emdrv/gpiointerrupt/inc
+
+SRCS = \
+  $(LIB_PATH)/Device/SiliconLabs/EFM32GG/Source/system_efm32gg.c \
+  $(LIB_PATH)/emlib/src/em_cmu.c \
+  $(LIB_PATH)/emlib/src/em_emu.c \
+  $(LIB_PATH)/emlib/src/em_gpio.c \
+  $(LIB_PATH)/emlib/src/em_rtc.c \
+  $(LIB_PATH)/emlib/src/em_system.c \
+  $(LIB_PATH)/emlib/src/em_timer.c \
+  $(LIB_PATH)/emlib/src/em_int.c \
+  $(LIB_PATH)/kits/common/drivers/retargetio.c \
+  $(LIB_PATH)/emdrv/gpiointerrupt/src/gpiointerrupt.c
+
+SRCS += emlib/gpio.c \
+	emlib/chip.c \
+	emdrv/gpiointerrupt.c \
+
+ASMS += $(LIB_PATH)/Device/SiliconLabs/EFM32GG/Source/GCC/startup_efm32gg.S
+
+OBJS = $(SRCS:.c=.o)
+OBJS += $(ASMS:.S=.o)
+
+AFLAGS	= -mthumb -mcpu=cortex-m3
+
+CFLAGS	= -g -O0 -Wall
+CFLAGS += -D$(DEVICE)
+CFLAGS += $(AFLAGS)
+CFLAGS += $(INCLUDEPATHS)
+CFLAGS += -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+
+.c.o:
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.S.o:
+	$(AS) $(CFLAGS) -c $< -o $@
+
+$(LIB_DIR)/libcompiler-rt.a: $(OBJS)
+	$(AR) rcs $@ $(OBJS)
