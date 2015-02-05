@@ -16,10 +16,13 @@ OUT_DIR = out
 OUT     = $(OUT_DIR)/$(PROJ_NAME)
 
 
-.PHONY: proj
-all:    proj
+.PHONY: all setup proj
+all:    setup proj
 proj:   $(OUT).elf $(OUT).hex $(OUT).bin
 
+setup:
+	@mkdir -p lib
+	@mkdir -p out
 
 include Makefile.emlib
 include Makefile.rustlib
