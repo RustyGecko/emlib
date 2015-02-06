@@ -30,11 +30,9 @@ LDFLAGS += -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
 
 RUSTFLAGS  = --target $(TARGET) --crate-type bin
 RUSTFLAGS += -g -C link-args="$(LDFLAGS)"
-RUSTFLAGS += -L dependency=$(TARGET_DIR)
-RUSTFLAGS += -L dependency=$(TARGET_DIR)/deps
 RUSTFLAGS += -L $(LIB_DIR)
-RUSTFLAGS += --extern core=$(TARGET_DIR)/deps/libcore-9bcb639479e20b80.rlib
-RUSTFLAGS += --extern emlib=$(TARGET_DIR)/libemlib-9b44da1ad5dde3c6.rlib
+RUSTFLAGS += -L $(TARGET_DIR)
+RUSTFLAGS += -L $(TARGET_DIR)/deps
 RUSTFLAGS += --emit=dep-info,link --verbose
 
 FLASHFLAGS = --verify --reset
