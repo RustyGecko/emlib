@@ -1,4 +1,5 @@
 #[repr(C)]
+#[derive(Copy)]
 pub enum Clock {
     LFA    = 0x60002,
     CORE   = 0x40020,
@@ -12,6 +13,7 @@ pub enum Clock {
 
 /** High frequency RC bands. */
 #[repr(C)]
+#[derive(Copy)]
 pub enum HFRCOBand {
     _1MHz  = 0x00000000,
     _7MHz  = 0x00000001,
@@ -23,6 +25,7 @@ pub enum HFRCOBand {
 
 /** Oscillator types. */
 #[repr(C)]
+#[derive(Copy)]
 pub enum Osc {
     LFXO,
     LFRCO,
@@ -34,6 +37,7 @@ pub enum Osc {
 
 /** Selectable clock sources. */
 #[repr(C)]
+#[derive(Copy)]
 pub enum Select {
     Error,
     Disabled,
