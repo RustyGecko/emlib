@@ -29,7 +29,11 @@ include Makefile.rustlib
 
 
 LDFLAGS  = $(AFLAGS) -T$(LIB_PATH)/Device/SiliconLabs/EFM32GG/Source/GCC/efm32gg.ld
-LDFLAGS += -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group lib/emlib.o
+LDFLAGS += -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+
+ifeq ($(PLATFORM),Darwin)
+LDFLAGS += lib/emlib.o
+endif
 
 RUSTFLAGS  = --target $(TARGET)
 RUSTFLAGS += -g -C link-args="$(LDFLAGS)"
