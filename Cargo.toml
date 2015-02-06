@@ -1,0 +1,15 @@
+[package]
+
+name = "emlib"
+version = "0.0.1"
+authors = ["Sondre Lefsaker <sondrele@stud.ntnu.no>"]
+
+description = "Bindings for Silicon Labs emlib"
+repository = "https://github.com/RustyGecko/emlib"
+
+readme = "README.md"
+
+keywords = ["emlib", "bindings"]
+
+[target.thumbv7m-none-eabi.dependencies.core]
+git = "https://github.com/sondrele/rust-libcore.git"

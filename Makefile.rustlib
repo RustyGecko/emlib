@@ -1,9 +1,0 @@
-
-RUSTLIBFLAGS  = --crate-type lib --out-dir lib -O -g --target $(TARGET)
-RUSTLIBFLAGS += -L $(LIB_DIR) --cfg stage0
-
-$(LIB_DIR)/libcore.rlib: $(RUST_SRC_HOME)/libcore/lib.rs
-	$(RUSTC) $(RUSTLIBFLAGS) --crate-name core $<
-
-$(LIB_DIR)/libemlib.rlib: src/lib.rs
-	$(RUSTC) $(RUSTLIBFLAGS) --crate-name emlib $<

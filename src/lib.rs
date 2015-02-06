@@ -1,6 +1,7 @@
 #![no_std]
-#![allow(unstable)]
-#![feature(lang_items)]
+#![crate_type="lib"]
+#![crate_name="emlib"]
+#![feature(core, lang_items)]
 
 extern crate core;
 
@@ -10,9 +11,6 @@ pub mod gpio;
 
 pub mod emdrv;
 
-pub mod std {
-  pub use core::cmp;
-  pub use core::option;
-  pub use core::num;
-  pub use core::marker;
+mod std {
+    pub use core::*;
 }
