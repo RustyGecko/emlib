@@ -29,16 +29,16 @@ include Makefile.rustlib
 
 
 LDFLAGS  = $(AFLAGS) -T$(LIB_PATH)/Device/SiliconLabs/EFM32GG/Source/GCC/efm32gg.ld
-LDFLAGS += -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+LDFLAGS += -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group lib/emlib.o
 
 RUSTFLAGS  = --target $(TARGET)
 RUSTFLAGS += -g -C link-args="$(LDFLAGS)"
-RUSTFLAGS += -L . -L $(LIB_DIR) --verbose
+RUSTFLAGS += -L $(LIB_DIR) --verbose
 
 FLASHFLAGS = --verify --reset
 
 
-%.elf: $(PROJ_DIR)/$(PROJ_NAME).rs $(LIB_DIR)/libcompiler-rt.a $(LIB_DIR)/libcore.rlib $(LIB_DIR)/libemlib.rlib
+%.elf: $(PROJ_DIR)/$(PROJ_NAME).rs $(LIB_DIR)/libcompiler-rt.a $(LIB_DIR)/libcore.rlib $(LIB_DIR)/emlib.o
 	$(RUSTC) $(RUSTFLAGS) $< -o $@
 
 %.hex: %.elf
@@ -55,5 +55,5 @@ flash: all
 .PHONY:clean
 clean:
 	@rm -rf lib
-	@rm -rf lib
+	@rm -rf out
 

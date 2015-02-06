@@ -2,6 +2,9 @@
 #![allow(unstable)]
 #![feature(lang_items)]
 
+#![crate_type="lib"]
+#![crate_name="emlib"]
+
 extern crate core;
 
 pub mod chip;

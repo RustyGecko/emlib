@@ -1,7 +1,6 @@
 #![no_std]
 #![no_main]
-#![allow(unstable)]
-#![feature(lang_items)]
+#![feature(lang_items, core)]
 
 
 extern crate core;
