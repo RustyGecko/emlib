@@ -11,5 +11,9 @@ readme = "README.md"
 
 keywords = ["emlib", "bindings"]
 
+build = "build/emlib.rs"
+[build-dependencies.gcc]
+git = "https://github.com/alexcrichton/gcc-rs.git"
+
 [target.thumbv7m-none-eabi.dependencies.core]
 git = "https://github.com/sondrele/rust-libcore.git"
