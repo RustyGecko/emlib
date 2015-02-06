@@ -30,9 +30,7 @@ LDFLAGS += -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
 
 RUSTFLAGS  = --target $(TARGET) --crate-type bin
 RUSTFLAGS += -g -C link-args="$(LDFLAGS)"
-RUSTFLAGS += -L $(LIB_DIR)
-RUSTFLAGS += -L $(TARGET_DIR)
-RUSTFLAGS += -L $(TARGET_DIR)/deps
+RUSTFLAGS += -L $(LIB_DIR) -L $(TARGET_DIR) -L $(TARGET_DIR)/deps
 RUSTFLAGS += --emit=dep-info,link --verbose
 
 FLASHFLAGS = --verify --reset
