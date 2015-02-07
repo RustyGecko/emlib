@@ -25,6 +25,7 @@ TARGET_OUT = $(TARGET_DIR)/$(PROJ_NAME)
 all:    proj
 proj:   $(TARGET_OUT).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
 
+AFLAGS   = -mthumb -mcpu=cortex-m3
 LDFLAGS  = $(AFLAGS) -T$(LIB_PATH)/Device/SiliconLabs/EFM32GG/Source/GCC/efm32gg.ld
 LDFLAGS += -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
 
