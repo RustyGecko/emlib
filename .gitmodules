@@ -1,0 +1,3 @@
+[submodule "efm32-common"]
+	path = efm32-common
+	url = git@github.com:RustyGecko/efm32-common.git

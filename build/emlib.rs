@@ -17,30 +17,30 @@ fn main() {
     assert_env_var("AR", "arm-none-eabi-ar");
 
     let emlib_sources = [
-        "/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/Device/SiliconLabs/EFM32GG/Source/system_efm32gg.c",
-        "/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/emlib/src/em_cmu.c",
-        "/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/emlib/src/em_emu.c",
-        "/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/emlib/src/em_gpio.c",
-        "/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/emlib/src/em_rtc.c",
-        "/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/emlib/src/em_system.c",
-        "/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/emlib/src/em_timer.c",
-        "/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/emlib/src/em_int.c",
-        "/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/kits/common/drivers/retargetio.c",
-        "/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/emdrv/gpiointerrupt/src/gpiointerrupt.c",
+        "efm32-common/Device/EFM32GG/Source/GCC/startup_efm32gg.S",
+        "efm32-common/Device/EFM32GG/Source/system_efm32gg.c",
+        "efm32-common/emlib/src/em_cmu.c",
+        "efm32-common/emlib/src/em_emu.c",
+        "efm32-common/emlib/src/em_gpio.c",
+        "efm32-common/emlib/src/em_rtc.c",
+        "efm32-common/emlib/src/em_system.c",
+        "efm32-common/emlib/src/em_timer.c",
+        "efm32-common/emlib/src/em_int.c",
+        "efm32-common/kits/common/drivers/retargetio.c",
+        "efm32-common/emdrv/gpiointerrupt/src/gpiointerrupt.c",
         "src/gpio/gpio.c",
         "src/chip/chip.c",
         "src/emdrv/gpiointerrupt.c",
-        "/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/Device/SiliconLabs/EFM32GG/Source/GCC/startup_efm32gg.S"
     ];
 
     let emlib_include_directories = vec!(
-        Path::new("/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/CMSIS/Include"),
-        Path::new("/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/Device/SiliconLabs/EFM32GG/Include"),
-        Path::new("/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/emlib/inc"),
-        Path::new("/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/kits/common/drivers"),
-        Path::new("/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/kits/common/bsp"),
-        Path::new("/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/kits/EFM32GG_STK3700/config"),
-        Path::new("/home/sondre/opt/SimplicityStudio_v2/developer/sdks/efm32/v2/emdrv/gpiointerrupt/inc"),
+        Path::new("efm32-common/CMSIS/Include"),
+        Path::new("efm32-common/Device/EFM32GG/Include"),
+        Path::new("efm32-common/emlib/inc"),
+        Path::new("efm32-common/kits/common/drivers"),
+        Path::new("efm32-common/kits/common/bsp"),
+        Path::new("efm32-common/kits/EFM32GG_STK3700/config"),
+        Path::new("efm32-common/emdrv/gpiointerrupt/inc"),
     );
 
     let emlib_definitions = vec!(
