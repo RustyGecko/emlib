@@ -6,6 +6,7 @@ use std::env;
 use std::ffi::OsString;
 
 fn assert_env_var(var: &str, expected: &str) {
+    env::set_var(var, expected);
     match env::var(var) {
         Some(ref val) if *val == OsString::from_string(expected.to_string()) => (),
         _ => panic!("`{}` environment variable must be `{}`", var, expected)
@@ -13,6 +14,7 @@ fn assert_env_var(var: &str, expected: &str) {
 }
 
 fn main() {
+
     assert_env_var("CC", "arm-none-eabi-gcc");
     assert_env_var("AR", "arm-none-eabi-ar");
 
