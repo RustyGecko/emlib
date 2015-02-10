@@ -14,7 +14,9 @@ PROJ_NAME = buttons_int
 RUSTC = $(RUSTC_PATH)rustc
 FLASH = eACommander
 
-HASH = 45127226698c02f0
+HASH = 
+
+-include Makefile.user
 
 LIB_PATH = $(SIMPLICITY_STUDIO_HOME)/developer/sdks/efm32/v2
 LIB_DIR = lib
