@@ -41,8 +41,12 @@ fn compile_emlib_library() {
         "efm32-common/emlib/src/em_int.c",
         "efm32-common/kits/common/drivers/retargetio.c",
         "efm32-common/emdrv/gpiointerrupt/src/gpiointerrupt.c",
-        "src/gpio/gpio.c",
+
         "src/chip/chip.c",
+        "src/cmsis/cmsis.c",
+        "src/gpio/gpio.c",
+        "src/rtc/rtc.c",
+        "src/timer/timer.c",
         "src/emdrv/gpiointerrupt.c",
     ];
 
