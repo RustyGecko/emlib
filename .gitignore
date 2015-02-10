@@ -1,0 +1,5 @@
+*.o
+lib/
+out/
+target
+Cargo.lock
