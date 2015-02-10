@@ -33,7 +33,7 @@ RUSTFLAGS += --emit=dep-info,link --verbose
 
 FLASHFLAGS = --verify --reset
 
-%.elf: $(PROJ_DIR)/$(PROJ_NAME).rs libemlib
+%.elf: $(PROJ_DIR)/$(PROJ_NAME).rs
 	cargo build --target thumbv7m-none-eabi --verbose
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
 	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
