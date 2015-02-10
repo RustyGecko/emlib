@@ -1,9 +1,12 @@
-#![feature(env, os, path)]
+#![deny(warnings)]
+#![feature(core, env, io, os, path)]
 
 extern crate gcc;
 
 use std::env;
 use std::ffi::OsString;
+use std::old_io::File;
+use std::old_io::IoResult;
 
 fn assert_env_var(var: &str, expected: &str) {
     env::set_var(var, expected);
@@ -14,7 +17,15 @@ fn assert_env_var(var: &str, expected: &str) {
 }
 
 fn main() {
+    compile_emlib_library();
 
+    match write_emlib_hash() {
+        Ok(_) => (),
+        Err(e) => panic!("{}", e)
+    }
+}
+
+fn compile_emlib_library() {
     assert_env_var("CC", "arm-none-eabi-gcc");
     assert_env_var("AR", "arm-none-eabi-ar");
 
@@ -69,4 +80,20 @@ fn main() {
     };
 
     gcc::compile_library("libcompiler-rt.a", &emlib_config, &emlib_sources);
+}
+
+fn write_emlib_hash() -> IoResult<()> {
+    // Get OUT_DIR and convert it from OsString to String
+    let out_dir = env::var("OUT_DIR").unwrap().into_string().ok().unwrap();
+    // Extract the hash
+    let hash_token: String = out_dir.rsplitn(2, '/').nth(1).unwrap()
+                                    .rsplitn(1, '-').nth(0).unwrap().to_string();
+    let emlib_hash = format!("HASH={}", hash_token);
+    println!("{}", emlib_hash);
+
+    // Write to .emlib_hash file
+    let emlib_hash_file = env::var("CARGO_MANIFEST_DIR").unwrap()
+                            .into_string().ok().unwrap() + "/.emlib_hash";
+    let mut f = try!(File::create(&Path::new(emlib_hash_file)));
+    f.write_line(emlib_hash.as_slice())
 }
