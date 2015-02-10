@@ -1,5 +1,4 @@
 *.o
-lib/
-out/
-target
 Cargo.lock
+target/
+Makefile.user
