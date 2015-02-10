@@ -12,7 +12,6 @@ PROJ_NAME = buttons_int
 RUSTC = rustc
 FLASH = eACommander
 
--include Makefile.user
 -include .emlib_hash
 
 TARGET_DIR = target/$(TARGET)
@@ -26,6 +25,8 @@ proj:   $(TARGET_OUT).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
 AFLAGS   = -mthumb -mcpu=cortex-m3
 LDFLAGS  = $(AFLAGS) -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
 LDFLAGS += -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+
+-include Makefile.user
 
 RUSTFLAGS  = --target $(TARGET) --crate-type bin
 RUSTFLAGS += -g -C link-args="$(LDFLAGS)"
