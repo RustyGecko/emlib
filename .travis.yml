@@ -5,6 +5,9 @@ before_script:
   - sudo apt-get update -q
   - sudo apt-get install gcc-arm-none-eabi
 
+before_install:
+  - git submodule update --init --recursive
+
 script:
   - cargo build --target thumbv7m-none-eabi --verbose
   - make
