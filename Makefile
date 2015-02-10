@@ -17,7 +17,7 @@ FLASH = eACommander
 TARGET_DIR = target/$(TARGET)
 TARGET_OUT = $(TARGET_DIR)/$(PROJ_NAME)
 
-.PHONY: all setup proj flash clean libemlib
+.PHONY: all setup proj flash clean
 
 all:    proj
 proj:   $(TARGET_OUT).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
