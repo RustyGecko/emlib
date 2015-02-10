@@ -1,4 +1,5 @@
 *.o
 Cargo.lock
 target/
+.emlib_hash
 Makefile.user
