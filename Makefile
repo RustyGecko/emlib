@@ -12,6 +12,7 @@ PROJ_NAME = buttons_int
 RUSTC = rustc
 FLASH = eACommander
 
+-include Makefile.user
 -include .emlib_hash
 
 TARGET_DIR = target/$(TARGET)
