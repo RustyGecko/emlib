@@ -8,8 +8,10 @@ extern crate core;
 pub mod chip;
 pub mod cmu;
 pub mod gpio;
+pub mod timer;
 
 pub mod emdrv;
+pub mod cmsis;
 
 mod std {
     pub use core::*;
