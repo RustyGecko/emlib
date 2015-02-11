@@ -2,7 +2,6 @@
 #![no_main]
 #![feature(core, lang_items, no_std)]
 
-
 extern crate core;
 extern crate emlib;
 
@@ -47,7 +46,6 @@ fn gpio_setup() {
 
 #[no_mangle]
 pub extern fn main() {
-
     chip::init();
 
     gpio_setup();
