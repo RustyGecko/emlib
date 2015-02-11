@@ -7,6 +7,7 @@ extern crate core;
 
 pub mod chip;
 pub mod cmu;
+pub mod dma;
 pub mod gpio;
 pub mod timer;
 

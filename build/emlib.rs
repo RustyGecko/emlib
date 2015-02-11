@@ -33,20 +33,24 @@ fn compile_emlib_library() {
         "efm32-common/Device/EFM32GG/Source/GCC/startup_efm32gg.S",
         "efm32-common/Device/EFM32GG/Source/system_efm32gg.c",
         "efm32-common/emlib/src/em_cmu.c",
+        "efm32-common/emlib/src/em_dma.c",
         "efm32-common/emlib/src/em_emu.c",
         "efm32-common/emlib/src/em_gpio.c",
         "efm32-common/emlib/src/em_rtc.c",
         "efm32-common/emlib/src/em_system.c",
         "efm32-common/emlib/src/em_timer.c",
         "efm32-common/emlib/src/em_int.c",
+        "efm32-common/kits/common/drivers/dmactrl.c",
         "efm32-common/kits/common/drivers/retargetio.c",
         "efm32-common/emdrv/gpiointerrupt/src/gpiointerrupt.c",
 
         "src/chip/chip.c",
         "src/cmsis/cmsis.c",
+        "src/dma/dma.c",
         "src/gpio/gpio.c",
         "src/rtc/rtc.c",
         "src/timer/timer.c",
+        
         "src/emdrv/gpiointerrupt.c",
     ];
 
