@@ -1,4 +1,5 @@
 #[repr(C)]
+#[derive(Copy)]
 pub enum IRQn {
 /******  Cortex-M3 Processor Exceptions Numbers *******************************************/
     NonMaskableInt   = -14,
