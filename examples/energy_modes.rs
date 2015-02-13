@@ -11,9 +11,6 @@ use emlib::gpio;
 use emlib::emu;
 use emlib::emdrv::gpioint;
 
-const LED0: u32 = 2;
-const LED1: u32 = 3;
-
 const PB0: u32 = 9;
 const PB1: u32 = 10;
 
@@ -48,9 +45,6 @@ pub extern fn main() {
     chip::init();
 
     gpio_setup();
-
-    gpio::pin_mode_set(gpio::Port::E, LED0, gpio::Mode::PushPull, 0);
-    gpio::pin_mode_set(gpio::Port::E, LED1, gpio::Mode::PushPull, 0);
 
     loop {
         match unsafe { mode } {
