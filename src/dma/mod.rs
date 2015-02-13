@@ -36,8 +36,8 @@ impl DMA {
     pub fn activate_auto<T>(&self, primary: bool, dst: &'static mut[T], src: &'static mut[T]) {
         unsafe {
 
-            let n = min(dst.len(), src.len());
-            
+            let n = min(dst.len(), src.len()) as u32;
+
             DMA_ActivateAuto(
                 self.channel,
                 primary,
@@ -135,21 +135,19 @@ pub fn dma_control_block() -> &'static Descriptor {
 }
 
 
+#[allow(warnings)]
 extern {
     fn GET_DMA_CONTROL_BLOCK() -> &'static Descriptor;
 
-    #[allow(warnings)]
     fn DMA_Init(init: *const Init);
 
-    #[allow(warnings)]
     fn DMA_CfgChannel(channel: u32, cfg: *const CfgChannel);
 
-    #[allow(warnings)]
     fn DMA_CfgDescr(channel: u32, primary: bool, cfg: *const CfgDescriptor);
     fn DMA_ActivateAuto(
         channel: u32,
         use_burst: bool,
         dst: *mut c_void,
         src: *mut c_void,
-        n_minus_1: usize);
+        n_minus_1: u32);
 }
