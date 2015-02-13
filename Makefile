@@ -6,8 +6,10 @@ OBJCOPY = arm-none-eabi-objcopy
 DEVICE=EFM32GG990F1024
 TARGET=thumbv7m-none-eabi
 
-PROJ_DIR  = examples
-PROJ_NAME = buttons_int
+EXAMPLE_DIR = examples
+EXAMPLES    = $(wildcard $(EXAMPLE_DIR)/*.rs)
+
+PROJ_NAME   = buttons_int
 
 RUSTC = rustc
 FLASH = eACommander
@@ -17,10 +19,10 @@ FLASH = eACommander
 TARGET_DIR = target/$(TARGET)
 TARGET_OUT = $(TARGET_DIR)/$(PROJ_NAME)
 
-.PHONY: all setup proj flash clean
+.PHONY: all setup proj flash test clean
 
 all:    proj
-proj:   $(TARGET_OUT).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
+proj:   $(PROJ_NAME).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
 
 AFLAGS   = -mthumb -mcpu=cortex-m3
 LDFLAGS  = $(AFLAGS) -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
@@ -35,11 +37,11 @@ RUSTFLAGS += --emit=dep-info,link --verbose
 
 FLASHFLAGS = --verify --reset
 
-%.elf: $(PROJ_DIR)/$(PROJ_NAME).rs
+%.elf: $(EXAMPLE_DIR)/$(@:.elf=.rs)
 	cargo build --target thumbv7m-none-eabi --verbose
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
 	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
-	$(RUSTC) $< $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name $(PROJ_NAME)
+	$(RUSTC) $<$(@:.elf=.rs) $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name $(@:.elf=)
 
 %.hex: %
 	$(OBJCOPY) -O ihex $< $@
@@ -49,6 +51,9 @@ FLASHFLAGS = --verify --reset
 
 flash: all
 	$(FLASH) --flash $(TARGET_OUT).bin $(FLASHFLAGS)
+
+test: $(notdir $(EXAMPLES:.rs=.elf))
+	@echo Done
 
 clean:
 	@cargo clean

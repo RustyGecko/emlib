@@ -43,6 +43,7 @@ fn compile_emlib_library() {
 
         "src/chip/chip.c",
         "src/cmsis/cmsis.c",
+        "src/emu/emu.c",
         "src/gpio/gpio.c",
         "src/rtc/rtc.c",
         "src/timer/timer.c",

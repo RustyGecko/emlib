@@ -10,4 +10,4 @@ before_install:
 
 script:
   - cargo build --target thumbv7m-none-eabi --verbose
-  - make
+  - make test

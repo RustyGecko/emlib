@@ -1,7 +1,6 @@
 #![no_std]
 #![no_main]
-#![feature(lang_items, core)]
-
+#![feature(lang_items, core, no_std)]
 
 extern crate core;
 extern crate emlib;
@@ -23,7 +22,6 @@ pub extern fn TIMER0_IRQHandler() {
 
 #[no_mangle]
 pub extern fn main() {
-
     chip::init();
 
     cmu::clock_enable(cmu::Clock::HFPER, true);
@@ -42,13 +40,13 @@ pub extern fn main() {
     let timer0 = timer::Timer::timer0();
 
     timer0.int_enable(timer::TIMER_IF_OF);
-    nvic::enable_IRQ(nvic::IRQn::TIMER0);
+    nvic::enable_irq(nvic::IRQn::TIMER0);
     timer0.top_set(TOP);
     timer0.init(&timer_init);
 
     loop {}
-    
 }
+
 #[lang = "stack_exhausted"] extern fn stack_exhausted() {}
 #[lang = "eh_personality"] extern fn eh_personality() {}
 #[lang = "panic_fmt"] fn panic_fmt() -> ! { loop {} }

@@ -1,13 +1,16 @@
 #![no_std]
 #![crate_type="lib"]
 #![crate_name="emlib"]
+#![deny(warnings)]
 #![feature(core, lang_items, no_std)]
 
 extern crate core;
 
 pub mod chip;
 pub mod cmu;
+pub mod emu;
 pub mod gpio;
+pub mod rtc;
 pub mod timer;
 
 pub mod emdrv;
