@@ -8,24 +8,19 @@ extern crate emlib;
 use emlib::chip;
 use emlib::cmu;
 use emlib::gpio;
+use emlib::emu;
 use emlib::emdrv::gpioint;
-
-extern {
-    pub fn BSP_TraceSwoSetup();
-}
-
-const LED0: u32 = 2;
-const LED1: u32 = 3;
 
 const PB0: u32 = 9;
 const PB1: u32 = 10;
 
-extern fn button_callback(pin: u8) {
+static mut mode: u32 = 0;
 
+extern fn button_callback(pin: u8) {
     if pin == 9 {
-        gpio::pin_out_toggle(gpio::Port::E, LED0);
+        unsafe { mode += 1; }
     } else {
-        gpio::pin_out_toggle(gpio::Port::E, LED1);
+        unsafe { mode -= 1; }
     }
 }
 
@@ -42,6 +37,7 @@ fn gpio_setup() {
 
     gpio::int_config(gpio::Port::B, PB0, false, true, true);
     gpio::int_config(gpio::Port::B, PB1, false, true, true);
+
 }
 
 #[no_mangle]
@@ -50,10 +46,15 @@ pub extern fn main() {
 
     gpio_setup();
 
-    gpio::pin_mode_set(gpio::Port::E, LED0, gpio::Mode::PushPull, 0);
-    gpio::pin_mode_set(gpio::Port::E, LED1, gpio::Mode::PushPull, 0);
-
-    loop {}
+    loop {
+        match unsafe { mode } {
+            1 => emu::enter_em1(),
+            2 => emu::enter_em2(true),
+            3 => emu::enter_em3(true),
+            4 => emu::enter_em4(),
+            _ => ()
+        }
+    }
 }
 
 #[lang = "stack_exhausted"] extern fn stack_exhausted() {}
