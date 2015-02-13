@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+
 use core::intrinsics::transmute;
 use core::slice::SliceExt;
 use core::cmp::min;
@@ -32,7 +33,7 @@ impl DMA {
         unsafe { DMA_CfgDescr(self.channel, primary, cfg) }
     }
 
-    pub fn activate_auto<T>(&self, primary: bool, dst: &mut[T], src: &mut[T]) {
+    pub fn activate_auto<T>(&self, primary: bool, dst: &'static mut[T], src: &'static mut[T]) {
         unsafe {
 
             let n = min(dst.len(), src.len());
@@ -133,11 +134,17 @@ pub fn dma_control_block() -> &'static Descriptor {
     unsafe { transmute(GET_DMA_CONTROL_BLOCK()) }
 }
 
+
 extern {
     fn GET_DMA_CONTROL_BLOCK() -> &'static Descriptor;
 
+    #[allow(warnings)]
     fn DMA_Init(init: *const Init);
+
+    #[allow(warnings)]
     fn DMA_CfgChannel(channel: u32, cfg: *const CfgChannel);
+
+    #[allow(warnings)]
     fn DMA_CfgDescr(channel: u32, primary: bool, cfg: *const CfgDescriptor);
     fn DMA_ActivateAuto(
         channel: u32,
