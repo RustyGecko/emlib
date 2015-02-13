@@ -53,14 +53,12 @@ pub extern fn main() {
     gpio::pin_mode_set(gpio::Port::E, LED1, gpio::Mode::PushPull, 0);
 
     loop {
-        unsafe {
-            match mode {
-                1 => emu::enter_em1(),
-                2 => emu::enter_em2(true),
-                3 => emu::enter_em3(true),
-                4 => emu::enter_em4(),
-                _ => ()
-            }
+        match unsafe { mode } {
+            1 => emu::enter_em1(),
+            2 => emu::enter_em2(true),
+            3 => emu::enter_em3(true),
+            4 => emu::enter_em4(),
+            _ => ()
         }
     }
 }
