@@ -1,6 +1,12 @@
 #![allow(dead_code)]
 
+use core::intrinsics::transmute;
+use core::slice::SliceExt;
+use core::cmp::min;
+
 #[repr(u8)]
+#[derive(Copy)]
+#[allow(non_camel_case_types)]
 pub enum c_void {
     __variant1,
     __variant2,
@@ -10,12 +16,7 @@ pub const DMAREQ_TIMER0_UFOF: u32 = ((24 << 16) + 0);
 
 pub type FuncPtr = extern fn(channel: u32, primary: bool, user: u32);
 
-use core::intrinsics::transmute;
-use core::default::Default;
-use core::option::Option;
-use core::slice::SliceExt;
-use core::ptr;
-
+#[derive(Copy)]
 pub struct DMA { channel: u32 }
 
 impl DMA {
@@ -34,9 +35,7 @@ impl DMA {
     pub fn activate_auto<T>(&self, primary: bool, dst: &mut[T], src: &mut[T]) {
         unsafe {
 
-            let (dst_n, src_n) = (dst.len(), src.len());
-
-            let n = if dst_n < src_n { dst_n } else { src_n };
+            let n = min(dst.len(), src.len());
             
             DMA_ActivateAuto(
                 self.channel,
@@ -49,8 +48,8 @@ impl DMA {
     }
 }
 
-#[repr(C)]
 #[derive(Copy)]
+#[repr(C)]
 pub struct Init {
     pub hprot: u8,
     pub control_block: &'static Descriptor,
@@ -77,6 +76,7 @@ pub struct CfgDescriptor {
 
 #[repr(C)]
 #[derive(Copy)]
+#[allow(non_snake_case)]
 pub struct Descriptor {
     pub SRCEND: u32,
     pub DSTEND: u32,
@@ -136,9 +136,9 @@ pub fn dma_control_block() -> &'static Descriptor {
 extern {
     fn GET_DMA_CONTROL_BLOCK() -> &'static Descriptor;
 
-    fn DMA_Init(init: &Init);
-    fn DMA_CfgChannel(channel: u32, cfg: &CfgChannel);
-    fn DMA_CfgDescr(channel: u32, primary: bool, cfg: &CfgDescriptor);
+    fn DMA_Init(init: *const Init);
+    fn DMA_CfgChannel(channel: u32, cfg: *const CfgChannel);
+    fn DMA_CfgDescr(channel: u32, primary: bool, cfg: *const CfgDescriptor);
     fn DMA_ActivateAuto(
         channel: u32,
         use_burst: bool,
