@@ -3,6 +3,7 @@
 pub enum Clock {
     LFA    = 0x60002,
     CORE   = 0x40020,
+    DMA    = 0x40300,
     HFPER  = 0x28110,
     GPIO   = 0x2d200,
     CORELE = 0x44300,
