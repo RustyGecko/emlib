@@ -1,4 +1,5 @@
-
+#![allow(dead_code)]
+#![allow(warnings)]
 use core::intrinsics::transmute;
 use core::default::Default;
 
@@ -9,6 +10,20 @@ pub const ROUTE_SCLPEN: u32 = (0x1 << 1);
 
 pub const FLAG_WRITE: u16 = 0x0001;
 pub const FLAG_READ:  u16 = 0x0002;
+
+pub const IF_ADDR:    u32 = (0x1 << 2);
+pub const IF_RXDATAV: u32 = (0x1 << 5);
+
+pub const IFC_ADDR: u32 = (0x1 << 2);
+
+
+pub const IEN_ADDR:    u32 = (0x1 << 2);
+pub const IEN_RXDATAV: u32 = (0x1 << 5);
+pub const IEN_SSTOP:   u32 = (0x1 << 16);
+
+pub const CTRL_SLAVE:   u32 = (0x1 << 1);
+pub const CTRL_AUTOACK: u32 = (0x1 << 2);
+pub const CTRL_AUTOSN:  u32 = (0x1 << 4);
 
 #[repr(C)]
 #[allow(non_snake_case)]
@@ -48,9 +63,22 @@ impl I2C {
     pub fn transfer(&self) -> TransferReturn {
         unsafe { I2C_Transfer(self) }
     }
+
+    pub fn int_enable(&self, flags: u32) {
+        unsafe { STATIC_INLINE_I2C_IntEnable(self, flags) }
+    }
+
+    pub fn int_clear(&self, flags: u32) {
+        unsafe { STATIC_INLINE_I2C_IntClear(self, flags) }
+    }
+
+    pub fn int_disable(&self, flags: u32) {
+        unsafe { STATIC_INLINE_I2C_IntDisable(self, flags) }
+    }
     
 }
 
+#[repr(C)]
 pub struct Init {
     enable: bool,
     master: bool,
@@ -99,8 +127,13 @@ pub enum TransferReturn {
 extern {
     fn GET_I2C0() -> &'static mut I2C;
 
-    pub fn I2C_Init(i2c: &I2C, init: &Init);
-    pub fn I2C_TransferInit(i2c: &I2C, transfer_seq: &TransferSeq) -> TransferReturn;
+
+    pub fn I2C_Init(i2c: &I2C, init: *const Init);
+    pub fn I2C_TransferInit(i2c: &I2C, transfer_seq: *const TransferSeq) -> TransferReturn;
     pub fn I2C_Transfer(i2c: &I2C) -> TransferReturn;
+
+    pub fn STATIC_INLINE_I2C_IntEnable(i2c: &I2C, flags: u32);
+    pub fn STATIC_INLINE_I2C_IntClear(i2c: &I2C, flags: u32);
+    pub fn STATIC_INLINE_I2C_IntDisable(i2c: &I2C, flags: u32);
 
 }
