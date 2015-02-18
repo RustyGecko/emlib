@@ -41,7 +41,6 @@ fn compile_emlib_library() {
         "efm32-common/emlib/src/em_usart.c",
         "efm32-common/emlib/src/em_int.c",
         "efm32-common/kits/common/drivers/dmactrl.c",
-        "efm32-common/kits/common/drivers/retargetio.c",
         "efm32-common/emdrv/gpiointerrupt/src/gpiointerrupt.c",
 
         "src/chip/chip.c",

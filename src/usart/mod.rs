@@ -1,11 +1,15 @@
 #![allow(dead_code)]
 
 pub const ROUTE_RXPEN: u32 = 0x1 << 0;
-pub const ROUTE_TXPEN: u32= 0x1 << 1;
+pub const ROUTE_TXPEN: u32 = 0x1 << 1;
+pub const ROUTE_CSPEN: u32 = 0x1 << 2;
+pub const ROUTE_CLKPEN: u32 = 0x1 << 3;
 
 pub const ROUTE_LOCATION_LOC1: u32 = 0x1 << 8;
+pub const ROUTE_LOCATION_LOC2: u32 = 0x2 << 8;
 
 pub const IEN_RXDATAV: u32 = 0x1 << 2;
+pub const IF_RXDATAV:  u32 = 0x1 << 2;
 
 use core::intrinsics::transmute;
 use core::default::Default;
@@ -47,8 +51,25 @@ impl Usart {
         unsafe { transmute(GET_UART1()) }
     }
 
+    #[inline]
+    pub fn usart1() -> &'static mut Usart {
+        unsafe { transmute(GET_USART1()) }
+    }
+
+    pub fn enable(&self, enable: Enable) {
+        unsafe { USART_Enable(self, enable) }
+    }
+
     pub fn init_async(&mut self, init: &InitAsync) {
         unsafe { USART_InitAsync(self, init) }
+    }
+
+    pub fn int_clear(&self, flags: u32) {
+        unsafe { STATIC_INLINE_USART_IntClear(self, flags) }
+    }
+
+    pub fn int_enable(&self, flags: u32) {
+        unsafe { STATIC_INLINE_USART_IntEnable(self, flags) }
     }
 
     pub fn tx(&self, val: u8) {
@@ -96,9 +117,9 @@ impl Default for InitAsync {
 #[derive(Copy)]
 pub enum Enable {
     Disable = 0x0,
-    Rx      = 0x1,
-    Tx      = 0x2,
-    Enable  = 0x1 | 0x2,
+    Rx      = 0x1 << 0,
+    Tx      = 0x1 << 2,
+    Enable  = (0x1 << 0) | (0x1 << 2),
 }
 
 #[repr(u8)]
@@ -164,8 +185,14 @@ pub enum PrsRxCh {
 
 extern {
     #[inline] fn GET_UART1() -> *mut Usart;
+    #[inline] fn GET_USART1() -> *mut Usart;
 
     #[inline] fn USART_InitAsync(usart: &Usart, init: &InitAsync);
     #[inline] fn USART_Rx(usart: &Usart) -> u8;
     #[inline] fn USART_Tx(usart: &Usart, data: u8);
+
+    #[inline] fn USART_Enable(usart: &Usart, enable: Enable);
+
+    #[inline] fn STATIC_INLINE_USART_IntClear(usart: &Usart, data: u32);
+    #[inline] fn STATIC_INLINE_USART_IntEnable(usart: &Usart, data: u32);
 }
