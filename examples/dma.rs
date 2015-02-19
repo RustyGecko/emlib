@@ -25,14 +25,14 @@ pub extern fn main() {
 
     let dma0 = dma::DMA::channel0();
     unsafe { dma0.activate_auto(true, &mut DATA_DST, &mut DATA_SRC); }
-    
+
     loop {}
 }
 
 extern fn transfer_complete(_channel: u32, _primary: bool, _user: u32) {}
 
 fn setup_dma() {
-    
+
     dma::init(&dma::Init{
         hprot: 0,
         control_block: dma::dma_control_block(),
@@ -44,7 +44,7 @@ fn setup_dma() {
         enable_int: true,
         select: 0,
         cb: &CB,
-    }); 
+    });
     dma0.configure_descriptor(true, &dma::CfgDescriptor {
         dst_inc: dma::DataInc::Inc4,
         src_inc: dma::DataInc::Inc4,
@@ -54,6 +54,14 @@ fn setup_dma() {
     });
 }
 
-#[lang = "stack_exhausted"] extern fn stack_exhausted() {}
-#[lang = "eh_personality"] extern fn eh_personality() {}
-#[lang = "panic_fmt"] fn panic_fmt() -> ! { loop {} }
+#[lang = "stack_exhausted"]
+pub extern fn stack_exhausted() {}
+
+#[lang = "eh_personality"]
+pub extern fn eh_personality() {}
+
+#[lang = "panic_fmt"]
+#[allow(unused_variables)]
+pub extern fn rust_begin_unwind(msg: core::fmt::Arguments, file: &'static str, line: usize) -> ! {
+    loop { }
+}
