@@ -35,12 +35,14 @@ fn compile_emlib_library() {
         "efm32-common/emlib/src/em_dma.c",
         "efm32-common/emlib/src/em_emu.c",
         "efm32-common/emlib/src/em_gpio.c",
+        "efm32-common/emlib/src/em_lcd.c",
         "efm32-common/emlib/src/em_rtc.c",
         "efm32-common/emlib/src/em_system.c",
         "efm32-common/emlib/src/em_timer.c",
         "efm32-common/emlib/src/em_usart.c",
         "efm32-common/emlib/src/em_int.c",
         "efm32-common/kits/common/drivers/dmactrl.c",
+        "efm32-common/kits/common/drivers/segmentlcd.c",
         "efm32-common/emdrv/gpiointerrupt/src/gpiointerrupt.c",
 
         "src/chip/chip.c",
@@ -51,6 +53,7 @@ fn compile_emlib_library() {
         "src/rtc/rtc.c",
         "src/timer/timer.c",
         "src/usart/usart.c",
+        "src/lcd/lcd.c",
         
         "src/emdrv/gpiointerrupt.c",
     ];
@@ -74,10 +77,12 @@ fn compile_emlib_library() {
         "-Wall".to_string(),
         "-mthumb".to_string(),
         "-mcpu=cortex-m3".to_string(),
+        "--specs=rdimon.specs".to_string(),
         "-Wl,--start-group".to_string(),
         "-lgcc".to_string(),
         "-lc".to_string(),
         "-lnosys".to_string(),
+        "-v".to_string(),
         "-Wl,--end-group".to_string(),
     );
 
