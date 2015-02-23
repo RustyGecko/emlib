@@ -9,6 +9,8 @@ TARGET=thumbv7m-none-eabi
 EXAMPLE_DIR = examples
 EXAMPLES    = $(wildcard $(EXAMPLE_DIR)/*.rs)
 
+TEST_DIR = test
+
 PROJ_NAME   = buttons_int
 
 RUSTC = rustc
@@ -37,7 +39,14 @@ RUSTFLAGS += --emit=dep-info,link --verbose
 
 FLASHFLAGS = --verify --reset
 
-%.elf: $(EXAMPLE_DIR)/$(@:.elf=.rs)
+#%.elf: $(EXAMPLE_DIR)/$(@:.elf=.rs)
+#	cargo build --target thumbv7m-none-eabi --verbose
+#	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
+#	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
+#	$(RUSTC) $<$(@:.elf=.rs) $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name $(@:.elf=)
+
+%.elf: $(TEST_DIR)/$(@:.elf=.rs)
+	rm -rf target/build/emlib-45127226698c02f0
 	cargo build --target thumbv7m-none-eabi --verbose
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
 	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
