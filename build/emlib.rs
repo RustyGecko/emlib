@@ -10,7 +10,7 @@ use std::old_io::IoResult;
 fn assert_env_var(var: &str, expected: &str) {
     env::set_var(var, expected);
     match env::var(var) {
-        Ok(ref val) if &val[] == expected => (),
+        Ok(ref val) if &val[..] == expected => (),
         _ => panic!("`{}` environment variable must be `{}`", var, expected)
     }
 }
