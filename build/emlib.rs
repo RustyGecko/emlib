@@ -1,5 +1,5 @@
 #![deny(warnings)]
-#![feature(core, env, io, path)]
+#![feature(core, env, old_io, old_path)]
 
 extern crate gcc;
 
@@ -10,7 +10,7 @@ use std::old_io::IoResult;
 fn assert_env_var(var: &str, expected: &str) {
     env::set_var(var, expected);
     match env::var(var) {
-        Ok(ref val) if &val[] == expected => (),
+        Ok(ref val) if &val[..] == expected => (),
         _ => panic!("`{}` environment variable must be `{}`", var, expected)
     }
 }
@@ -50,7 +50,7 @@ fn compile_emlib_library() {
         "src/gpio/gpio.c",
         "src/rtc/rtc.c",
         "src/timer/timer.c",
-        
+
         "src/emdrv/gpiointerrupt.c",
     ];
 
