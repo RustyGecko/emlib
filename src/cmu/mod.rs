@@ -9,6 +9,8 @@ pub enum Clock {
     CORELE = 0x44300,
     HF     = 0x51,
     TIMER0 = 0x25200,
+    USART1 = 0x21200,
+    UART1  = 0x24200,
     RTC    = 0x81430,
 }
 
