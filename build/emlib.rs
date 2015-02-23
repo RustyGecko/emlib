@@ -17,7 +17,6 @@ fn main() {
 }
 
 fn compile_emlib_library() {
-
     println!("The ARM embedded toolchain must be available in the PATH");
     env::set_var("CC", "arm-none-eabi-gcc");
     env::set_var("AR", "arm-none-eabi-ar");
@@ -52,11 +51,11 @@ fn base_config() {
         .flag("-Wall")
         .flag("-mthumb")
         .flag("-mcpu=cortex-m3")
-        .flag("-Wl,--start-group")
+        .flag("--specs=rdimon.specs")
         .flag("-lgcc")
         .flag("-lc")
-        .flag("-lnosys")
-        .flag("-Wl,--end-group")
+        .flag("-lm")
+        .flag("-lrdimon")
         
 }
 
@@ -102,6 +101,10 @@ fn test_config() {
         .file("src/timer/timer.c")
         .file("src/gpio/gpio.c")
         .file("test/timer.c")
+
+        .file("test/lib/Unity/src/unity.c")
+        .file("test/lib/cmock/src/cmock.c")
+        .file("test/mocks/Mockem_timer.c")
     
 }
 
