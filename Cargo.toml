@@ -14,6 +14,7 @@ keywords = ["emlib", "bindings"]
 build = "build/emlib.rs"
 [build-dependencies.gcc]
 git = "https://github.com/sondrele/gcc-rs.git"
+rev = "554de33b5b4af5b505b44f25601edecde517e90f"
 
 [target.thumbv7m-none-eabi.dependencies.core]
 git = "https://github.com/sondrele/rust-libcore.git"
