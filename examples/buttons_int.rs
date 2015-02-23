@@ -56,6 +56,14 @@ pub extern fn main() {
     loop {}
 }
 
-#[lang = "stack_exhausted"] extern fn stack_exhausted() {}
-#[lang = "eh_personality"] extern fn eh_personality() {}
-#[lang = "panic_fmt"] fn panic_fmt() -> ! { loop {} }
+#[lang = "stack_exhausted"]
+pub extern fn stack_exhausted() {}
+
+#[lang = "eh_personality"]
+pub extern fn eh_personality() {}
+
+#[lang = "panic_fmt"]
+#[allow(unused_variables)]
+pub extern fn rust_begin_unwind(msg: core::fmt::Arguments, file: &'static str, line: usize) -> ! {
+    loop { }
+}

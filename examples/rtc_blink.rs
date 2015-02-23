@@ -31,7 +31,7 @@ fn rtc_setup() {
     rtc::init(&rtc_init);
 
     /* Interrupt every second */
-    rtc::compare_set(0, LFXO_FREQ * RTC_TIMEOUT_S);
+    rtc::compare_set(0, (LFXO_FREQ * RTC_TIMEOUT_S) / 2);
 
     /* Enable interrupt */
     nvic::enable_irq(nvic::IRQn::RTC);
@@ -66,8 +66,17 @@ pub extern fn RTC_IRQHandler() {
     rtc::int_clear(rtc::RTC_IEN_COMP0);
 
     gpio::pin_out_toggle(gpio::Port::E, 2);
+
 }
 
-#[lang = "stack_exhausted"] extern fn stack_exhausted() {}
-#[lang = "eh_personality"] extern fn eh_personality() {}
-#[lang = "panic_fmt"] fn panic_fmt() -> ! { loop {} }
+#[lang = "stack_exhausted"]
+pub extern fn stack_exhausted() {}
+
+#[lang = "eh_personality"]
+pub extern fn eh_personality() {}
+
+#[lang = "panic_fmt"]
+#[allow(unused_variables)]
+pub extern fn rust_begin_unwind(msg: core::fmt::Arguments, file: &'static str, line: usize) -> ! {
+    loop { }
+}
