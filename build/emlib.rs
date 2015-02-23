@@ -1,5 +1,5 @@
 #![deny(warnings)]
-#![feature(core, env, io, path)]
+#![feature(core, env, old_io, old_path)]
 
 extern crate gcc;
 
@@ -50,7 +50,7 @@ fn compile_emlib_library() {
         "src/gpio/gpio.c",
         "src/rtc/rtc.c",
         "src/timer/timer.c",
-        
+
         "src/emdrv/gpiointerrupt.c",
     ];
 
