@@ -1,6 +1,7 @@
 use emlib::timer;
 use led_test::{assert};
 use core::default::Default;
+use core::slice::SliceExt;
 
 fn setup() {
     unsafe { TIMER_setup(); }
@@ -32,17 +33,17 @@ fn test_init_called_with_default() {
 
 pub fn tests() {
 
-    setup();
-    test_init_called();
-    tear_down();
+    let tests: [fn(); 3] = [
+        test_init_called,
+        test_init_called_with_timer0,
+        test_init_called_with_default
+    ];
 
-    setup();
-    test_init_called_with_timer0();
-    tear_down();
-
-    setup();
-    test_init_called_with_default();
-    tear_down();
+    for test in tests.iter() {
+        setup();
+        test();
+        tear_down();
+    }
     
 }
 
