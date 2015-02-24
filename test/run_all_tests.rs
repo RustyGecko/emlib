@@ -21,9 +21,9 @@ pub extern fn main() {
     let usart1 = usart::Usart::usart1();
 
     start();
-    usart1.tx('\n' as u8);
+    usart1.tx('\n' as u8); usart1.tx('\r' as u8);
     tests::timer::run_tests();
-    usart1.tx('\n' as u8);
+    usart1.tx('\n' as u8); usart1.tx('\r' as u8);
     success();
     loop {}
 }
