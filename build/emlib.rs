@@ -7,14 +7,6 @@ use std::env;
 use std::old_io::File;
 use std::old_io::IoResult;
 
-fn assert_env_var(var: &str, expected: &str) {
-    env::set_var(var, expected);
-    match env::var(var) {
-        Ok(ref val) if &val[..] == expected => (),
-        _ => panic!("`{}` environment variable must be `{}`", var, expected)
-    }
-}
-
 fn main() {
     compile_emlib_library();
 
@@ -25,8 +17,9 @@ fn main() {
 }
 
 fn compile_emlib_library() {
-    assert_env_var("CC", "arm-none-eabi-gcc");
-    assert_env_var("AR", "arm-none-eabi-ar");
+    println!("The ARM embedded toolchain must be available in the PATH");
+    env::set_var("CC", "arm-none-eabi-gcc");
+    env::set_var("AR", "arm-none-eabi-ar");
 
     gcc::Config::new()
             .file("efm32-common/Device/EFM32GG/Source/GCC/startup_efm32gg.S")
@@ -38,6 +31,7 @@ fn compile_emlib_library() {
             .file("efm32-common/emlib/src/em_rtc.c")
             .file("efm32-common/emlib/src/em_system.c")
             .file("efm32-common/emlib/src/em_timer.c")
+            .file("efm32-common/emlib/src/em_usart.c")
             .file("efm32-common/emlib/src/em_int.c")
             .file("efm32-common/kits/common/drivers/dmactrl.c")
             .file("efm32-common/kits/common/drivers/retargetio.c")
