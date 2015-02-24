@@ -21,3 +21,5 @@ pub mod cmsis;
 mod std {
     pub use core::*;
 }
+
+pub mod modules;

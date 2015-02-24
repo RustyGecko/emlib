@@ -10,6 +10,7 @@ pub const ROUTE_LOCATION_LOC2: u32 = 0x2 << 8;
 
 pub const IEN_RXDATAV: u32 = 0x1 << 2;
 pub const IF_RXDATAV:  u32 = 0x1 << 2;
+pub const IF_MASK: u32     = 0x00001FFF;
 
 use core::intrinsics::transmute;
 use core::default::Default;
