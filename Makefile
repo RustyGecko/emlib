@@ -12,6 +12,8 @@ TARGET=thumbv7m-none-eabi
 EXAMPLE_DIR = examples
 EXAMPLES    = $(wildcard $(EXAMPLE_DIR)/*.rs)
 
+TEST_DIR = test
+
 PROJ_NAME   = buttons_int
 
 RUSTC = rustc
@@ -29,7 +31,9 @@ proj:   $(PROJ_NAME).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
 
 AFLAGS   = -mthumb -mcpu=cortex-m3
 LDFLAGS  = $(AFLAGS) -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
-LDFLAGS += -Wl,--start-group -lgcc -lc -lnosys -Wl,--end-group
+LDFLAGS += --specs=nosys.specs
+LDFLAGS += -lgcc -lc -lnosys -lm
+LDFLAGS += -Wl,--start-group -lnosys -lgcc -lc -lm -Wl,--start-group
 
 -include Makefile.user
 
@@ -41,7 +45,7 @@ RUSTFLAGS += --emit=dep-info,link --verbose
 FLASHFLAGS = --verify --reset
 
 %.elf: $(EXAMPLE_DIR)/$(@:.elf=.rs)
-	cargo build --target thumbv7m-none-eabi --verbose
+	BUILD_ENV=prod cargo build --target thumbv7m-none-eabi --verbose
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
 	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
 	$(RUSTC) $<$(@:.elf=.rs) $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name $(@:.elf=)
@@ -60,6 +64,17 @@ burn: all
 	$(FLASH) --flash $(TARGET_OUT).bin $(FLASHFLAGS)
 
 test: $(notdir $(EXAMPLES:.rs=.elf))
+	@echo Done
+
+run-tests: $(TEST_DIR)/run_all_tests.rs
+	@mkdir -p test/mocks
+	rm -rf target/build/emlib-$(HASH)
+	BUILD_ENV=test cargo build --target thumbv7m-none-eabi --verbose
+	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
+	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
+	$(RUSTC) $(TEST_DIR)/run_all_tests.rs $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name run_all_tests
+	$(OBJCOPY) -O binary $(TARGET_DIR)/run_all_tests $(TARGET_DIR)/run_all_tests.bin
+	$(FLASH) --flash $(TARGET_DIR)/run_all_tests.bin $(FLASHFLAGS)
 	@echo Done
 
 clean:
