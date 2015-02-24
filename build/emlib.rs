@@ -91,6 +91,9 @@ fn prod_config() {
 fn test_config() {
 
     base_config()
+
+        .flag("-DUNITY_OUTPUT_CHAR=print_char")
+        .flag("-DNULL=0")
         
         .file("src/chip/chip.c")
         .file("src/cmsis/cmsis.c")
@@ -99,13 +102,15 @@ fn test_config() {
 
         .file("test/lib/Unity/src/unity.c")
         .file("test/lib/cmock/src/cmock.c")
-
+        .file("test/util/usart_print.c")
+        
         // Mocks
         .file("test/mocks/Mockem_timer.c")
 
         // Tests
         .file("test/tests/timer.c")
-    
+
+
 }
 
 fn write_emlib_hash() -> IoResult<()> {
