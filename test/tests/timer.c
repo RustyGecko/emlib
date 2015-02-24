@@ -7,8 +7,7 @@
 
 void expect_init_called() {
 
-    TIMER_Init_TypeDef timer_init = TIMER_INIT_DEFAULT;
+    static TIMER_Init_TypeDef timer_init = TIMER_INIT_DEFAULT;
     TIMER_Init_Expect(TIMER0, &timer_init);
 
 }
-
