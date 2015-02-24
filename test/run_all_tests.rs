@@ -8,7 +8,9 @@ extern crate emlib;
 use emlib::{cmu, gpio, usart};
 use core::default::Default;
 
-mod timer;
+mod tests {
+    pub mod timer;
+}
 
 #[no_mangle]
 pub extern fn main() {
@@ -18,7 +20,7 @@ pub extern fn main() {
 
     start();
 
-    timer::run_tests();
+    tests::timer::run_tests();
 
     success();
     loop {}

@@ -17,6 +17,7 @@ fn main() {
 }
 
 fn compile_emlib_library() {
+
     println!("The ARM embedded toolchain must be available in the PATH");
     env::set_var("CC", "arm-none-eabi-gcc");
     env::set_var("AR", "arm-none-eabi-ar");
@@ -95,11 +96,15 @@ fn test_config() {
         .file("src/cmsis/cmsis.c")
         .file("src/timer/timer.c")
         .file("src/gpio/gpio.c")
-        .file("test/timer.c")
 
         .file("test/lib/Unity/src/unity.c")
         .file("test/lib/cmock/src/cmock.c")
+
+        // Mocks
         .file("test/mocks/Mockem_timer.c")
+
+        // Tests
+        .file("test/tests/timer.c")
     
 }
 
