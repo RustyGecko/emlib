@@ -1,4 +1,5 @@
 use emlib::timer;
+use emlib::usart;
 use core::default::Default;
 use core::slice::SliceExt;
 
@@ -15,6 +16,7 @@ fn test_init_called() {
 }
 
 pub fn run_tests() {
+    let usart1 = usart::Usart::usart1();
 
     let tests: [fn(); 1] = [
         test_init_called,
@@ -24,6 +26,7 @@ pub fn run_tests() {
         setup();
         test();
         tear_down();
+        usart1.tx('.' as u8);
     }
 
     tear_down_tests();

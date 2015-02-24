@@ -18,10 +18,12 @@ pub extern fn main() {
     setup_leds();
     setup_usart1();
 
+    let usart1 = usart::Usart::usart1();
+
     start();
-
+    usart1.tx('\n' as u8);
     tests::timer::run_tests();
-
+    usart1.tx('\n' as u8);
     success();
     loop {}
 }
