@@ -50,6 +50,10 @@ FLASHFLAGS = --verify --reset
 	$(OBJCOPY) -O binary $< $@
 
 flash: all
+	cp $(TARGET_DIR)/$(PROJ_NAME).bin $(TARGET_DIR)/out.bin
+	JLinkExe -commanderscript .execute.jlink || echo ""
+
+burn: all
 	$(FLASH) --flash $(TARGET_OUT).bin $(FLASHFLAGS)
 
 test: $(notdir $(EXAMPLES:.rs=.elf))
