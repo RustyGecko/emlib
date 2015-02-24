@@ -30,7 +30,7 @@ AFLAGS   = -mthumb -mcpu=cortex-m3
 LDFLAGS  = $(AFLAGS) -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
 LDFLAGS += --specs=nosys.specs
 LDFLAGS += -lgcc -lc -lnosys -lm
-LDFLAGS += -Wl,--start-group -lnosys -lgcc -lc -lrdimon -lm -Wl,--start-group
+LDFLAGS += -Wl,--start-group -lnosys -lgcc -lc -lm -Wl,--start-group
 
 -include Makefile.user
 
