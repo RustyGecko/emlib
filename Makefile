@@ -3,6 +3,9 @@ AR      = arm-none-eabi-ar
 AS      = arm-none-eabi-as
 OBJCOPY = arm-none-eabi-objcopy
 
+BINARY_NAME   = out
+BINARY_FORMAT = hex
+
 DEVICE=EFM32GG990F1024
 TARGET=thumbv7m-none-eabi
 
@@ -50,6 +53,10 @@ FLASHFLAGS = --verify --reset
 	$(OBJCOPY) -O binary $< $@
 
 flash: all
+	cp $(TARGET_DIR)/$(PROJ_NAME).$(BINARY_FORMAT) $(TARGET_DIR)/$(BINARY_NAME).$(BINARY_FORMAT)
+	JLinkExe -commanderscript .execute.jlink || echo ""
+
+burn: all
 	$(FLASH) --flash $(TARGET_OUT).bin $(FLASHFLAGS)
 
 test: $(notdir $(EXAMPLES:.rs=.elf))
