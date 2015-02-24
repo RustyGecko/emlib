@@ -60,7 +60,8 @@ test: $(notdir $(EXAMPLES:.rs=.elf))
 	@echo Done
 
 run-tests: $(TEST_DIR)/run_all_tests.rs
-	rm -rf target/build/emlib-45127226698c02f0
+	@mkdir -p test/mocks
+	rm -rf target/build/emlib-$(HASH)
 	BUILD_ENV=test cargo build --target thumbv7m-none-eabi --verbose
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
 	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
