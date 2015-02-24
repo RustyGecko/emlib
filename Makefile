@@ -41,14 +41,7 @@ RUSTFLAGS += --emit=dep-info,link --verbose
 
 FLASHFLAGS = --verify --reset
 
-#%.elf: $(EXAMPLE_DIR)/$(@:.elf=.rs)
-#	cargo build --target thumbv7m-none-eabi --verbose
-#	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
-#	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
-#	$(RUSTC) $<$(@:.elf=.rs) $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name $(@:.elf=)
-
-%.elf: $(TEST_DIR)/$(@:.elf=.rs)
-	rm -rf target/build/emlib-45127226698c02f0
+%.elf: $(EXAMPLE_DIR)/$(@:.elf=.rs)
 	cargo build --target thumbv7m-none-eabi --verbose
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
 	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
@@ -64,6 +57,16 @@ flash: all
 	$(FLASH) --flash $(TARGET_OUT).bin $(FLASHFLAGS)
 
 test: $(notdir $(EXAMPLES:.rs=.elf))
+	@echo Done
+
+run-tests: $(TEST_DIR)/run_all_tests.rs
+	rm -rf target/build/emlib-45127226698c02f0
+	cargo build --target thumbv7m-none-eabi --verbose
+	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
+	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
+	$(RUSTC) $(TEST_DIR)/run_all_tests.rs $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name run_all_tests
+	$(OBJCOPY) -O binary $(TARGET_DIR)/run_all_tests $(TARGET_DIR)/run_all_tests.bin
+	$(FLASH) --flash $(TARGET_DIR)/run_all_tests.bin $(FLASHFLAGS)
 	@echo Done
 
 clean:
