@@ -1,42 +1,23 @@
 use emlib::timer;
-use led_test::{assert};
 use core::default::Default;
 use core::slice::SliceExt;
 
-fn setup() {
-    unsafe { TIMER_setup(); }
-}
-
-fn tear_down() {}
+fn setup() { unsafe { Mockem_timer_Init() } }
+fn tear_down() { unsafe { Mockem_timer_Verify() } }
+fn tear_down_tests() { unsafe { Mockem_timer_Destroy() } }
 
 fn test_init_called() {
+
+    unsafe { expect_init_called(); }
+    
     let timer = timer::Timer::timer0();
     timer.init(&Default::default());
-
-    assert(unsafe { check_test_called() });
 }
 
-fn test_init_called_with_timer0() {
+pub fn run_tests() {
 
-    let timer = timer::Timer::timer0();
-    timer.init(&Default::default());
-
-    assert(unsafe { check_test_called_with_timer0() });
-}
-
-fn test_init_called_with_default() {
-    let timer = timer::Timer::timer0();
-    timer.init(&Default::default());
-
-    assert(unsafe { check_test_called_with_default() });
-}
-
-pub fn tests() {
-
-    let tests: [fn(); 3] = [
+    let tests: [fn(); 1] = [
         test_init_called,
-        test_init_called_with_timer0,
-        test_init_called_with_default
     ];
 
     for test in tests.iter() {
@@ -44,13 +25,15 @@ pub fn tests() {
         test();
         tear_down();
     }
-    
+
+    tear_down_tests();
 }
 
 extern {
-    fn TIMER_setup();
-    
-    fn check_test_called() -> bool;
-    fn check_test_called_with_timer0() -> bool;
-    fn check_test_called_with_default() -> bool;
+
+    fn Mockem_timer_Init();
+    fn Mockem_timer_Destroy();
+    fn Mockem_timer_Verify();
+
+    fn expect_init_called();
 }

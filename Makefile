@@ -28,8 +28,9 @@ proj:   $(PROJ_NAME).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
 
 AFLAGS   = -mthumb -mcpu=cortex-m3
 LDFLAGS  = $(AFLAGS) -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
-LDFLAGS += --specs=rdimon.specs
-LDFLAGS += -lgcc -lc -lm -lrdimon
+LDFLAGS += --specs=nosys.specs
+LDFLAGS += -lgcc -lc -lnosys -lm
+LDFLAGS += -Wl,--start-group -lnosys -lgcc -lc -lrdimon -lm -Wl,--start-group
 
 -include Makefile.user
 

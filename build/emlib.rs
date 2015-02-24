@@ -46,17 +46,13 @@ fn base_config() {
 
         .file("efm32-common/emlib/src/em_cmu.c")
         .file("efm32-common/emlib/src/em_gpio.c")
+        .file("efm32-common/emlib/src/em_usart.c")
         
         .flag("-g")
         .flag("-Wall")
         .flag("-mthumb")
         .flag("-mcpu=cortex-m3")
-        .flag("--specs=rdimon.specs")
-        .flag("-lgcc")
-        .flag("-lc")
-        .flag("-lm")
-        .flag("-lrdimon")
-        
+
 }
 
 fn prod_config() {
@@ -70,7 +66,6 @@ fn prod_config() {
         .file("efm32-common/emlib/src/em_rtc.c")
         .file("efm32-common/emlib/src/em_system.c")
         .file("efm32-common/emlib/src/em_timer.c")
-        .file("efm32-common/emlib/src/em_usart.c")
         .file("efm32-common/emlib/src/em_int.c")
 
         .file("src/chip/chip.c")

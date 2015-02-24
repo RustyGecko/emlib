@@ -1,30 +1,22 @@
 #include <stdbool.h>
 #include <em_timer.h>
+#include <em_usart.h>
 
-#include "timer-mock.c"
+#define NULL 0
+#define UNITY_OUTPUT_CHAR(ch) print_char(ch)
 
-bool check_test_called() {
-    return TIMER_Init__called;
+#include "unity.h"
+#include "cmock.h"
+#include "Mockem_timer.h"
+
+void expect_init_called() {
+
+    TIMER_Init_TypeDef timer_init = TIMER_INIT_DEFAULT;
+    TIMER_Init_Expect(TIMER0, &timer_init);
+
 }
 
-bool check_test_called_with_timer0() {
-    return TIMER_Init__timer == TIMER0;
-}
-
-bool check_test_called_with_default() {
-    TIMER_Init_TypeDef defaults = TIMER_INIT_DEFAULT;
-
-    return TIMER_Init__init.enable == defaults.enable
-        && TIMER_Init__init.debugRun == defaults.debugRun
-        && TIMER_Init__init.prescale == defaults.prescale
-        && TIMER_Init__init.clkSel == defaults.clkSel
-        && TIMER_Init__init.count2x == defaults.count2x
-        && TIMER_Init__init.ati == defaults.ati
-        && TIMER_Init__init.fallAction == defaults.fallAction
-        && TIMER_Init__init.riseAction == defaults.riseAction
-        && TIMER_Init__init.mode == defaults.mode
-        && TIMER_Init__init.dmaClrAct == defaults.dmaClrAct
-        && TIMER_Init__init.quadModeX4 == defaults.quadModeX4
-        && TIMER_Init__init.oneShot == defaults.oneShot
-        && TIMER_Init__init.sync == defaults.sync;
+int print_char(int ch) {
+    USART_Tx(USART1, ch);
+    return 0;
 }
