@@ -7,14 +7,6 @@ use std::env;
 use std::old_io::File;
 use std::old_io::IoResult;
 
-fn assert_env_var(var: &str, expected: &str) {
-    env::set_var(var, expected);
-    match env::var(var) {
-        Ok(ref val) if &val[..] == expected => (),
-        _ => panic!("`{}` environment variable must be `{}`", var, expected)
-    }
-}
-
 fn main() {
     compile_emlib_library();
 
@@ -25,70 +17,58 @@ fn main() {
 }
 
 fn compile_emlib_library() {
-    assert_env_var("CC", "arm-none-eabi-gcc");
-    assert_env_var("AR", "arm-none-eabi-ar");
+    println!("The ARM embedded toolchain must be available in the PATH");
+    env::set_var("CC", "arm-none-eabi-gcc");
+    env::set_var("AR", "arm-none-eabi-ar");
 
-    let emlib_sources = [
-        "efm32-common/Device/EFM32GG/Source/GCC/startup_efm32gg.S",
-        "efm32-common/Device/EFM32GG/Source/system_efm32gg.c",
-        "efm32-common/emlib/src/em_cmu.c",
-        "efm32-common/emlib/src/em_dma.c",
-        "efm32-common/emlib/src/em_emu.c",
-        "efm32-common/emlib/src/em_gpio.c",
-        "efm32-common/emlib/src/em_rtc.c",
-        "efm32-common/emlib/src/em_system.c",
-        "efm32-common/emlib/src/em_timer.c",
-        "efm32-common/emlib/src/em_usart.c",
-        "efm32-common/emlib/src/em_int.c",
-        "efm32-common/kits/common/drivers/dmactrl.c",
-        "efm32-common/emdrv/gpiointerrupt/src/gpiointerrupt.c",
+    gcc::Config::new()
+            .file("efm32-common/Device/EFM32GG/Source/GCC/startup_efm32gg.S")
+            .file("efm32-common/Device/EFM32GG/Source/system_efm32gg.c")
+            .file("efm32-common/emlib/src/em_cmu.c")
+            .file("efm32-common/emlib/src/em_dma.c")
+            .file("efm32-common/emlib/src/em_emu.c")
+            .file("efm32-common/emlib/src/em_gpio.c")
+            .file("efm32-common/emlib/src/em_rtc.c")
+            .file("efm32-common/emlib/src/em_system.c")
+            .file("efm32-common/emlib/src/em_timer.c")
+            .file("efm32-common/emlib/src/em_usart.c")
+            .file("efm32-common/emlib/src/em_int.c")
+            .file("efm32-common/kits/common/drivers/dmactrl.c")
+            .file("efm32-common/kits/common/drivers/retargetio.c")
+            .file("efm32-common/emdrv/gpiointerrupt/src/gpiointerrupt.c")
 
-        "src/chip/chip.c",
-        "src/cmsis/cmsis.c",
-        "src/emu/emu.c",
-        "src/dma/dma.c",
-        "src/gpio/gpio.c",
-        "src/rtc/rtc.c",
-        "src/timer/timer.c",
-        "src/usart/usart.c",
+            .file("src/emdrv/gpiointerrupt.c")
 
-        "src/emdrv/gpiointerrupt.c",
-    ];
+            .file("src/chip/chip.c")
+            .file("src/cmsis/cmsis.c")
+            .file("src/emu/emu.c")
+            .file("src/dma/dma.c")
+            .file("src/gpio/gpio.c")
+            .file("src/rtc/rtc.c")
+            .file("src/timer/timer.c")
+            .file("src/usart/usart.c")
 
-    let emlib_include_directories = vec!(
-        Path::new("efm32-common/CMSIS/Include"),
-        Path::new("efm32-common/Device/EFM32GG/Include"),
-        Path::new("efm32-common/emlib/inc"),
-        Path::new("efm32-common/kits/common/drivers"),
-        Path::new("efm32-common/kits/common/bsp"),
-        Path::new("efm32-common/kits/EFM32GG_STK3700/config"),
-        Path::new("efm32-common/emdrv/gpiointerrupt/inc"),
-    );
+            .include("efm32-common/CMSIS/Include")
+            .include("efm32-common/Device/EFM32GG/Include")
+            .include("efm32-common/emlib/inc")
+            .include("efm32-common/kits/common/drivers")
+            .include("efm32-common/kits/common/bsp")
+            .include("efm32-common/kits/EFM32GG_STK3700/config")
+            .include("efm32-common/emdrv/gpiointerrupt/inc")
 
-    let emlib_definitions = vec!(
-        ("EFM32GG990F1024".to_string(), None)
-    );
+            .define("EFM32GG990F1024", None)
 
-    let emlib_flags = vec!(
-        "-g".to_string(),
-        "-Wall".to_string(),
-        "-mthumb".to_string(),
-        "-mcpu=cortex-m3".to_string(),
-        "-Wl,--start-group".to_string(),
-        "-lgcc".to_string(),
-        "-lc".to_string(),
-        "-lnosys".to_string(),
-        "-Wl,--end-group".to_string(),
-    );
+            .flag("-g")
+            .flag("-Wall")
+            .flag("-mthumb")
+            .flag("-mcpu=cortex-m3")
+            .flag("-Wl,--start-group")
+            .flag("-lgcc")
+            .flag("-lc")
+            .flag("-lnosys")
+            .flag("-Wl,--end-group")
 
-    let emlib_config = gcc::Config {
-        include_directories: emlib_include_directories,
-        definitions: emlib_definitions,
-        objects: Vec::new(),
-        flags: emlib_flags
-    };
-
-    gcc::compile_library("libcompiler-rt.a", &emlib_config, &emlib_sources);
+            .compile("libcompiler-rt.a");
 }
 
 fn write_emlib_hash() -> IoResult<()> {
