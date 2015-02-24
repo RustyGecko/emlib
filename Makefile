@@ -42,7 +42,7 @@ RUSTFLAGS += --emit=dep-info,link --verbose
 FLASHFLAGS = --verify --reset
 
 %.elf: $(EXAMPLE_DIR)/$(@:.elf=.rs)
-	cargo build --target thumbv7m-none-eabi --verbose
+	BUILD_ENV=prod cargo build --target thumbv7m-none-eabi --verbose
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
 	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
 	$(RUSTC) $<$(@:.elf=.rs) $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name $(@:.elf=)
@@ -61,7 +61,7 @@ test: $(notdir $(EXAMPLES:.rs=.elf))
 
 run-tests: $(TEST_DIR)/run_all_tests.rs
 	rm -rf target/build/emlib-45127226698c02f0
-	cargo build --target thumbv7m-none-eabi --verbose
+	BUILD_ENV=test cargo build --target thumbv7m-none-eabi --verbose
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
 	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
 	$(RUSTC) $(TEST_DIR)/run_all_tests.rs $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name run_all_tests

@@ -3,6 +3,8 @@
 
 extern crate gcc;
 
+use gcc::Config;
+
 use std::env;
 use std::old_io::File;
 use std::old_io::IoResult;
@@ -22,19 +24,23 @@ fn compile_emlib_library() {
     env::set_var("CC", "arm-none-eabi-gcc");
     env::set_var("AR", "arm-none-eabi-ar");
 
-    let config = match env::get_var("BUILD_ENV") {
-        Ok("prod") => prod_config(),
-        Ok("test") => test_config(),
-        _ => prod_config()
-    }
+    let mut config = Config::new();
+
+    let config = match env::var("BUILD_ENV") {
+        Ok(ref val) if &val[..] == "prod" => prod_config(&mut config),
+        Ok(ref val) if &val[..] == "test" => test_config(&mut config),
+        _ => prod_config(&mut config)
+    };
 
     config.compile("libcompiler-rt.a");
 
 }
 
-fn base_config() {
+
+
+fn base_config(config: &mut Config) -> &mut Config {
     
-    gcc::Config::new()
+    config
         .define("EFM32GG990F1024", None)
 
         .include("efm32-common/CMSIS/Include")
@@ -48,6 +54,7 @@ fn base_config() {
         .file("efm32-common/emlib/src/em_cmu.c")
         .file("efm32-common/emlib/src/em_gpio.c")
         .file("efm32-common/emlib/src/em_usart.c")
+        .file("efm32-common/emlib/src/em_emu.c")
         
         .flag("-g")
         .flag("-Wall")
@@ -56,14 +63,13 @@ fn base_config() {
 
 }
 
-fn prod_config() {
+fn prod_config(config: &mut Config) -> &mut Config {
     
-    base_config()
+    base_config(config)
 
         .include("efm32-common/kits/common/bsp")
         
         .file("efm32-common/emlib/src/em_dma.c")
-        .file("efm32-common/emlib/src/em_emu.c")
         .file("efm32-common/emlib/src/em_rtc.c")
         .file("efm32-common/emlib/src/em_system.c")
         .file("efm32-common/emlib/src/em_timer.c")
@@ -88,23 +94,28 @@ fn prod_config() {
 
 }
 
-fn test_config() {
+fn test_config(config: &mut Config) -> &mut Config {
 
-    base_config()
+    base_config(config)
 
         .flag("-DUNITY_OUTPUT_CHAR=print_char")
         .flag("-DNULL=0")
+
+        .include("test/lib/Unity/src")
+        .include("test/lib/cmock/src")
         
         .file("src/chip/chip.c")
         .file("src/cmsis/cmsis.c")
         .file("src/timer/timer.c")
         .file("src/gpio/gpio.c")
+        .file("src/usart/usart.c")
 
         .file("test/lib/Unity/src/unity.c")
         .file("test/lib/cmock/src/cmock.c")
         .file("test/util/usart_print.c")
         
         // Mocks
+        .include("test/mocks")
         .file("test/mocks/Mockem_timer.c")
 
         // Tests
