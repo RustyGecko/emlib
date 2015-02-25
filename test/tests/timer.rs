@@ -10,7 +10,7 @@ fn tear_down_tests() { unsafe { Mockem_timer_Destroy() } }
 fn test_init_called_with_default() {
 
     unsafe { expect_init_called_with_default(); }
-    
+
     let timer = timer::Timer::timer0();
     timer.init(&Default::default());
 }
