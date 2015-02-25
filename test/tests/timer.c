@@ -3,6 +3,7 @@
 
 #include "unity.h"
 #include "cmock.h"
+#include "Mocktimer.h"
 #include "Mockem_timer.h"
 
 void expect_init_called_with_default() {

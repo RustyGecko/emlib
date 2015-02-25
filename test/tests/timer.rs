@@ -3,9 +3,24 @@ use emlib::usart;
 use core::default::Default;
 use core::slice::SliceExt;
 
-fn setup() { unsafe { Mockem_timer_Init() } }
-fn tear_down() { unsafe { Mockem_timer_Verify() } }
-fn tear_down_tests() { unsafe { Mockem_timer_Destroy() } }
+fn setup() {
+    unsafe {
+        Mocktimer_Init();
+        Mockem_timer_Init();
+    }
+}
+fn tear_down() {
+    unsafe {
+        Mocktimer_Verify();
+        Mockem_timer_Verify();
+    }
+}
+fn tear_down_tests() {
+    unsafe {
+        Mocktimer_Destroy();
+        Mockem_timer_Destroy();
+    }
+}
 
 fn test_init_called_with_default() {
 
@@ -60,6 +75,10 @@ pub fn run_tests() {
 }
 
 extern {
+
+    fn Mocktimer_Init();
+    fn Mocktimer_Destroy();
+    fn Mocktimer_Verify();
 
     fn Mockem_timer_Init();
     fn Mockem_timer_Destroy();

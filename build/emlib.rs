@@ -68,6 +68,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
     base_config(config)
 
         .include("efm32-common/kits/common/bsp")
+        .include("src/timer")
 
         .file("efm32-common/emlib/src/em_dma.c")
         .file("efm32-common/emlib/src/em_rtc.c")
@@ -83,6 +84,8 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/rtc/rtc.c")
         .file("src/timer/timer.c")
         .file("src/usart/usart.c")
+
+        .file("src/timer/get_timer.c")
 
         .include("efm32-common/emdrv/gpiointerrupt/inc")
         .file("efm32-common/emdrv/gpiointerrupt/src/gpiointerrupt.c")
@@ -103,12 +106,14 @@ fn test_config(config: &mut Config) -> &mut Config {
 
         .include("test/lib/Unity/src")
         .include("test/lib/cmock/src")
+        .include("src/timer")
 
         .file("src/chip/chip.c")
         .file("src/cmsis/cmsis.c")
-        .file("src/timer/timer.c")
         .file("src/gpio/gpio.c")
         .file("src/usart/usart.c")
+
+        .file("src/timer/get_timer.c")
 
         .file("test/lib/Unity/src/unity.c")
         .file("test/lib/cmock/src/cmock.c")
@@ -117,6 +122,7 @@ fn test_config(config: &mut Config) -> &mut Config {
         // Mocks
         .include("test/mocks")
         .file("test/mocks/Mockem_timer.c")
+        .file("test/mocks/Mocktimer.c")
 
         // Tests
         .file("test/tests/timer.c")
