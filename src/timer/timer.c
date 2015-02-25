@@ -59,7 +59,7 @@ void STATIC_INLINE_TIMER_IntClear(TIMER_TypeDef *timer, uint32_t flags) {
 void STATIC_INLINE_TIMER_IntDisable(TIMER_TypeDef *timer, uint32_t flags) {
     TIMER_IntDisable(timer, flags);
 }
-    
+
 void STATIC_INLINE_TIMER_IntEnable(TIMER_TypeDef *timer, uint32_t flags) {
     TIMER_IntEnable(timer, flags);
 }
