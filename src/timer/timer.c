@@ -1,20 +1,5 @@
 #include "em_timer.h"
 
-TIMER_TypeDef* GET_TIMER0() {
-    return TIMER0;
-}
-
-TIMER_TypeDef* GET_TIMER1() {
-    return TIMER1;
-}
-
-TIMER_TypeDef* GET_TIMER2() {
-    return TIMER2;
-}
-
-TIMER_TypeDef* GET_TIMER3() {
-    return TIMER3;
-}
 
 uint32_t STATIC_INLINE_TIMER_CaptureGet(TIMER_TypeDef *timer, unsigned int ch) {
     return TIMER_CaptureGet(timer, ch);
@@ -59,7 +44,7 @@ void STATIC_INLINE_TIMER_IntClear(TIMER_TypeDef *timer, uint32_t flags) {
 void STATIC_INLINE_TIMER_IntDisable(TIMER_TypeDef *timer, uint32_t flags) {
     TIMER_IntDisable(timer, flags);
 }
-    
+
 void STATIC_INLINE_TIMER_IntEnable(TIMER_TypeDef *timer, uint32_t flags) {
     TIMER_IntEnable(timer, flags);
 }
