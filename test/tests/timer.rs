@@ -7,9 +7,9 @@ fn setup() { unsafe { Mockem_timer_Init() } }
 fn tear_down() { unsafe { Mockem_timer_Verify() } }
 fn tear_down_tests() { unsafe { Mockem_timer_Destroy() } }
 
-fn test_init_called() {
+fn test_init_called_with_default() {
 
-    unsafe { expect_init_called(); }
+    unsafe { expect_init_called_with_default(); }
     
     let timer = timer::Timer::timer0();
     timer.init(&Default::default());
@@ -19,7 +19,7 @@ pub fn run_tests() {
     let usart1 = usart::Usart::usart1();
 
     let tests: [fn(); 1] = [
-        test_init_called,
+        test_init_called_with_default,
     ];
 
     for test in tests.iter() {
@@ -38,5 +38,5 @@ extern {
     fn Mockem_timer_Destroy();
     fn Mockem_timer_Verify();
 
-    fn expect_init_called();
+    fn expect_init_called_with_default();
 }

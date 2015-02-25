@@ -5,7 +5,7 @@
 #include "cmock.h"
 #include "Mockem_timer.h"
 
-void expect_init_called() {
+void expect_init_called_with_default() {
 
     static TIMER_Init_TypeDef timer_init = TIMER_INIT_DEFAULT;
     TIMER_Init_Expect(TIMER0, &timer_init);
