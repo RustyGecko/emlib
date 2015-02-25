@@ -23,4 +23,11 @@ void expect_init_dti_called_with_default() {
 
     static TIMER_InitDTI_TypeDef timer_init_dti = TIMER_INITDTI_DEFAULT;
     TIMER_InitDTI_Expect(TIMER0, &timer_init_dti);
+
+}
+
+void expect_reset_called() {
+
+    TIMER_Reset_Expect(TIMER0);
+
 }
