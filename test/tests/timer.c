@@ -32,3 +32,9 @@ void expect_reset_called() {
     TIMER_Reset_Expect(TIMER0);
 
 }
+
+void expect_enable_called() {
+
+    STATIC_INLINE_TIMER_Enable_Expect(TIMER0, true);
+
+}

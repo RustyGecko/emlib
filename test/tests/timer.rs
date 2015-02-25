@@ -54,14 +54,24 @@ fn test_reset_called() {
     timer.reset();
 }
 
+fn test_enable_called() {
+
+    unsafe { expect_enable_called(); }
+
+    let timer = timer::Timer::timer0();
+    timer.enable(true);
+
+}
+
 pub fn run_tests() {
     let usart1 = usart::Usart::usart1();
 
-    let tests: [fn(); 4] = [
+    let tests: [fn(); 5] = [
         test_init_called_with_default,
         test_init_cc_called_with_default,
         test_init_dti_called_with_default,
         test_reset_called,
+        test_enable_called,
     ];
 
     for test in tests.iter() {
@@ -88,4 +98,5 @@ extern {
     fn expect_init_cc_called_with_default();
     fn expect_init_dti_called_with_default();
     fn expect_reset_called();
+    fn expect_enable_called();
 }
