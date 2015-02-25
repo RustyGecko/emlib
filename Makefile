@@ -73,8 +73,8 @@ run-tests: $(TEST_DIR)/run_all_tests.rs
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
 	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
 	$(RUSTC) $(TEST_DIR)/run_all_tests.rs $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name run_all_tests
-	$(OBJCOPY) -O binary $(TARGET_DIR)/run_all_tests $(TARGET_DIR)/run_all_tests.bin
-	$(FLASH) --flash $(TARGET_DIR)/run_all_tests.bin $(FLASHFLAGS)
+	$(OBJCOPY) -O ihex $(TARGET_DIR)/run_all_tests $(TARGET_DIR)/out.hex
+	JLinkExe -commanderscript .execute.jlink || echo ""
 	@echo Done
 
 clean:
