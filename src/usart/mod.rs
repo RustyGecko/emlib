@@ -12,6 +12,10 @@ pub const IEN_RXDATAV: u32 = 0x1 << 2;
 pub const IF_RXDATAV:  u32 = 0x1 << 2;
 pub const IF_MASK: u32     = 0x00001FFF;
 
+// Usart status register
+pub const USART_STATUS_RXDATAV: u32 = 0x1 << 7;
+pub const USART_STATUS_TXBL: u32 = 0x1 << 6;
+
 use core::intrinsics::transmute;
 use core::default::Default;
 
@@ -80,7 +84,6 @@ impl Usart {
     pub fn rx(&self) -> u8 {
         unsafe { USART_Rx(self) }
     }
-
 }
 
 #[repr(C)]
