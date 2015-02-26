@@ -11,9 +11,16 @@ readme = "README.md"
 
 keywords = ["emlib", "bindings"]
 
+
 build = "build/emlib.rs"
 [build-dependencies.gcc]
 git = "https://github.com/sondrele/gcc-rs.git"
 
 [target.thumbv7m-none-eabi.dependencies.core]
 git = "https://github.com/RustyGecko/rust-core.git"
+
+[target.thumbv7m-none-eabi.dependencies.collections]
+git = "https://github.com/RustyGecko/rust-collections.git"
+
+[target.thumbv7m-none-eabi.dependencies.rlibc]
+git = "https://github.com/havardh/rust-librlibc.git"
