@@ -1,7 +1,9 @@
 #![no_std]
 #![no_main]
-#![feature(lang_items, start, core, no_std, alloc, collections)]
+#![feature(start, core, no_std, alloc, collections)]
 
+// for lang_items
+extern crate emlib;
 extern crate core;
 extern crate alloc;
 extern crate libc;
@@ -21,13 +23,6 @@ pub extern fn main() {
 
     loop {}
 
-}
-
-#[lang = "stack_exhausted"] extern fn stack_exhausted() {}
-#[lang = "eh_personality"] extern fn eh_personality() {}
-#[lang = "panic_fmt"]
-pub extern fn rust_begin_unwind(_msg: core::fmt::Arguments, _file: &'static str, _line: usize) -> ! {
-    loop { }
 }
 
 #[no_mangle]
