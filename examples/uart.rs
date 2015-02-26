@@ -1,6 +1,6 @@
 #![no_std]
 #![no_main]
-#![feature(lang_items, core, no_std)]
+#![feature(core, no_std)]
 
 extern crate core;
 extern crate emlib;
@@ -46,14 +46,4 @@ fn setup_usart1() {
         | usart::ROUTE_CSPEN
         | usart::ROUTE_LOCATION_LOC1;
 
-}
-
-
-#[lang = "stack_exhausted"] extern fn stack_exhausted() {}
-#[lang = "eh_personality"] extern fn eh_personality() {}
-
-#[lang = "panic_fmt"]
-#[allow(unused_variables)]
-pub extern fn rust_begin_unwind(msg: core::fmt::Arguments, file: &'static str, line: usize) -> ! {
-    loop { }
 }
