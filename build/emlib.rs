@@ -3,6 +3,8 @@
 
 extern crate gcc;
 
+use gcc::Config;
+
 use std::env;
 use std::old_io::File;
 use std::old_io::IoResult;
@@ -17,58 +19,113 @@ fn main() {
 }
 
 fn compile_emlib_library() {
+
     println!("The ARM embedded toolchain must be available in the PATH");
     env::set_var("CC", "arm-none-eabi-gcc");
     env::set_var("AR", "arm-none-eabi-ar");
 
-    gcc::Config::new()
-            .file("efm32-common/Device/EFM32GG/Source/GCC/startup_efm32gg.S")
-            .file("efm32-common/Device/EFM32GG/Source/system_efm32gg.c")
-            .file("efm32-common/emlib/src/em_cmu.c")
-            .file("efm32-common/emlib/src/em_dma.c")
-            .file("efm32-common/emlib/src/em_emu.c")
-            .file("efm32-common/emlib/src/em_gpio.c")
-            .file("efm32-common/emlib/src/em_rtc.c")
-            .file("efm32-common/emlib/src/em_system.c")
-            .file("efm32-common/emlib/src/em_timer.c")
-            .file("efm32-common/emlib/src/em_usart.c")
-            .file("efm32-common/emlib/src/em_int.c")
-            .file("efm32-common/kits/common/drivers/dmactrl.c")
-            .file("efm32-common/kits/common/drivers/retargetio.c")
-            .file("efm32-common/emdrv/gpiointerrupt/src/gpiointerrupt.c")
+    let mut config = Config::new();
 
-            .file("src/emdrv/gpiointerrupt.c")
+    let config = match env::var("BUILD_ENV") {
+        Ok(ref val) if &val[..] == "prod" => prod_config(&mut config),
+        Ok(ref val) if &val[..] == "test" => test_config(&mut config),
+        _ => prod_config(&mut config)
+    };
 
-            .file("src/chip/chip.c")
-            .file("src/cmsis/cmsis.c")
-            .file("src/emu/emu.c")
-            .file("src/dma/dma.c")
-            .file("src/gpio/gpio.c")
-            .file("src/rtc/rtc.c")
-            .file("src/timer/timer.c")
-            .file("src/usart/usart.c")
+    config.compile("libcompiler-rt.a");
 
-            .include("efm32-common/CMSIS/Include")
-            .include("efm32-common/Device/EFM32GG/Include")
-            .include("efm32-common/emlib/inc")
-            .include("efm32-common/kits/common/drivers")
-            .include("efm32-common/kits/common/bsp")
-            .include("efm32-common/kits/EFM32GG_STK3700/config")
-            .include("efm32-common/emdrv/gpiointerrupt/inc")
+}
 
-            .define("EFM32GG990F1024", None)
 
-            .flag("-g")
-            .flag("-Wall")
-            .flag("-mthumb")
-            .flag("-mcpu=cortex-m3")
-            .flag("-Wl,--start-group")
-            .flag("-lgcc")
-            .flag("-lc")
-            .flag("-lnosys")
-            .flag("-Wl,--end-group")
 
-            .compile("libcompiler-rt.a");
+fn base_config(config: &mut Config) -> &mut Config {
+
+    config
+        .define("EFM32GG990F1024", None)
+
+        .include("efm32-common/CMSIS/Include")
+        .include("efm32-common/Device/EFM32GG/Include")
+        .include("efm32-common/kits/EFM32GG_STK3700/config")
+        .include("efm32-common/emlib/inc")
+
+        .file("efm32-common/Device/EFM32GG/Source/GCC/startup_efm32gg.S")
+        .file("efm32-common/Device/EFM32GG/Source/system_efm32gg.c")
+
+        .file("efm32-common/emlib/src/em_cmu.c")
+        .file("efm32-common/emlib/src/em_gpio.c")
+        .file("efm32-common/emlib/src/em_usart.c")
+        .file("efm32-common/emlib/src/em_emu.c")
+
+        .flag("-g")
+        .flag("-Wall")
+        .flag("-mthumb")
+        .flag("-mcpu=cortex-m3")
+
+}
+
+fn prod_config(config: &mut Config) -> &mut Config {
+
+    base_config(config)
+
+        .include("efm32-common/kits/common/bsp")
+        .include("src/timer")
+
+        .file("efm32-common/emlib/src/em_dma.c")
+        .file("efm32-common/emlib/src/em_rtc.c")
+        .file("efm32-common/emlib/src/em_system.c")
+        .file("efm32-common/emlib/src/em_timer.c")
+        .file("efm32-common/emlib/src/em_int.c")
+
+        .file("src/chip/chip.c")
+        .file("src/cmsis/cmsis.c")
+        .file("src/emu/emu.c")
+        .file("src/dma/dma.c")
+        .file("src/gpio/gpio.c")
+        .file("src/rtc/rtc.c")
+        .file("src/timer/timer.c")
+        .file("src/usart/usart.c")
+
+        .file("src/timer/get_timer.c")
+
+        .include("efm32-common/emdrv/gpiointerrupt/inc")
+        .file("efm32-common/emdrv/gpiointerrupt/src/gpiointerrupt.c")
+        .file("src/emdrv/gpiointerrupt.c")
+
+        .include("efm32-common/kits/common/drivers")
+        .file("efm32-common/kits/common/drivers/dmactrl.c")
+        .file("efm32-common/kits/common/drivers/retargetio.c")
+
+}
+
+fn test_config(config: &mut Config) -> &mut Config {
+
+    base_config(config)
+
+        .flag("-DUNITY_OUTPUT_CHAR=print_char")
+        .flag("-DNULL=0")
+
+        .include("test/lib/Unity/src")
+        .include("test/lib/cmock/src")
+        .include("src/timer")
+
+        .file("src/chip/chip.c")
+        .file("src/cmsis/cmsis.c")
+        .file("src/gpio/gpio.c")
+        .file("src/usart/usart.c")
+
+        .file("src/timer/get_timer.c")
+
+        .file("test/lib/Unity/src/unity.c")
+        .file("test/lib/cmock/src/cmock.c")
+        .file("test/util/usart_print.c")
+
+        // Mocks
+        .include("test/mocks")
+        .file("test/mocks/Mockem_timer.c")
+        .file("test/mocks/Mocktimer.c")
+
+        // Tests
+        .file("test/tests/timer.c")
 }
 
 fn write_emlib_hash() -> IoResult<()> {

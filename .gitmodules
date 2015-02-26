@@ -1,3 +1,9 @@
 [submodule "efm32-common"]
 	path = efm32-common
 	url = git://github.com/RustyGecko/efm32-common.git
+[submodule "test/lib/Unity"]
+	path = test/lib/Unity
+	url = https://github.com/ThrowTheSwitch/Unity.git
+[submodule "test/lib/cmock"]
+	path = test/lib/cmock
+	url = https://github.com/ThrowTheSwitch/CMock.git
