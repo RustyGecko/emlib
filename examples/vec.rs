@@ -1,6 +1,6 @@
 #![no_std]
 #![no_main]
-#![feature(lang_items, start, core, no_std)]
+#![feature(lang_items, start, core, no_std, alloc, collections)]
 
 extern crate core;
 extern crate alloc;
@@ -16,8 +16,8 @@ use libc::{c_void, size_t, c_int};
 #[no_mangle]
 pub extern fn main() {
 
-    let mut x: Vec<u8> = vec![1, 2, 3];
-    let mut y: String = String::from_str("hei");
+    let _x: Vec<u8> = vec![1, 2, 3];
+    let _y: String = String::from_str("hei");
 
     loop {}
 

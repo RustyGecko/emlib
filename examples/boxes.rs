@@ -1,6 +1,6 @@
 #![no_std]
 #![no_main]
-#![feature(lang_items, start, core, no_std)]
+#![feature(lang_items, start, core, no_std, alloc)]
 
 extern crate core;
 extern crate alloc;
@@ -12,17 +12,16 @@ use alloc::boxed::Box;
 #[no_mangle]
 pub extern fn main() {
 
-    let a = 1;
-    let b = &2;
-    let c = &3;
+    let _a = 1;
+    let _b = &2;
+    let _c = &3;
 
-    let x = Box::new(1);
+    let _x = Box::new(1);
     {
-        let y = Box::new(2);
+        let _y = Box::new(2);
     }
-    let z = Box::new(3);
+    let _z = Box::new(3);
 
-    let a = 2 / 1;
     loop {}
 
 }
