@@ -7,8 +7,8 @@ extern crate alloc;
 extern crate libc;
 #[macro_use]
 extern crate collections;
+extern crate rlibc;
 
-use core::ptr::PtrExt;
 use collections::vec::Vec;
 use collections::string::String;
 use libc::{c_void, size_t, c_int};
@@ -40,20 +40,7 @@ extern {
 }
 
 #[no_mangle]
-pub unsafe extern fn __aeabi_memmove(dest: *mut u8, src: *const u8,
+pub unsafe fn __aeabi_memmove(dest: *mut u8, src: *const u8,
                              n: usize) -> *mut u8 {
-    if src < dest as *const u8 { // copy from end
-        let mut i = n;
-        while i != 0 {
-            i -= 1;
-            *dest.offset(i as isize) = *src.offset(i as isize);
-        }
-    } else { // copy from beginning
-        let mut i = 0;
-        while i < n {
-            *dest.offset(i as isize) = *src.offset(i as isize);
-            i += 1;
-        }
-    }
-    return dest;
+    rlibc::memmove(dest, src, n)
 }
