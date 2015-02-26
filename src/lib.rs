@@ -6,8 +6,11 @@
 
 extern crate core;
 
+extern crate rlibc;
+extern crate libc;
+
 // emlib library utilities
-mod utils;
+pub mod utils;
 
 // emlib bindings
 pub mod chip;
