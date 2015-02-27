@@ -11,6 +11,7 @@ pub enum Clock {
     TIMER0 = 0x25200,
     USART1 = 0x21200,
     UART1  = 0x24200,
+    ADC0   = 0x30200,
     RTC    = 0x81430,
 }
 

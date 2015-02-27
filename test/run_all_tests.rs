@@ -9,6 +9,7 @@ use emlib::{cmu, gpio, usart};
 use core::default::Default;
 
 mod tests {
+    pub mod adc;
     pub mod timer;
 }
 
@@ -22,6 +23,7 @@ pub extern fn main() {
 
     start();
     usart1.tx('\n' as u8); usart1.tx('\r' as u8);
+    tests::adc::run_tests();
     tests::timer::run_tests();
     usart1.tx('\n' as u8); usart1.tx('\r' as u8);
     success();
@@ -37,7 +39,7 @@ fn setup_leds() {
 
     gpio::pin_mode_set(gpio::Port::E, 2, gpio::Mode::PushPull, 0);
     gpio::pin_mode_set(gpio::Port::E, 3, gpio::Mode::PushPull, 0);
-    
+
 }
 
 fn setup_usart1() {
