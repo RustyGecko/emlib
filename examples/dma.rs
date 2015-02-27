@@ -1,6 +1,6 @@
 #![no_std]
 #![no_main]
-#![feature(lang_items, core, no_std)]
+#![feature(core, no_std)]
 
 extern crate core;
 extern crate emlib;
@@ -52,16 +52,4 @@ fn setup_dma() {
         arb_rate: dma::ArbiterConfig::Arbitrate1,
         hprot: 0,
     });
-}
-
-#[lang = "stack_exhausted"]
-pub extern fn stack_exhausted() {}
-
-#[lang = "eh_personality"]
-pub extern fn eh_personality() {}
-
-#[lang = "panic_fmt"]
-#[allow(unused_variables)]
-pub extern fn rust_begin_unwind(msg: core::fmt::Arguments, file: &'static str, line: usize) -> ! {
-    loop { }
 }

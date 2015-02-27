@@ -1,6 +1,6 @@
 #![no_std]
 #![no_main]
-#![feature(core, lang_items, no_std)]
+#![feature(core, no_std)]
 
 extern crate core;
 extern crate emlib;
@@ -54,16 +54,4 @@ pub extern fn main() {
     gpio::pin_mode_set(gpio::Port::E, LED1, gpio::Mode::PushPull, 0);
 
     loop {}
-}
-
-#[lang = "stack_exhausted"]
-pub extern fn stack_exhausted() {}
-
-#[lang = "eh_personality"]
-pub extern fn eh_personality() {}
-
-#[lang = "panic_fmt"]
-#[allow(unused_variables)]
-pub extern fn rust_begin_unwind(msg: core::fmt::Arguments, file: &'static str, line: usize) -> ! {
-    loop { }
 }
