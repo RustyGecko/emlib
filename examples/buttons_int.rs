@@ -20,7 +20,7 @@ const LED1: u32 = 3;
 const PB0: u32 = 9;
 const PB1: u32 = 10;
 
-extern fn button_callback(pin: u8) {
+fn button_callback(pin: u8) {
 
     if pin == 9 {
         gpio::pin_out_toggle(gpio::Port::E, LED0);
@@ -37,8 +37,8 @@ fn gpio_setup() {
 
     gpioint::init();
 
-    gpioint::callback_register(PB0 as u8, button_callback);
-    gpioint::callback_register(PB1 as u8, button_callback);
+    gpioint::register(PB0 as u8, button_callback);
+    gpioint::register(PB1 as u8, button_callback);
 
     gpio::int_config(gpio::Port::B, PB0, false, true, true);
     gpio::int_config(gpio::Port::B, PB1, false, true, true);
