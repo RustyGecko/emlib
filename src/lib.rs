@@ -2,7 +2,7 @@
 #![crate_type="lib"]
 #![crate_name="emlib"]
 #![deny(warnings)]
-#![feature(core, lang_items, no_std)]
+#![feature(core, lang_items, no_std, asm)]
 
 extern crate core;
 
@@ -18,6 +18,7 @@ pub mod cmu;
 pub mod emu;
 pub mod dma;
 pub mod gpio;
+pub mod int;
 pub mod rtc;
 pub mod timer;
 pub mod usart;
@@ -27,6 +28,9 @@ pub mod emdrv;
 
 // cmsis bindings
 pub mod cmsis;
+
+// stk utils
+pub mod stk;
 
 mod std {
     pub use core::*;
