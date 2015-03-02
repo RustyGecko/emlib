@@ -5,16 +5,21 @@ pub const ROUTE_TXPEN: u32 = 0x1 << 1;
 pub const ROUTE_CSPEN: u32 = 0x1 << 2;
 pub const ROUTE_CLKPEN: u32 = 0x1 << 3;
 
+pub const ROUTE_LOCATION_MASK: u32 = 0x700;
+pub const ROUTE_LOCATION_LOC0: u32 = 0x0 << 8;
 pub const ROUTE_LOCATION_LOC1: u32 = 0x1 << 8;
 pub const ROUTE_LOCATION_LOC2: u32 = 0x2 << 8;
+pub const ROUTE_LOCATION_LOC3: u32 = 0x3 << 8;
+pub const ROUTE_LOCATION_LOC4: u32 = 0x4 << 8;
+pub const ROUTE_LOCATION_LOC5: u32 = 0x5 << 8;
 
 pub const IEN_RXDATAV: u32 = 0x1 << 2;
 pub const IF_RXDATAV:  u32 = 0x1 << 2;
 pub const IF_MASK: u32     = 0x00001FFF;
 
 // Usart status register
-pub const USART_STATUS_RXDATAV: u32 = 0x1 << 7;
-pub const USART_STATUS_TXBL: u32 = 0x1 << 6;
+pub const STATUS_RXDATAV: u32 = 0x1 << 7;
+pub const STATUS_TXBL: u32 = 0x1 << 6;
 
 use core::intrinsics::transmute;
 use core::default::Default;
@@ -50,6 +55,10 @@ pub struct Usart {
 }
 
 impl Usart {
+    #[inline]
+    pub fn uart0() -> &'static mut Usart {
+        unsafe { transmute(GET_UART0()) }
+    }
 
     #[inline]
     pub fn uart1() -> &'static mut Usart {
@@ -57,8 +66,18 @@ impl Usart {
     }
 
     #[inline]
+    pub fn usart0() -> &'static mut Usart {
+        unsafe { transmute(GET_USART0()) }
+    }
+
+    #[inline]
     pub fn usart1() -> &'static mut Usart {
         unsafe { transmute(GET_USART1()) }
+    }
+
+    #[inline]
+    pub fn usart2() -> &'static mut Usart {
+        unsafe { transmute(GET_USART2()) }
     }
 
     pub fn enable(&self, enable: Enable) {
@@ -188,8 +207,12 @@ pub enum PrsRxCh {
 }
 
 extern {
+    #[inline] fn GET_UART0() -> *mut Usart;
     #[inline] fn GET_UART1() -> *mut Usart;
+
+    #[inline] fn GET_USART0() -> *mut Usart;
     #[inline] fn GET_USART1() -> *mut Usart;
+    #[inline] fn GET_USART2() -> *mut Usart;
 
     #[inline] fn USART_InitAsync(usart: &Usart, init: &InitAsync);
     #[inline] fn USART_Rx(usart: &Usart) -> u8;

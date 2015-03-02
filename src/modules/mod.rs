@@ -1,4 +1,4 @@
 
-pub use self::usart::{Usart, Location};
+pub use self::usart::{Usart, Config, Location};
 
 mod usart;

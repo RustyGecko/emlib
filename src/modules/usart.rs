@@ -4,28 +4,48 @@ use core::default::Default;
 use collections::vec::Vec;
 use collections::string::String;
 
-use cmsis::nvic;
 use {cmu, gpio, usart};
+use gpio::Port;
 
-#[derive(Copy)]
+use self::Location::*;
+
+type PortPin = Option<(Port, u32)>;
+
+/// Possible locations for the different Usart's. Not all locations is available for every Usart.
+#[derive(Copy, Debug)]
 pub enum Location {
     Loc0,
     Loc1,
+    Loc2,
+    Loc3,
+    Loc4,
+    Loc5,
+}
+
+/// Possible different Usart's to configure.
+#[derive(Copy, Debug)]
+pub enum Config {
+    Usart0(Location),
+    Usart1(Location),
+    Usart2(Location),
 }
 
 #[allow(dead_code)]
 pub struct Usart {
-    location: Location,
+    config: Config,
     baudrate: u32,
     usart: &'static mut usart::Usart,
+    line_break: &'static str,
 }
 
+/// Initializes and returns a new Usart1 instance with Location 1 and a baudrate of 9600.
 impl Default for Usart {
     fn default() -> Usart {
         let mut usart = Usart {
-            location: Location::Loc1,
+            config: Config::Usart1(Loc1),
             baudrate: 9600,
-            usart: usart::Usart::usart1()
+            usart: usart::Usart::usart1(),
+            line_break: "\0\r",
         };
 
         usart.init();
@@ -34,71 +54,76 @@ impl Default for Usart {
 }
 
 impl Usart {
-    pub fn new(loc: Location, baudrate: u32) -> Usart {
+    /// Returns a new Usart instance. The Usart have to be manually initialized and it is
+    /// configured to return Strings when it receives either a `\0` or a `\r` character.
+    pub fn new(config: Config, baudrate: u32) -> Usart {
         Usart {
-            location: loc,
+            config: config,
             baudrate: baudrate,
-            usart: match loc {
-                Location::Loc0 => usart::Usart::usart1(),
-                Location::Loc1 => usart::Usart::usart1(),
-            }
+            usart: match config {
+                Config::Usart0(_) => usart::Usart::usart0(),
+                Config::Usart1(_) => usart::Usart::usart1(),
+                Config::Usart2(_) => usart::Usart::usart2(),
+            },
+            line_break: "\0\r",
         }
     }
 
-    // TODO: Add support for Usart0
+    /// Called in order to initialize the Usart according to it's config
     pub fn init(&mut self) {
         // Enable clock for HF peripherals
-        cmu::clock_enable(cmu::Clock::HFPER, true);
-        // Enable clock for USART module
-        cmu::clock_enable(cmu::Clock::USART1, true);
-        // Enable clock for GPIO module (required for pin configuration)
-        cmu::clock_enable(cmu::Clock::GPIO, true);
+        cmu::clock_select_set(cmu::Clock::HF, cmu::Select::HFRCO);
 
-        // Configure GPIO pins for tx (D0) and rx (D1) for Usart1
-        gpio::pin_mode_set(gpio::Port::D, 0, gpio::Mode::PushPull, 1);
-        gpio::pin_mode_set(gpio::Port::D, 1, gpio::Mode::Input, 0);
-
+        // Configure usart
+        let (usart_clock, usart) = match self.config {
+            Config::Usart0(_) => (cmu::Clock::USART0, usart::Usart::usart0()),
+            Config::Usart1(_) => (cmu::Clock::USART1, usart::Usart::usart1()),
+            Config::Usart2(_) => (cmu::Clock::USART2, usart::Usart::usart2()),
+        };
+        self.usart = usart;
+        cmu::clock_enable(usart_clock, true);
         self.usart.init_async(&usart::InitAsync {
             enable: usart::Enable::Disable,
             baudrate: self.baudrate,
             .. Default::default()
         });
 
-        // Clear and setup the interrupt vector
-        self.usart.int_clear(usart::IF_MASK);
-        self.usart.int_enable(usart::IF_RXDATAV);
-        nvic::clear_pending_irq(nvic::IRQn::UART1_RX);
-        nvic::clear_pending_irq(nvic::IRQn::UART1_TX);
-        nvic::enable_irq(nvic::IRQn::UART1_RX);
-        nvic::enable_irq(nvic::IRQn::UART1_TX);
+        // Configure TX, RX, CLK, CS pins and Usart location
+        self.init_location_and_gpio();
 
-        // Enable tx and rx for location 1
-        self.usart.ROUTE = usart::ROUTE_RXPEN | usart::ROUTE_TXPEN | usart::ROUTE_LOCATION_LOC1;
         // Enable Usart
         self.usart.enable(usart::Enable::Enable);
     }
 
+    /// Performs a blocking send of one `char`.
     pub fn putc(&self, data: u8) {
         self.usart.tx(data);
     }
 
+    /// Blocks until one `char` is received.
     pub fn getc(&self) -> u8 {
         self.usart.rx()
     }
 
+    /// Performs a blocking send of a `&str`
     pub fn write_str(&self, string: &str) {
         for c in string.chars() {
             self.putc(c as u8);
         }
     }
 
+    /// Blocks and returns a `String` that is terminated by either one of the
+    /// characters in `line_break`.
+    ///
+    /// #Panics
+    /// Panics if it fails to parse the received characters to a UTF8 String.
     pub fn read_string(&self) -> String {
         let mut bytes = Vec::new();
 
         loop {
             match self.getc() as char {
-                '\0' | '\r' => { break; }
-                b => { bytes.push(b as u8); }
+                c if self.line_break.contains_char(c) => { break; }
+                c => { bytes.push(c as u8); }
             }
         }
 
@@ -107,11 +132,127 @@ impl Usart {
         })
     }
 
+    /// Returns `true` if a `char` is available to read.
     pub fn readable(&self) -> bool {
-        self.usart.IF & usart::USART_STATUS_RXDATAV > 0
+        (self.usart.IF & usart::STATUS_RXDATAV) != 0
     }
 
+    /// Returns `true` if there is space available to write a `char`.
     pub fn writeable(&self) -> bool {
-        self.usart.IF & usart::USART_STATUS_TXBL > 0
+        (self.usart.IF & usart::STATUS_TXBL) != 0
+    }
+
+
+    fn init_location_and_gpio(&mut self) {
+        let location = match self.config {
+            Config::Usart0(loc) => {
+                match loc {
+                    Loc0 => {
+                        self.init_gpio(Some((Port::E, 10)), Some((Port::E, 11)),
+                            Some((Port::E, 12)), Some((Port::E, 13)));
+                        usart::ROUTE_LOCATION_LOC0
+                    },
+                    Loc1 => {
+                        self.init_gpio(Some((Port::E, 7)), Some((Port::E, 6)),
+                            Some((Port::E, 5)), Some((Port::E, 4)));
+                        usart::ROUTE_LOCATION_LOC1
+                    },
+                    Loc2 => {
+                        self.init_gpio(Some((Port::C, 10)), Some((Port::C, 11)),
+                            Some((Port::C, 9)), Some((Port::C, 8)));
+                        usart::ROUTE_LOCATION_LOC2
+                    },
+                    Loc3 => {
+                        self.init_gpio(Some((Port::E, 13)), Some((Port::E, 12)),
+                            None, None);
+                        usart::ROUTE_LOCATION_LOC3
+                    },
+                    Loc4 => {
+                        self.init_gpio(Some((Port::B, 7)), Some((Port::B, 8)),
+                            Some((Port::B, 13)), Some((Port::B, 14)));
+                        usart::ROUTE_LOCATION_LOC4
+                    },
+                    Loc5 => {
+                        self.init_gpio(Some((Port::C, 0)), Some((Port::C, 1)),
+                            Some((Port::B, 13)), Some((Port::B, 14)));
+                        usart::ROUTE_LOCATION_LOC5
+                    },
+                }
+            },
+            Config::Usart1(loc) => {
+                match loc {
+                    Loc0 => {
+                        self.init_gpio(Some((Port::C, 0)), Some((Port::C, 1)),
+                            Some((Port::B, 7)), Some((Port::B, 8)));
+                        usart::ROUTE_LOCATION_LOC0
+                    },
+                    Loc1 => {
+                        self.init_gpio(Some((Port::D, 0)), Some((Port::D, 1)),
+                            Some((Port::D, 2)), Some((Port::D, 3)));
+                        usart::ROUTE_LOCATION_LOC1
+                    },
+                    Loc2 => {
+                        self.init_gpio(Some((Port::D, 7)), Some((Port::D, 6)),
+                            Some((Port::F, 0)), Some((Port::F, 1)));
+                        usart::ROUTE_LOCATION_LOC2
+                    },
+                    _ => panic!("Invalid location for Usart1: {:?}", loc)
+                }
+            },
+            Config::Usart2(loc) => {
+                match loc {
+                    Loc0 => {
+                        self.init_gpio(Some((Port::D, 0)), Some((Port::D, 1)),
+                            Some((Port::D, 2)), Some((Port::D, 3)));
+                        usart::ROUTE_LOCATION_LOC0
+                    },
+                    Loc1 => {
+                        self.init_gpio(Some((Port::D, 0)), Some((Port::D, 1)),
+                            Some((Port::D, 2)), Some((Port::D, 3)));
+                        usart::ROUTE_LOCATION_LOC1
+                    },
+                    _ => panic!("Invalid location for Usart2: {:?}", loc)
+                }
+            },
+        };
+        self.usart.ROUTE = (self.usart.ROUTE & !usart::ROUTE_LOCATION_MASK) | location;
+    }
+
+    fn init_gpio(&mut self, rx: PortPin, tx: PortPin, clk: PortPin, cs: PortPin) {
+        // Enable clock for GPIO module (required for pin configuration)
+        cmu::clock_enable(cmu::Clock::GPIO, true);
+
+        // Configure GPIO pins for TX, RX, CLK and CS
+        match rx {
+            Some((port, pin)) => {
+                gpio::pin_mode_set(port, pin, gpio::Mode::PushPull, 1);
+                self.usart.ROUTE |= usart::ROUTE_TXPEN;
+            },
+            None => ()
+        }
+
+        match tx {
+            Some((port, pin)) => {
+                gpio::pin_mode_set(port, pin, gpio::Mode::Input, 0);
+                self.usart.ROUTE |= usart::ROUTE_RXPEN;
+            },
+            None => ()
+        }
+
+        match clk {
+            Some((port, pin)) => {
+                gpio::pin_mode_set(port, pin, gpio::Mode::PushPull, 1);
+                self.usart.ROUTE |= usart::ROUTE_CLKPEN;
+            },
+            None => ()
+        }
+
+        match cs {
+            Some((port, pin)) => {
+                gpio::pin_mode_set(port, pin, gpio::Mode::PushPull, 1);
+                self.usart.ROUTE |= usart::ROUTE_CSPEN;
+            },
+            None => ()
+        }
     }
 }
