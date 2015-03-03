@@ -64,10 +64,3 @@ fn setup_usart1() {
         | usart::ROUTE_LOCATION_LOC1;
 
 }
-
-#[lang = "stack_exhausted"] extern fn stack_exhausted() {}
-#[lang = "eh_personality"] extern fn eh_personality() {}
-#[lang = "panic_fmt"]
-pub extern fn rust_begin_unwind(_msg: core::fmt::Arguments, _file: &'static str, _line: usize) -> ! {
-    loop { }
-}
