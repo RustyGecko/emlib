@@ -32,8 +32,8 @@ fn gpio_setup() {
 
     gpioint::init();
 
-    gpioint::callback_register(PB0 as u8, button_callback);
-    gpioint::callback_register(PB1 as u8, button_callback);
+    gpioint::register(PB0 as u8, button_callback);
+    gpioint::register(PB1 as u8, button_callback);
 
     gpio::int_config(gpio::Port::B, PB0, false, true, true);
     gpio::int_config(gpio::Port::B, PB1, false, true, true);
