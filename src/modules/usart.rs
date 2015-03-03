@@ -158,7 +158,7 @@ impl Usart {
                         usart::ROUTE_LOCATION_LOC1
                     },
                     Loc2 => {
-                        self.init_gpio(Some((Port::C, 10)), Some((Port::C, 11)),
+                        self.init_gpio(Some((Port::C, 11)), Some((Port::C, 10)),
                             Some((Port::C, 9)), Some((Port::C, 8)));
                         usart::ROUTE_LOCATION_LOC2
                     },
@@ -202,13 +202,13 @@ impl Usart {
             Config::Usart2(loc) => {
                 match loc {
                     Loc0 => {
-                        self.init_gpio(Some((Port::D, 0)), Some((Port::D, 1)),
-                            Some((Port::D, 2)), Some((Port::D, 3)));
+                        self.init_gpio(Some((Port::C, 2)), Some((Port::C, 3)),
+                            Some((Port::C, 4)), Some((Port::C, 5)));
                         usart::ROUTE_LOCATION_LOC0
                     },
                     Loc1 => {
-                        self.init_gpio(Some((Port::D, 0)), Some((Port::D, 1)),
-                            Some((Port::D, 2)), Some((Port::D, 3)));
+                        self.init_gpio(Some((Port::B, 3)), Some((Port::B, 4)),
+                            Some((Port::B, 5)), Some((Port::B, 6)));
                         usart::ROUTE_LOCATION_LOC1
                     },
                     _ => panic!("Invalid location for Usart2: {:?}", loc)
