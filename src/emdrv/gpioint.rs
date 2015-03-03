@@ -1,5 +1,5 @@
 use cmsis::nvic;
-use {gpio, int};
+use {gpio, irq};
 use core::prelude::*;
 
 pub type IrqCallback = fn (u8);
@@ -20,16 +20,16 @@ pub fn init() {
 
 fn set(pin: u8, callback: Option<IrqCallback>) {
 
-    int::disable();
+    irq::disable();
     unsafe { CALLBACKS[pin as usize] = callback; }
-    int::enable();
+    irq::enable();
 }
 
 fn get(pin: u32) -> Option<IrqCallback> {
 
-    int::disable();
+    irq::disable();
     let callback = unsafe { CALLBACKS[pin as usize] };
-    int::enable();
+    irq::enable();
 
     callback
 }

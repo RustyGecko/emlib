@@ -81,7 +81,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/emu/emu.c")
         .file("src/dma/dma.c")
         .file("src/gpio/gpio.c")
-        .file("src/int/int.c")
+        .file("src/irq/irq.c")
         .file("src/rtc/rtc.c")
         .file("src/timer/timer.c")
         .file("src/usart/usart.c")
