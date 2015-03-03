@@ -54,6 +54,14 @@ fn test_prescale_calc_called_with_value() {
 
 }
 
+fn test_start_called() {
+
+    unsafe { adc_expect_adc_start_called(); }
+
+    let adc0 = adc::Adc::adc0();
+    adc0.start(adc::Start::Single);
+}
+
 fn test_data_single_get_called() {
 
     unsafe { adc_expect_data_single_get_called(); }
@@ -66,11 +74,12 @@ fn test_data_single_get_called() {
 pub fn run_tests() {
     let usart1 = usart::Usart::usart1();
 
-    let tests: [fn(); 5] = [
+    let tests: [fn(); 6] = [
         test_init_called_with_default,
         test_init_single_called_with_default,
         test_timebase_calc_called_with_value,
         test_prescale_calc_called_with_value,
+        test_start_called,
         test_data_single_get_called,
     ];
 
@@ -98,5 +107,6 @@ extern {
     fn adc_expect_init_single_called_with_default();
     fn adc_expect_timebase_calc_called_with_value();
     fn adc_expect_prescale_calc_called_with_value();
+    fn adc_expect_adc_start_called();
     fn adc_expect_data_single_get_called();
 }

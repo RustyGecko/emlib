@@ -42,6 +42,10 @@ impl Adc {
         unsafe { STATIC_INLINE_ADC_DataSingleGet(self) }
     }
 
+    pub fn start(&self, cmd: Start) {
+        unsafe { STATIC_INLINE_ADC_Start(self, cmd) }
+    }
+
 }
 
 pub fn timebase_calc(hfper_freq: u32) -> u8 {
@@ -191,6 +195,13 @@ pub enum SingleInput
     //Diff0    = 4
 }
 
+#[repr(u8)]
+#[derive(Copy)]
+pub enum Start {
+    Single = 0x1,
+    Scan = 0x1 << 2,
+    ScanAndSingle = 0x1 | (0x1 << 2),
+}
 
 
 impl Default for Init {
@@ -233,4 +244,5 @@ extern {
     fn ADC_TimebaseCalc(hfper_freq: u32) -> u8;
     fn ADC_PrescaleCalc(adc_freq: u32, hfper_freq: u32) -> u8;
     fn STATIC_INLINE_ADC_DataSingleGet(adc: &Adc) -> u32;
+    fn STATIC_INLINE_ADC_Start(adc: &Adc, cmd: Start);
 }

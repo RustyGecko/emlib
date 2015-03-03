@@ -28,6 +28,12 @@ void adc_expect_prescale_calc_called_with_value() {
     ADC_PrescaleCalc_ExpectAndReturn(7000000, 0, 100);
 }
 
+void adc_expect_adc_start_called() {
+
+    STATIC_INLINE_ADC_Start_Expect(ADC0, adcStartSingle);
+
+}
+
 void adc_expect_data_single_get_called() {
     STATIC_INLINE_ADC_DataSingleGet_ExpectAndReturn(ADC0, 0);
 }
