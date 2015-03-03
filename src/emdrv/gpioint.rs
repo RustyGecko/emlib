@@ -4,12 +4,7 @@ use core::prelude::*;
 
 pub type IrqCallback = fn (u8);
 
-static mut CALLBACKS: [Option<IrqCallback>; 16] = [
-    None,None,None,None,
-    None,None,None,None,
-    None,None,None,None,
-    None,None,None,None
-];
+static mut CALLBACKS: [Option<IrqCallback>; 16] = [None; 16];
 
 pub fn init() {
     nvic::clear_pending_irq(nvic::IRQn::GPIO_ODD);
