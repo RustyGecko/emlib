@@ -1,7 +1,6 @@
 use cmsis::nvic;
 use {gpio, int};
-use core::option::Option;
-use core::option::Option::{Some, None};
+use core::prelude::*;
 
 pub type IrqCallback = fn (u8);
 
