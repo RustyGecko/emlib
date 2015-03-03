@@ -31,7 +31,7 @@ impl Button {
         Button::new(gpio::Port::B, 10)
     }
 
-    pub fn click(&self, func: gpioint::IrqCallback) {
+    pub fn on_click(&self, func: gpioint::IrqCallback) {
         gpioint::register(self.pin, func)
     }
 

@@ -27,8 +27,8 @@ pub extern fn main() {
     Led::led0().init();
     Led::led1().init();
 
-    btn0.click(led0);
-    btn1.click(led1);
+    btn0.on_click(led0);
+    btn1.on_click(led1);
 
     loop {}
 }
