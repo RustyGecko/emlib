@@ -19,14 +19,14 @@ pub fn init() {
     nvic::enable_irq(nvic::IRQn::GPIO_EVEN);
 }
 
-pub fn set(pin: u8, callback: Option<IrqCallback>) {
+fn set(pin: u8, callback: Option<IrqCallback>) {
 
     int::disable();
     unsafe { CALLBACKS[pin as usize] = callback; }
     int::enable();
 }
 
-pub fn get(pin: u32) -> Option<IrqCallback> {
+fn get(pin: u32) -> Option<IrqCallback> {
 
     int::disable();
     let callback = unsafe { CALLBACKS[pin as usize] };
