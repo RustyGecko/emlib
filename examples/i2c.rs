@@ -61,14 +61,14 @@ pub extern fn main() {
 extern fn button_callback(_: u8) {
 
     match unsafe { MODE } {
-        
+
         Mode::Idle => {
             disable_i2c_slave_interrupts();
             unsafe { MODE = Mode::Send; }
         },
 
         _ => ()
-                
+
     }
 
 }
@@ -76,7 +76,7 @@ extern fn button_callback(_: u8) {
 fn receive_i2c_data() {}
 
 fn perform_i2c_transfer() {
-    
+
     gpio::pin_out_set(gpio::Port::C, 0);
     gpio::pin_out_set(gpio::Port::E, LED0);
 
@@ -97,7 +97,7 @@ fn perform_i2c_transfer() {
 
     gpio::pin_out_clear(gpio::Port::C, 0);
     gpio::pin_out_clear(gpio::Port::E, LED0);
-    
+
     unsafe { MODE = Mode::Idle; }
 
     enable_i2c_slave_interrupts();
@@ -105,11 +105,11 @@ fn perform_i2c_transfer() {
 }
 
 fn setup_oscillators() {
-    
+
     cmu::clock_enable(cmu::Clock::I2C0, true);
     cmu::clock_enable(cmu::Clock::GPIO, true);
     cmu::clock_enable(cmu::Clock::CORELE, true);
-    
+
     cmu::clock_enable(cmu::Clock::USART0, true);
 
     cmu::oscillator_enable(cmu::Osc::LFXO, true, true);
@@ -123,7 +123,7 @@ fn setup_i2c() {
     gpio::pin_mode_set(gpio::Port::D, 7, gpio::Mode::WiredAndPullUpFilter, 1);
     gpio::pin_mode_set(gpio::Port::D, 6, gpio::Mode::WiredAndPullUpFilter, 1);
     gpio::pin_mode_set(gpio::Port::C, 0, gpio::Mode::PushPull, 0);
-    
+
     let i2c0 = i2c::I2C::i2c0();
     i2c0.ROUTE = i2c::ROUTE_SDAPEN | i2c::ROUTE_SCLPEN | (1 << 8);
 
@@ -163,7 +163,7 @@ fn setup_gpio() {
 
     gpio::pin_mode_set(gpio::Port::E, LED0, gpio::Mode::PushPull, 0);
     gpio::pin_mode_set(gpio::Port::E, LED1, gpio::Mode::PushPull, 0);
-    
+
 }
 
 #[no_mangle]
@@ -176,7 +176,7 @@ pub extern fn I2C0_IRQHandler() {
     unsafe {
 
         let status = volatile_load(&i2c0.IF as *const u32);
-        
+
         if (status & i2c::IF_ADDR) != 0 {
 
             MODE = Mode::Receive;
@@ -184,10 +184,10 @@ pub extern fn I2C0_IRQHandler() {
             i2c0.int_clear(i2c::IFC_ADDR);
 
         } else if (status & i2c::IEN_SSTOP) != 0 {
-            
+
             i2c0.int_clear(i2c::IEN_SSTOP);
             MODE = Mode::Idle;
-            
+
         } else if (status & i2c::IF_RXDATAV) != 0 {
 
             RX = volatile_load(&i2c0.RXDATA as *const u32);
@@ -197,7 +197,3 @@ pub extern fn I2C0_IRQHandler() {
 
     gpio::pin_out_clear(gpio::Port::E, LED1);
 }
-
-#[lang = "stack_exhausted"] extern fn stack_exhausted() {}
-#[lang = "eh_personality"] extern fn eh_personality() {}
-#[lang = "panic_fmt"] fn panic_fmt() -> ! { loop {} }
