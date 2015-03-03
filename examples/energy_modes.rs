@@ -16,7 +16,7 @@ const PB1: u32 = 10;
 
 static mut mode: u32 = 0;
 
-extern fn button_callback(pin: u8) {
+fn button_callback(pin: u8) {
     if pin == 9 {
         unsafe { mode += 1; }
     } else {
