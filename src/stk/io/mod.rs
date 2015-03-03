@@ -31,6 +31,18 @@ impl Button {
         Button::new(gpio::Port::B, 10)
     }
 
+    pub fn init_pb0() -> Button {
+        let btn = Button::pb0();
+        btn.init();
+        btn
+    }
+
+    pub fn init_pb1() -> Button {
+        let btn = Button::pb1();
+        btn.init();
+        btn
+    }
+
     pub fn on_click(&self, func: gpioint::IrqCallback) {
         gpioint::register(self.pin, func)
     }
@@ -62,6 +74,18 @@ impl Led {
 
     pub fn led1() -> Led {
         Led::new(gpio::Port::E, 3)
+    }
+
+    pub fn init_led0() -> Led {
+        let btn = Led::led0();
+        btn.init();
+        btn
+    }
+
+    pub fn init_led1() -> Led {
+        let btn = Led::led1();
+        btn.init();
+        btn
     }
 
     pub fn toggle(&self) {

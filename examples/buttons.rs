@@ -24,8 +24,8 @@ pub extern fn main() {
     btn0.init();
     btn1.init();
 
-    Led::led0().init();
-    Led::led1().init();
+    Led::init_led0();
+    Led::init_led1();
 
     btn0.on_click(led0);
     btn1.on_click(led1);
