@@ -1,6 +1,7 @@
 use core::default::Default;
 use core::intrinsics::transmute;
 
+pub const STATUS_SINGLEACT:u32 = 0x1;
 
 #[repr(C)]
 #[derive(Copy)]
