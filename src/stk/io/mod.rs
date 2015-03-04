@@ -88,6 +88,14 @@ impl Led {
         btn
     }
 
+    pub fn on(&self) {
+        gpio::pin_out_set(self.port, self.pin);
+    }
+
+    pub fn off(&self) {
+        gpio::pin_out_clear(self.port, self.pin);
+    }
+
     pub fn toggle(&self) {
         gpio::pin_out_toggle(self.port, self.pin);
     }
