@@ -35,6 +35,9 @@ LDFLAGS += --specs=nosys.specs
 LDFLAGS += -lgcc -lc -lnosys -lm
 LDFLAGS += -Wl,--start-group -lnosys -lgcc -lc -lm -Wl,--start-group
 
+KIT = stk3700
+FEATURES = --features $(KIT)
+
 -include Makefile.user
 
 RUSTFLAGS  = --target $(TARGET) --crate-type bin
@@ -45,7 +48,7 @@ RUSTFLAGS += --emit=dep-info,link --verbose
 FLASHFLAGS = --verify --reset
 
 %.elf: $(EXAMPLE_DIR)/$(@:.elf=.rs)
-	BUILD_ENV=prod cargo build --target thumbv7m-none-eabi --verbose
+	BUILD_ENV=prod cargo build --target thumbv7m-none-eabi --verbose $(FEATURES)
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
 	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
 	$(RUSTC) $<$(@:.elf=.rs) $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name $(@:.elf=)
@@ -69,7 +72,7 @@ test: $(notdir $(EXAMPLES:.rs=.elf))
 run-tests: $(TEST_DIR)/run_all_tests.rs
 	@mkdir -p test/mocks
 	rm -rf target/build/emlib-$(HASH)
-	BUILD_ENV=test cargo build --target thumbv7m-none-eabi --verbose
+	BUILD_ENV=test cargo build --target thumbv7m-none-eabi --verbose $(FEATURES)
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
 	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
 	$(RUSTC) $(TEST_DIR)/run_all_tests.rs $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name run_all_tests

@@ -32,8 +32,12 @@ pub mod emdrv;
 // cmsis bindings
 pub mod cmsis;
 
+// higher-level modules depending on the bindings
+pub mod modules;
+
+// kit-specific dependencies
+pub mod kits;
+
 mod std {
     pub use core::*;
 }
-
-pub mod modules;
