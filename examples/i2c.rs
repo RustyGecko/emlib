@@ -58,7 +58,7 @@ pub extern fn main() {
     }
 }
 
-extern fn button_callback(_: u8) {
+fn button_callback(_: u8) {
 
     match unsafe { MODE } {
 
