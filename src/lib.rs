@@ -2,7 +2,7 @@
 #![crate_type="lib"]
 #![crate_name="emlib"]
 #![deny(warnings)]
-#![feature(lang_items, no_std)]
+#![feature(lang_items, no_std, asm)]
 #![feature(core, collections)]
 
 #[macro_use]
@@ -22,6 +22,7 @@ pub mod cmu;
 pub mod emu;
 pub mod dma;
 pub mod gpio;
+pub mod irq;
 pub mod rtc;
 pub mod timer;
 pub mod usart;

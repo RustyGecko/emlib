@@ -8,12 +8,12 @@ extern crate emlib;
 extern crate collections;
 
 use core::default::Default;
-use emlib::kits::dk3750;
+use emlib::kits::dk3750::bsp;
 use emlib::modules::Usart;
 
 #[no_mangle]
 pub extern fn main() {
-    dk3750::init(dk3750::SPI);
+    bsp::init(bsp::SPI);
 
     let usart: Usart = Default::default();
 
