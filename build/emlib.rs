@@ -83,15 +83,12 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/dma/dma.c")
         .file("src/gpio/gpio.c")
         .file("src/i2c/i2c.c")
+        .file("src/irq/irq.c")
         .file("src/rtc/rtc.c")
         .file("src/timer/timer.c")
         .file("src/usart/usart.c")
 
         .file("src/timer/get_timer.c")
-
-        .include("efm32-common/emdrv/gpiointerrupt/inc")
-        .file("efm32-common/emdrv/gpiointerrupt/src/gpiointerrupt.c")
-        .file("src/emdrv/gpiointerrupt.c")
 
         .include("efm32-common/kits/common/drivers")
         .file("efm32-common/kits/common/drivers/dmactrl.c")
