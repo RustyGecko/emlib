@@ -9,7 +9,7 @@ use emlib::emdrv::flash;
 use emlib::stk::bsp;
 use emlib::stk::io::{Button, Led};
 
-const PAGE_SIZE: u32 = 512;
+const PAGE_SIZE: usize = 512;
 static PAGE_NUM: u32 = 0;
 
 static mut SRC: [u8; PAGE_SIZE] = [0; PAGE_SIZE];
