@@ -9,5 +9,5 @@ before_install:
   - git submodule update --init --recursive
 
 script:
-  - cargo build --target thumbv7m-none-eabi --verbose
+  - cargo build --target thumbv7m-none-eabi --verbose --features stk3700
   - make test
