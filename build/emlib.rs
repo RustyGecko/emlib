@@ -71,6 +71,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .include("src/timer")
 
         .file("efm32-common/emlib/src/em_dma.c")
+        .file("efm32-common/emlib/src/em_ebi.c")
         .file("efm32-common/emlib/src/em_rtc.c")
         .file("efm32-common/emlib/src/em_system.c")
         .file("efm32-common/emlib/src/em_timer.c")
@@ -89,8 +90,11 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/timer/get_timer.c")
 
         .include("efm32-common/kits/common/drivers")
+        .file("efm32-common/kits/common/drivers/nandflash.c")
         .file("efm32-common/kits/common/drivers/dmactrl.c")
         .file("efm32-common/kits/common/drivers/retargetio.c")
+
+        .file("efm32-common/kits/common/bsp/bsp_stk.c")
 
 }
 
