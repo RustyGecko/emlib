@@ -40,6 +40,8 @@ fn compile_emlib_library() {
 
 fn base_config(config: &mut Config) -> &mut Config {
 
+    let path = env::var("CARGO_MANIFEST_DIR").ok().unwrap();
+
     config
         .define("EFM32GG990F1024", None)
 
@@ -60,6 +62,8 @@ fn base_config(config: &mut Config) -> &mut Config {
         .flag("-Wall")
         .flag("-mthumb")
         .flag("-mcpu=cortex-m3")
+
+        .flag(format!("-fdebug-prefix-map={}=.", path).as_slice())
 
 }
 
