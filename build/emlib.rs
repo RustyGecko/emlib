@@ -72,6 +72,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
 
         .file("efm32-common/emlib/src/em_acmp.c")
         .file("efm32-common/emlib/src/em_dma.c")
+        .file("efm32-common/emlib/src/em_lesense.c")
         .file("efm32-common/emlib/src/em_rtc.c")
         .file("efm32-common/emlib/src/em_system.c")
         .file("efm32-common/emlib/src/em_timer.c")
@@ -83,6 +84,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/emu/emu.c")
         .file("src/dma/dma.c")
         .file("src/gpio/gpio.c")
+        .file("src/lesense/lesense.c")
         .file("src/irq/irq.c")
         .file("src/rtc/rtc.c")
         .file("src/timer/timer.c")

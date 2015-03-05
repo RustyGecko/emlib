@@ -44,6 +44,10 @@ pub fn clk_div_set(clk: ChClk, clk_div: ClkPresc) {
     unsafe { LESENSE_ClkDivSet(clk, clk_div) }
 }
 
+pub fn int_clear(flags: u32) {
+    unsafe { STATIC_INLINE_LESENSE_IntClear(flags) }
+}
+
 #[repr(C)]
 #[derive(Copy)]
 pub struct CoreCtrlDesc {
@@ -443,4 +447,6 @@ extern {
     fn LESENSE_AltExConfig(conf_alt_ex: *const ConfAltEx);
     fn LESENSE_ScanFreqSet(ref_freq: u32, scan_freq: u32) -> u32;
     fn LESENSE_ClkDivSet(clk: ChClk, clk_div: ClkPresc);
+
+    fn STATIC_INLINE_LESENSE_IntClear(flags: u32);
 }
