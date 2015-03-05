@@ -13,6 +13,7 @@ extern crate libc;
 pub mod utils;
 
 // emlib bindings
+pub mod acmp;
 pub mod chip;
 pub mod cmu;
 pub mod emu;

@@ -10,7 +10,7 @@ pub enum Clock {
     HFPER       = 0x28110,
     GPIO        = 0x2d200,
     LESENSE     = 0x100430,
-    CORELE      = 0x44300,2
+    CORELE      = 0x44300,
     HF          = 0x51,
     TIMER0      = 0x25200,
     USART1      = 0x21200,
