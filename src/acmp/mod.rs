@@ -4,17 +4,17 @@ use core::default::Default;
 #[repr(C)]
 #[derive(Copy)]
 pub struct Init {
-    full_bias:                   bool,
-    half_bias:                   bool,
-    bias_prog:                   u32,
-    interrupt_on_falling_edge:   bool,
-    interrupt_on_rising_edge:    bool,
-    warm_time:                   WarmTime,
-    hysteresis_level:            HysteresisLevel,
-    inactive_value:              bool,
-    low_power_reference_enabled: bool,
-    vdd_level:                   u32,
-    enable:                      bool,
+    pub full_bias:                   bool,
+    pub half_bias:                   bool,
+    pub bias_prog:                   u32,
+    pub interrupt_on_falling_edge:   bool,
+    pub interrupt_on_rising_edge:    bool,
+    pub warm_time:                   WarmTime,
+    pub hysteresis_level:            HysteresisLevel,
+    pub inactive_value:              bool,
+    pub low_power_reference_enabled: bool,
+    pub vdd_level:                   u32,
+    pub enable:                      bool,
 }
 
 impl Default for Init {
@@ -39,14 +39,14 @@ impl Default for Init {
 #[repr(C)]
 #[derive(Copy)]
 pub struct Acmp {
-    CTRL:     u32,
-    INPUTSEL: u32,
-    STATUS:   u32,
-    IEN:      u32,
-    IF:       u32,
-    IFS:      u32,
-    IFC:      u32,
-    ROUTE:    u32,
+    pub CTRL:     u32,
+    pub INPUTSEL: u32,
+    pub STATUS:   u32,
+    pub IEN:      u32,
+    pub IF:       u32,
+    pub IFS:      u32,
+    pub IFC:      u32,
+    pub ROUTE:    u32,
 }
 
 impl Acmp {
@@ -60,6 +60,17 @@ impl Acmp {
         unsafe { transmute(GET_ACMP1()) }
     }
 
+    pub fn init(&self, init: &Init) {
+        unsafe { ACMP_Init(self, init) }
+    }
+
+    pub fn gpio_setup(&self, location: u32, enable: bool, invert: bool) {
+        unsafe { ACMP_GPIOSetup(self, location, enable, invert) }
+    }
+
+    pub fn channel_set(&self, neg_sel: Channel, pos_sel: Channel) {
+        unsafe { ACMP_ChannelSet(self, neg_sel, pos_sel) }
+    }
 }
 
 #[repr(u8)]
@@ -91,15 +102,15 @@ pub enum HysteresisLevel {
 #[repr(C)]
 #[derive(Copy)]
 pub struct CapsenseInit {
-    full_bias:                   bool,
-    half_bias:                   bool,
-    bias_prog:                   u32,
-    warm_time:                   WarmTime,
-    hysteresis_level:            HysteresisLevel,
-    resistor:                    CapsenseResistor,
-    low_power_reference_enabled: bool,
-    vdd_level:                   u32,
-    enable:                      bool,
+    pub full_bias:                   bool,
+    pub half_bias:                   bool,
+    pub bias_prog:                   u32,
+    pub warm_time:                   WarmTime,
+    pub hysteresis_level:            HysteresisLevel,
+    pub resistor:                    CapsenseResistor,
+    pub low_power_reference_enabled: bool,
+    pub vdd_level:                   u32,
+    pub enable:                      bool,
 }
 
 #[repr(C)]
@@ -114,20 +125,20 @@ pub enum CapsenseResistor {
 #[repr(C)]
 #[derive(Copy)]
 pub enum Channel {
-    acmpChannel0        = 0x0,
-    acmpChannel1        = 0x1,
-    acmpChannel2        = 0x2,
-    acmpChannel3        = 0x3,
-    acmpChannel4        = 0x4,
-    acmpChannel5        = 0x5,
-    acmpChannel6        = 0x6,
-    acmpChannel7        = 0x7,
-    acmpChannel1V25     = 0x8,
-    acmpChannel2V5      = 0x9,
-    acmpChannelVDD      = 0xA,
-    acmpChannelCapSense = 0xB,
-    acmpChannelDAC0Ch0  = 0xC,
-    acmpChannelDAC0Ch1  = 0xD,
+    _0        = 0x0,
+    _1        = 0x1,
+    _2        = 0x2,
+    _3        = 0x3,
+    _4        = 0x4,
+    _5        = 0x5,
+    _6        = 0x6,
+    _7        = 0x7,
+    _1V25     = 0x8,
+    _2V5      = 0x9,
+    VDD       = 0xA,
+    CapSense  = 0xB,
+    DAC0Ch0   = 0xC,
+    DAC0Ch1   = 0xD,
 }
 
 #[allow(dead_code)]
