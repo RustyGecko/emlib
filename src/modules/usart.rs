@@ -9,9 +9,7 @@ use gpio::Port;
 
 use self::Location::*;
 
-type PortPin = Option<(Port, u32)>;
-
-/// Possible locations for the different Usart's. Not all locations is available for every Usart.
+/// Possible locations for the different Usart's. Not all locations are available for every Usart.
 #[derive(Copy, Debug)]
 pub enum Location {
     Loc0,
@@ -142,59 +140,49 @@ impl Usart {
         (self.usart.IF & usart::STATUS_TXBL) != 0
     }
 
-
     fn init_location_and_gpio(&mut self) {
-        let location = match self.config {
+        let (location, tx, rx, clk, cs) = match self.config {
             Config::Usart0(loc) => {
                 match loc {
                     Loc0 => {
-                        self.init_gpio(Some((Port::E, 10)), Some((Port::E, 11)),
-                            Some((Port::E, 12)), Some((Port::E, 13)));
-                        usart::ROUTE_LOCATION_LOC0
+                        (usart::ROUTE_LOCATION_LOC0, Some((Port::E, 10)), Some((Port::E, 11)),
+                            Some((Port::E, 12)), Some((Port::E, 13)))
                     },
                     Loc1 => {
-                        self.init_gpio(Some((Port::E, 7)), Some((Port::E, 6)),
-                            Some((Port::E, 5)), Some((Port::E, 4)));
-                        usart::ROUTE_LOCATION_LOC1
+                        (usart::ROUTE_LOCATION_LOC1, Some((Port::E, 7)), Some((Port::E, 6)),
+                            Some((Port::E, 5)), Some((Port::E, 4)))
                     },
                     Loc2 => {
-                        self.init_gpio(Some((Port::C, 11)), Some((Port::C, 10)),
-                            Some((Port::C, 9)), Some((Port::C, 8)));
-                        usart::ROUTE_LOCATION_LOC2
+                        (usart::ROUTE_LOCATION_LOC2, Some((Port::C, 11)), Some((Port::C, 10)),
+                            Some((Port::C, 9)), Some((Port::C, 8)))
                     },
                     Loc3 => {
-                        self.init_gpio(Some((Port::E, 13)), Some((Port::E, 12)),
-                            None, None);
-                        usart::ROUTE_LOCATION_LOC3
+                        (usart::ROUTE_LOCATION_LOC3, Some((Port::E, 13)), Some((Port::E, 12)),
+                            None, None)
                     },
                     Loc4 => {
-                        self.init_gpio(Some((Port::B, 7)), Some((Port::B, 8)),
-                            Some((Port::B, 13)), Some((Port::B, 14)));
-                        usart::ROUTE_LOCATION_LOC4
+                        (usart::ROUTE_LOCATION_LOC4, Some((Port::B, 7)), Some((Port::B, 8)),
+                            Some((Port::B, 13)), Some((Port::B, 14)))
                     },
                     Loc5 => {
-                        self.init_gpio(Some((Port::C, 0)), Some((Port::C, 1)),
-                            Some((Port::B, 13)), Some((Port::B, 14)));
-                        usart::ROUTE_LOCATION_LOC5
+                        (usart::ROUTE_LOCATION_LOC5, Some((Port::C, 0)), Some((Port::C, 1)),
+                            Some((Port::B, 13)), Some((Port::B, 14)))
                     },
                 }
             },
             Config::Usart1(loc) => {
                 match loc {
                     Loc0 => {
-                        self.init_gpio(Some((Port::C, 0)), Some((Port::C, 1)),
-                            Some((Port::B, 7)), Some((Port::B, 8)));
-                        usart::ROUTE_LOCATION_LOC0
+                        (usart::ROUTE_LOCATION_LOC0, Some((Port::C, 0)), Some((Port::C, 1)),
+                            Some((Port::B, 7)), Some((Port::B, 8)))
                     },
                     Loc1 => {
-                        self.init_gpio(Some((Port::D, 0)), Some((Port::D, 1)),
-                            Some((Port::D, 2)), Some((Port::D, 3)));
-                        usart::ROUTE_LOCATION_LOC1
+                        (usart::ROUTE_LOCATION_LOC1, Some((Port::D, 0)), Some((Port::D, 1)),
+                            Some((Port::D, 2)), Some((Port::D, 3)))
                     },
                     Loc2 => {
-                        self.init_gpio(Some((Port::D, 7)), Some((Port::D, 6)),
-                            Some((Port::F, 0)), Some((Port::F, 1)));
-                        usart::ROUTE_LOCATION_LOC2
+                        (usart::ROUTE_LOCATION_LOC2, Some((Port::D, 7)), Some((Port::D, 6)),
+                            Some((Port::F, 0)), Some((Port::F, 1)))
                     },
                     _ => panic!("Invalid location for Usart1: {:?}", loc)
                 }
@@ -202,57 +190,61 @@ impl Usart {
             Config::Usart2(loc) => {
                 match loc {
                     Loc0 => {
-                        self.init_gpio(Some((Port::C, 2)), Some((Port::C, 3)),
-                            Some((Port::C, 4)), Some((Port::C, 5)));
-                        usart::ROUTE_LOCATION_LOC0
+                        (usart::ROUTE_LOCATION_LOC0, Some((Port::C, 2)), Some((Port::C, 3)),
+                            Some((Port::C, 4)), Some((Port::C, 5)))
                     },
                     Loc1 => {
-                        self.init_gpio(Some((Port::B, 3)), Some((Port::B, 4)),
-                            Some((Port::B, 5)), Some((Port::B, 6)));
-                        usart::ROUTE_LOCATION_LOC1
+                        (usart::ROUTE_LOCATION_LOC1, Some((Port::B, 3)), Some((Port::B, 4)),
+                            Some((Port::B, 5)), Some((Port::B, 6)))
                     },
                     _ => panic!("Invalid location for Usart2: {:?}", loc)
                 }
             },
         };
+
+        self.init_gpio(tx, rx, clk, cs);
         self.usart.ROUTE = (self.usart.ROUTE & !usart::ROUTE_LOCATION_MASK) | location;
     }
 
-    fn init_gpio(&mut self, rx: PortPin, tx: PortPin, clk: PortPin, cs: PortPin) {
+    fn init_gpio(&mut self, tx: Option<(Port, u32)>, rx: Option<(Port, u32)>,
+        clk: Option<(Port, u32)>, cs: Option<(Port, u32)>)
+    {
         // Enable clock for GPIO module (required for pin configuration)
         cmu::clock_enable(cmu::Clock::GPIO, true);
 
         // Configure GPIO pins for TX, RX, CLK and CS
-        match rx {
+        let tx_route = match tx {
             Some((port, pin)) => {
                 gpio::pin_mode_set(port, pin, gpio::Mode::PushPull, 1);
-                self.usart.ROUTE |= usart::ROUTE_TXPEN;
+                usart::ROUTE_TXPEN
             },
-            None => ()
-        }
+            None => 0
+        };
 
-        match tx {
+        let rx_route = match rx {
             Some((port, pin)) => {
                 gpio::pin_mode_set(port, pin, gpio::Mode::Input, 0);
-                self.usart.ROUTE |= usart::ROUTE_RXPEN;
+                usart::ROUTE_RXPEN
             },
-            None => ()
-        }
+            None => 0
+        };
 
-        match clk {
+        let clk_route = match clk {
             Some((port, pin)) => {
                 gpio::pin_mode_set(port, pin, gpio::Mode::PushPull, 1);
-                self.usart.ROUTE |= usart::ROUTE_CLKPEN;
+                usart::ROUTE_CLKPEN
             },
-            None => ()
-        }
+            None => 0
+        };
 
-        match cs {
+        let cs_route = match cs {
             Some((port, pin)) => {
                 gpio::pin_mode_set(port, pin, gpio::Mode::PushPull, 1);
-                self.usart.ROUTE |= usart::ROUTE_CSPEN;
+                usart::ROUTE_CSPEN
             },
-            None => ()
-        }
+            None => 0
+        };
+
+        self.usart.ROUTE |= rx_route | tx_route | clk_route | cs_route;
     }
 }
