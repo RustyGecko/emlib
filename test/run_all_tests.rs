@@ -37,7 +37,7 @@ fn setup_leds() {
 
     gpio::pin_mode_set(gpio::Port::E, 2, gpio::Mode::PushPull, 0);
     gpio::pin_mode_set(gpio::Port::E, 3, gpio::Mode::PushPull, 0);
-    
+
 }
 
 fn setup_usart1() {
@@ -61,11 +61,4 @@ fn setup_usart1() {
         | usart::ROUTE_TXPEN
         | usart::ROUTE_LOCATION_LOC1;
 
-}
-
-#[lang = "stack_exhausted"] extern fn stack_exhausted() {}
-#[lang = "eh_personality"] extern fn eh_personality() {}
-#[lang = "panic_fmt"]
-pub extern fn rust_begin_unwind(_msg: core::fmt::Arguments, _file: &'static str, _line: usize) -> ! {
-    loop { }
 }
