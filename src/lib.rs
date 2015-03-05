@@ -19,6 +19,7 @@ pub mod cmu;
 pub mod emu;
 pub mod dma;
 pub mod gpio;
+pub mod lesense;
 pub mod irq;
 pub mod rtc;
 pub mod timer;

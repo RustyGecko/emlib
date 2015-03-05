@@ -1,7 +1,7 @@
 use core::default::Default;
 
 #[repr(C)]
-#[derive(Copy]
+#[derive(Copy)]
 pub struct Init {
     pub core_ctrl: CoreCtrlDesc,
     pub time_ctrl: TimeCtrlDesc,
@@ -9,24 +9,79 @@ pub struct Init {
     pub dec_ctrl:  DecCtrlDesc,
 }
 
+impl Default for Init {
+    fn default() -> Init {
+        Init {
+            core_ctrl: Default::default(),
+            time_ctrl: Default::default(),
+            per_ctrl:  Default::default(),
+            dec_ctrl:  Default::default(),
+        }
+    }
+}
+
+pub fn scan_start() {
+    unsafe { LESENSE_ScanStart() }
+}
+
+pub fn init(init: &Init, req_reset: bool) {
+    unsafe { LESENSE_Init(init, req_reset) }
+}
+
+pub fn channel_config(conf_ch: &ChDesc, ch_idx: u32) {
+    unsafe { LESENSE_ChannelConfig(conf_ch, ch_idx) }
+}
+
+pub fn alt_ex_config(conf_alt_ex: &ConfAltEx) {
+    unsafe {  LESENSE_AltExConfig(conf_alt_ex) }
+}
+
+pub fn scan_freq_set(ref_freq: u32, scan_freq: u32) -> u32 {
+    unsafe { LESENSE_ScanFreqSet(ref_freq, scan_freq) }
+}
+
+pub fn clk_div_set(clk: ChClk, clk_div: ClkPresc) {
+    unsafe { LESENSE_ClkDivSet(clk, clk_div) }
+}
+
 #[repr(C)]
-#[derive(Copy]
+#[derive(Copy)]
 pub struct CoreCtrlDesc {
     pub scan_start:     ScanMode,
     pub prs_sel:        PRSSel,
     pub scan_conf_sel:  ScanConfSel,
-    pub inv_acmp0:      bool
+    pub inv_acmp0:      bool,
+    pub inv_acmp1:      bool,
     pub dual_sample:    bool,
     pub store_scan_res: bool,
     pub buf_over_wr:    bool,
     pub buf_trig_level: BufTrigLevel,
-    pub wakeup_on_dma:  DMAWakeUp
+    pub wakeup_on_dma:  DMAWakeUp,
     pub bias_mode:      BiasMode,
     pub debug_run:      bool,
 }
 
+impl Default for CoreCtrlDesc {
+    fn default() -> CoreCtrlDesc {
+        CoreCtrlDesc {
+            scan_start:     ScanMode::StartPeriodic,
+            prs_sel:        PRSSel::PRSCh0,
+            scan_conf_sel:  ScanConfSel::DirMap,
+            inv_acmp0:      false,
+            inv_acmp1:      false,
+            dual_sample:    false,
+            store_scan_res: true,
+            buf_over_wr:    true,
+            buf_trig_level: BufTrigLevel::Half,
+            wakeup_on_dma:  DMAWakeUp::Disable,
+            bias_mode:      BiasMode::DontTouch,
+            debug_run:      true,
+        }
+    }
+}
+
 #[repr(u8)]
-#[derive(Copy]
+#[derive(Copy)]
 pub enum ScanMode {
   StartPeriodic = 0x0 << 0,
   StartOneShot  = 0x1 << 0,
@@ -34,7 +89,7 @@ pub enum ScanMode {
 }
 
 #[repr(u8)]
-#[derive(Copy]
+#[derive(Copy)]
 pub enum PRSSel {
     PRSCh0 = 0,
     PRSCh1 = 1,
@@ -47,7 +102,7 @@ pub enum PRSSel {
 }
 
 #[repr(u8)]
-#[derive(Copy]
+#[derive(Copy)]
 pub enum ScanConfSel {
     DirMap = 0x0 << 6,
     InvMap = 0x1 << 6,
@@ -55,15 +110,15 @@ pub enum ScanConfSel {
     DecDef = 0x3 << 6,
 }
 
-#[repr(u8)]
-#[derive(Copy]
+#[repr(u32)]
+#[derive(Copy)]
 pub enum BufTrigLevel {
-    half = 0x0 << 18,
-    full = 0x1 << 18,
+    Half = 0x0 << 18,
+    Full = 0x1 << 18,
 }
 
-#[repr(u8)]
-#[derive(Copy]
+#[repr(u32)]
+#[derive(Copy)]
 pub enum DMAWakeUp {
     Disable  = 0x0 << 20,
     BufValid = 0x1 << 20,
@@ -71,7 +126,7 @@ pub enum DMAWakeUp {
 }
 
 #[repr(u8)]
-#[derive(Copy]
+#[derive(Copy)]
 pub enum BiasMode {
     DutyCycle = 0x0 << 0,
     HighAcc   = 0x1 << 0,
@@ -79,36 +134,62 @@ pub enum BiasMode {
 }
 
 #[repr(C)]
-#[derive(Copy]
+#[derive(Copy)]
 pub struct TimeCtrlDesc {
-    start_delay: u8,
+    pub start_delay: u8,
+}
+
+impl Default for TimeCtrlDesc {
+    fn default() -> TimeCtrlDesc {
+        TimeCtrlDesc {
+            start_delay: 0
+        }
+    }
 }
 
 #[repr(C)]
-#[derive(Copy]
+#[derive(Copy)]
 pub struct PerCtrlDesc {
-    dac_ch0_data:      ControlDACData,
-    dac_ch0_conv_mode: ControlDACConv,
-    dac_ch0_out_mode:  ControlDACOut,
-    dac_ch1_data:      ControlDACData,
-    dac_ch1_conv_mode: ControlDACConv,
-    dac_ch1_out_mode:  ControlDACOut,
-    dac_presc:         u8,
-    dac_ref:           DACRef,
-    acmp0_mode:        ControlACMP,
-    acmp1_mode:        ControlACMP,
-    warmup_mode:       WarmupMode,
+    pub dac_ch0_data:      ControlDACData,
+    pub dac_ch0_conv_mode: ControlDACConv,
+    pub dac_ch0_out_mode:  ControlDACOut,
+    pub dac_ch1_data:      ControlDACData,
+    pub dac_ch1_conv_mode: ControlDACConv,
+    pub dac_ch1_out_mode:  ControlDACOut,
+    pub dac_presc:         u8,
+    pub dac_ref:           DACRef,
+    pub acmp0_mode:        ControlACMP,
+    pub acmp1_mode:        ControlACMP,
+    pub warmup_mode:       WarmupMode,
+}
+
+impl Default for PerCtrlDesc {
+    fn default() -> PerCtrlDesc {
+        PerCtrlDesc {
+            dac_ch0_data:      ControlDACData::DACIfData,
+            dac_ch0_conv_mode: ControlDACConv::ModeDisable,
+            dac_ch0_out_mode:  ControlDACOut::ModeDisable,
+            dac_ch1_data:      ControlDACData::DACIfData,
+            dac_ch1_conv_mode: ControlDACConv::ModeDisable,
+            dac_ch1_out_mode:  ControlDACOut::ModeDisable,
+            dac_presc:         0,
+            dac_ref:           DACRef::Vdd,
+            acmp0_mode:        ControlACMP::MuxThres,
+            acmp1_mode:        ControlACMP::MuxThres,
+            warmup_mode:       WarmupMode::KeepWarm,
+        }
+    }
 }
 
 #[repr(u8)]
-#[derive(Copy]
+#[derive(Copy)]
 pub enum ControlDACData {
   DACIfData = 0x0,
   ACMPThres = 0x1,
 }
 
 #[repr(u8)]
-#[derive(Copy]
+#[derive(Copy)]
 pub enum ControlDACConv {
     ModeDisable    = 0x0,
     ModeContinuous = 0x1,
@@ -117,7 +198,7 @@ pub enum ControlDACConv {
 }
 
 #[repr(u8)]
-#[derive(Copy]
+#[derive(Copy)]
 pub enum ControlDACOut {
     ModeDisable    = 0x0,
     ModePin        = 0x1,
@@ -125,23 +206,23 @@ pub enum ControlDACOut {
     ModePinADCACMP = 0x3,
 }
 
-#[repr(u8)]
-#[derive(Copy]
+#[repr(u32)]
+#[derive(Copy)]
 pub enum DACRef {
     Vdd     = 0x0 << 18,
     BandGap = 0x1 << 18,
 }
 
 #[repr(u8)]
-#[derive(Copy]
+#[derive(Copy)]
 pub enum ControlACMP{
     Disable  = 0x0,
     Mux      = 0x1,
     MuxThres = 0x2,
 }
 
-#[repr(u8)]
-#[derive(Copy]
+#[repr(u32)]
+#[derive(Copy)]
 pub enum WarmupMode {
     Normal   = 0x0 << 26,
     ACMP     = 0x1 << 26,
@@ -150,26 +231,216 @@ pub enum WarmupMode {
 }
 
 #[repr(C)]
-#[derive(Copy]
+#[derive(Copy)]
 pub struct DecCtrlDesc {
-    dec_Input:   LESENSE_DecInput_TypeDef,
-    init_State:  uint32_t,
-    chk_State:   bool,
-    int_Map:     bool,
-    hyst_PRS0:   bool,
-    hyst_PRS1:   bool,
-    hyst_PRS2:   bool,
-    hyst_IRQ:    bool,
-    prs_Count:   bool,
-    prs_Ch_Sel0: PRSSel,
-    prs_Ch_Sel1: PRSSel,
-    prs_Ch_Sel2: PRSSel,
-    prs_Ch_Sel3: PRSSel,
+    pub dec_input:   DecInput,
+    pub init_state:  u32,
+    pub chk_state:   bool,
+    pub int_map:     bool,
+    pub hyst_prs0:   bool,
+    pub hyst_prs1:   bool,
+    pub hyst_prs2:   bool,
+    pub hyst_irq:    bool,
+    pub prs_count:   bool,
+    pub prs_ch_sel0: PRSSel,
+    pub prs_ch_sel1: PRSSel,
+    pub prs_ch_sel2: PRSSel,
+    pub prs_ch_sel3: PRSSel,
 }
 
-#[repr(u8)]
-#[derive(Copy]
+impl Default for DecCtrlDesc {
+    fn default() -> DecCtrlDesc {
+        DecCtrlDesc {
+            dec_input:   DecInput::SensorSt,
+            init_state:  0,
+            chk_state:   false,
+            int_map:     true,
+            hyst_prs0:   true,
+            hyst_prs1:   true,
+            hyst_prs2:   true,
+            hyst_irq:    true,
+            prs_count:   false,
+            prs_ch_sel0: PRSSel::PRSCh0,
+            prs_ch_sel1: PRSSel::PRSCh1,
+            prs_ch_sel2: PRSSel::PRSCh2,
+            prs_ch_sel3: PRSSel::PRSCh3,
+        }
+    }
+}
+
+#[repr(u16)]
+#[derive(Copy)]
 pub enum DecInput {
     SensorSt = 0x0 << 8,
     PRS      = 0x1 << 8,
+}
+
+#[repr(C)]
+#[derive(Copy)]
+pub struct ChDesc {
+    pub ena_scan_ch:      bool,
+    pub ena_pin:          bool,
+    pub ena_int:          bool,
+    pub ch_pin_ex_mode:   ChPinExMode,
+    pub ch_pin_idle_mode: ChPinIdleMode,
+    pub use_alt_ex:       bool,
+    pub shift_res:        bool,
+    pub inv_res:          bool,
+    pub store_cnt_res:    bool,
+    pub ex_clk:           ChClk,
+    pub sample_clk:       ChClk,
+    pub ex_time:          u8,
+    pub sample_delay:     u8,
+    pub meas_delay:       u8,
+    pub acmp_thres:       u16,
+    pub sample_mode:      ChSampleMode,
+    pub int_mode:         ChIntMode,
+    pub cnt_thres:        u16,
+    pub comp_mode:        ChCompMode,
+}
+
+impl Default for ChDesc {
+    fn default() -> ChDesc {
+        ChDesc {
+            ena_scan_ch:      true,
+            ena_pin:          true,
+            ena_int:          true,
+            ch_pin_ex_mode:   ChPinExMode::High,
+            ch_pin_idle_mode: ChPinIdleMode::Low,
+            use_alt_ex:       false,
+            shift_res:        false,
+            inv_res:          false,
+            store_cnt_res:    false,
+            ex_clk:           ChClk::LF,
+            sample_clk:       ChClk::LF,
+            ex_time:          0x03,
+            sample_delay:     0x09,
+            meas_delay:       0x06,
+            acmp_thres:       0x00,
+            sample_mode:      ChSampleMode::ACMP,
+            int_mode:         ChIntMode::SetIntNone,
+            cnt_thres:        0xFF,
+            comp_mode:        ChCompMode::Less
+        }
+    }
+}
+
+#[repr(u32)]
+#[derive(Copy)]
+pub enum ChPinExMode {
+    Dis    = 0x0 << 15,
+    High   = 0x1 << 15,
+    Low    = 0x2 << 15,
+    DACOut = 0x3 << 15,
+}
+
+#[repr(u8)]
+#[derive(Copy)]
+pub enum ChPinIdleMode {
+    Dis    = 0x0,
+    High   = 0x1,
+    Low    = 0x2,
+    DACCh0 = 0x3,
+    // DACCh1 = 0x3, #FIXME This field has the same value, so it's ignored for now.
+}
+
+#[repr(u8)]
+#[derive(Copy)]
+pub enum ChClk {
+    LF = 0x0,
+    HF = 0x1,
+}
+
+#[repr(u16)]
+#[derive(Copy)]
+pub enum ChSampleMode {
+    Counter = 0x0 << 12,
+    ACMP    = 0x1 << 12,
+}
+
+#[repr(u16)]
+#[derive(Copy)]
+pub enum ChIntMode {
+    SetIntNone    = 0x0 << 13,
+    SetIntLevel   = 0x1 << 13,
+    SetIntPosEdge = 0x2 << 13,
+    SetIntNegEdge = 0x3 << 13,
+}
+
+#[repr(u32)]
+#[derive(Copy)]
+pub enum ChCompMode {
+    Less        = 0x0 << 16,
+    GreaterOrEq = 0x1 << 16,
+}
+
+#[repr(C)]
+#[derive(Copy)]
+pub struct ConfAltEx {
+    pub alt_ex_map: AltExMap,
+    pub alt_ex:     [AltExDesc; 16],
+}
+
+impl Default for ConfAltEx {
+    fn default() -> ConfAltEx {
+        ConfAltEx {
+            alt_ex_map: AltExMap::ACMP,
+            alt_ex: [Default::default(); 16]
+        }
+    }
+}
+
+#[repr(u8)]
+#[derive(Copy)]
+pub enum AltExMap {
+    ALTEX = 0x0,
+    ACMP  = 0x1,
+}
+
+#[repr(C)]
+#[derive(Copy)]
+pub struct AltExDesc {
+    pub enable_pin: bool,
+    pub idle_conf:  AltExPinIdle,
+    pub always_ex:  bool,
+}
+
+impl Default for AltExDesc {
+    fn default() -> AltExDesc {
+        AltExDesc {
+            enable_pin: true,
+            idle_conf:  AltExPinIdle::Dis,
+            always_ex:  false
+        }
+    }
+}
+
+#[repr(u8)]
+#[derive(Copy)]
+pub enum AltExPinIdle {
+    Dis  = 0x0,
+    High = 0x1,
+    Low  = 0x2,
+}
+
+#[repr(C)]
+#[derive(Copy)]
+pub enum ClkPresc {
+    ClkDiv1   = 0,
+    ClkDiv2   = 1,
+    ClkDiv4   = 2,
+    ClkDiv8   = 3,
+    ClkDiv16  = 4,
+    ClkDiv32  = 5,
+    ClkDiv64  = 6,
+    ClkDiv128 = 7,
+}
+
+extern {
+    fn LESENSE_ScanStart();
+    fn LESENSE_Init(init: *const Init, req_reset: bool);
+    fn LESENSE_ChannelConfig(conf_ch: *const ChDesc, req_idx: u32);
+    fn LESENSE_AltExConfig(conf_alt_ex: *const ConfAltEx);
+    fn LESENSE_ScanFreqSet(ref_freq: u32, scan_freq: u32) -> u32;
+    fn LESENSE_ClkDivSet(clk: ChClk, clk_div: ClkPresc);
 }
