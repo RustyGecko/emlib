@@ -46,7 +46,7 @@ impl Default for Usart {
             line_break: "\0\r",
         };
 
-        usart.init();
+        usart.init_async();
         usart
     }
 }
@@ -67,8 +67,12 @@ impl Usart {
         }
     }
 
+    pub fn set_line_break(&mut self, chars: &'static str) {
+        self.line_break = chars;
+    }
+
     /// Called in order to initialize the Usart according to it's config
-    pub fn init(&mut self) {
+    pub fn init_async(&mut self) {
         // Enable clock for HF peripherals
         cmu::clock_select_set(cmu::Clock::HF, cmu::Select::HFRCO);
 
@@ -104,7 +108,7 @@ impl Usart {
     }
 
     /// Performs a blocking send of a `&str`
-    pub fn write_str(&self, string: &str) {
+    pub fn write_line(&self, string: &str) {
         for c in string.chars() {
             self.putc(c as u8);
         }
@@ -115,7 +119,7 @@ impl Usart {
     ///
     /// #Panics
     /// Panics if it fails to parse the received characters to a UTF8 String.
-    pub fn read_string(&self) -> String {
+    pub fn read_line(&self) -> String {
         let mut bytes = Vec::new();
 
         loop {
