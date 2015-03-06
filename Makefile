@@ -11,10 +11,9 @@ TARGET=thumbv7m-none-eabi
 
 EXAMPLE_DIR = examples
 EXAMPLES    = $(wildcard $(EXAMPLE_DIR)/*.rs)
+EX          = buttons_int
 
 TEST_DIR = test
-
-PROJ_NAME   = buttons_int
 
 RUSTC = rustc
 FLASH = eACommander
@@ -22,12 +21,12 @@ FLASH = eACommander
 -include .emlib_hash
 
 TARGET_DIR = target/$(TARGET)
-TARGET_OUT = $(TARGET_DIR)/$(PROJ_NAME)
+TARGET_OUT = $(TARGET_DIR)/$(EX)
 
 .PHONY: all setup proj flash test clean
 
 all:    proj
-proj:   $(PROJ_NAME).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
+proj:   $(EX).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
 
 AFLAGS   = -mthumb -mcpu=cortex-m3
 LDFLAGS  = $(AFLAGS) -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
@@ -57,7 +56,7 @@ FLASHFLAGS = --verify --reset
 	$(OBJCOPY) -O binary $< $@
 
 flash: all
-	cp $(TARGET_DIR)/$(PROJ_NAME).$(BINARY_FORMAT) $(TARGET_DIR)/$(BINARY_NAME).$(BINARY_FORMAT)
+	cp $(TARGET_DIR)/$(EX).$(BINARY_FORMAT) $(TARGET_DIR)/$(BINARY_NAME).$(BINARY_FORMAT)
 	JLinkExe -commanderscript .execute.jlink || echo ""
 
 burn: all
