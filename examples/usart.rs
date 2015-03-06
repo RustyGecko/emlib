@@ -12,7 +12,8 @@ use emlib::modules::Usart;
 
 #[no_mangle]
 pub extern fn main() {
-    let usart: Usart = Default::default();
+    let mut usart: Usart = Default::default();
+    usart.init_async();
 
     loop {
         let s = format!("Received: {}\n\r", usart.read_line());
