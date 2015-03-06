@@ -77,4 +77,7 @@ run-tests: $(TEST_DIR)/run_all_tests.rs
 	@echo Done
 
 clean:
+	@rm -rf $(TARGET_DIR)/build/emlib*
+
+clean-all:
 	@cargo clean
