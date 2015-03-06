@@ -39,21 +39,18 @@ pub struct Usart {
 /// Initializes and returns a new Usart1 instance with Location 1 and a baudrate of 9600.
 impl Default for Usart {
     fn default() -> Usart {
-        let mut usart = Usart {
+        Usart {
             config: Config::Usart1(Loc1),
             baudrate: 9600,
             usart: usart::Usart::usart1(),
             line_break: "\0\r",
-        };
-
-        usart.init_async();
-        usart
+        }
     }
 }
 
 impl Usart {
-    /// Returns a new Usart instance. The Usart have to be manually initialized and it is
-    /// configured to return Strings when it receives either a `\0` or a `\r` character.
+    /// Returns a new Usart instance. It is configured to return Strings when it receives
+    /// either a `\0` or a `\r` character.
     pub fn new(config: Config, baudrate: u32) -> Usart {
         Usart {
             config: config,
@@ -67,6 +64,7 @@ impl Usart {
         }
     }
 
+    /// Set the `line_break` characters used by the `read_line` function.
     pub fn set_line_break(&mut self, chars: &'static str) {
         self.line_break = chars;
     }
