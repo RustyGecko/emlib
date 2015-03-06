@@ -17,11 +17,13 @@ extern crate collections;
 pub mod utils;
 
 // emlib bindings
+pub mod adc;
 pub mod chip;
 pub mod cmu;
 pub mod emu;
 pub mod dma;
 pub mod gpio;
+pub mod i2c;
 pub mod irq;
 pub mod rtc;
 pub mod timer;
@@ -36,8 +38,12 @@ pub mod cmsis;
 // higher-level modules depending on the bindings
 pub mod modules;
 
-// kit-specific dependencies
-pub mod kits;
+// Temporary kit dependencies
+#[cfg(feature = "dk3750")]
+pub mod dk;
+
+#[cfg(feature = "stk3700")]
+pub mod stk;
 
 mod std {
     pub use core::*;

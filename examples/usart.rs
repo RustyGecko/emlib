@@ -15,7 +15,7 @@ pub extern fn main() {
     let usart: Usart = Default::default();
 
     loop {
-        let s = format!("Received: {}\n\r", usart.read_string());
-        usart.write_str(&s[..]);
+        let s = format!("Received: {}\n\r", usart.read_line());
+        usart.write_line(&s);
     }
 }

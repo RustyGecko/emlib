@@ -5,7 +5,7 @@
 extern crate core;
 extern crate emlib;
 
-use emlib::kits::stk3700::io::{Button, Led};
+use emlib::stk::io::{Button, Led};
 
 fn led0(_pin: u8) {
     Led::led0().toggle();
