@@ -412,7 +412,7 @@ pub struct AltExDesc {
 impl Default for AltExDesc {
     fn default() -> AltExDesc {
         AltExDesc {
-            enable_pin: true,
+            enable_pin: false,
             idle_conf:  AltExPinIdle::Dis,
             always_ex:  false
         }

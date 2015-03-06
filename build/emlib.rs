@@ -74,6 +74,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .include("efm32-common/kits/common/bsp")
         .include("src/timer")
         .include("src/adc")
+        .include("src/lesense")
 
         .file("efm32-common/emlib/src/em_acmp.c")
         .file("efm32-common/emlib/src/em_adc.c")

@@ -113,7 +113,7 @@ pub struct CapsenseInit {
     pub enable:                      bool,
 }
 
-#[repr(C)]
+#[repr(u8)]
 #[derive(Copy)]
 pub enum CapsenseResistor {
     Resistor0 = 0x0,
@@ -122,7 +122,7 @@ pub enum CapsenseResistor {
     Resistor3 = 0x3,
 }
 
-#[repr(C)]
+#[repr(u8)]
 #[derive(Copy)]
 pub enum Channel {
     _0        = 0x0,
