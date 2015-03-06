@@ -49,17 +49,17 @@ fn setup_cmu() {
 fn setup_acmp() {
     /* Configuration structure for ACMP */
     let acmp_init = acmp::Init {
-        full_bias:                   false, /* The lightsensor is slow acting, */
-        half_bias:                   true,  /* comparator bias current can be set to lowest setting.*/
-        bias_prog:                   0x0,   /* Analog comparator will still be fast enough */
-        interrupt_on_falling_edge:   false, /* No comparator interrupt, lesense will issue interrupts. */
+        full_bias:                   false,                     /* The lightsensor is slow acting, */
+        half_bias:                   true,                      /* comparator bias current can be set to lowest setting.*/
+        bias_prog:                   0x0,                       /* Analog comparator will still be fast enough */
+        interrupt_on_falling_edge:   false,                     /* No comparator interrupt, lesense will issue interrupts. */
         interrupt_on_rising_edge:    false,
-        warm_time:                   acmp::WarmTime::_512, /* Not applicable, lesense controls this. */
+        warm_time:                   acmp::WarmTime::_512,      /* Not applicable, lesense controls this. */
         hysteresis_level:            acmp::HysteresisLevel::_5, /* Some hysteresis will prevent excessive toggling. */
-        inactive_value:              false, /* Not applicable, lesense controls this. */
-        low_power_reference_enabled: false, /* Can be enabled for even lower power. */
-        vdd_level:                   0x00,  /* Not applicable, lesense controls this through .acmpThres value. */
-        enable:                      false  /* Not applicable, lesense controls this. */
+        inactive_value:              false,                     /* Not applicable, lesense controls this. */
+        low_power_reference_enabled: false,                     /* Can be enabled for even lower power. */
+        vdd_level:                   0x00,                      /* Not applicable, lesense controls this through .acmpThres value. */
+        enable:                      false                      /* Not applicable, lesense controls this. */
     };
 
     let acmp = acmp::Acmp::acmp0();
@@ -99,52 +99,29 @@ fn setup_lesense() {
     let init_lesense = lesense::Init {
         // LESENSE configured for periodic scan.
         core_ctrl: lesense::CoreCtrlDesc {
-            scan_start:     lesense::ScanMode::StartPeriodic,
-            prs_sel:        lesense::PRSSel::PRSCh0,
-            scan_conf_sel:  lesense::ScanConfSel::DirMap,
-            inv_acmp0:      false,
-            inv_acmp1:      false,
-            dual_sample:    false,
-            store_scan_res: false,
-            buf_over_wr:    true,
-            buf_trig_level: lesense::BufTrigLevel::Half,
-            wakeup_on_dma:  lesense::DMAWakeUp::Disable,
+            store_scan_res: true,
             bias_mode:      lesense::BiasMode::DutyCycle, /* Lesense should duty cycle comparator and related references etc. */
-            debug_run:      false
+            debug_run:      false,
+            .. Default::default()
         },
 
-        time_ctrl: lesense::TimeCtrlDesc {
-            start_delay: 0
-        },
+        time_ctrl: Default::default(),
 
         per_ctrl: lesense::PerCtrlDesc {
-            dac_ch0_data:      lesense::ControlDACData::DACIfData,
-            dac_ch0_conv_mode: lesense::ControlDACConv::ModeDisable,
-            dac_ch0_out_mode:  lesense::ControlDACOut::ModeDisable,
-            dac_ch1_data:      lesense::ControlDACData::DACIfData,
-            dac_ch1_conv_mode: lesense::ControlDACConv::ModeDisable,
-            dac_ch1_out_mode:  lesense::ControlDACOut::ModeDisable,
-            dac_presc:         0,
             dac_ref:           lesense::DACRef::BandGap,
             acmp0_mode:        lesense::ControlACMP::MuxThres, /* Allow LESENSE to control ACMP mux and reference threshold. */
             acmp1_mode:        lesense::ControlACMP::MuxThres,
-            warmup_mode:       lesense::WarmupMode::Normal  /* Normal mode means LESENSE is allowed to dutycycle comparator and reference. */
+            warmup_mode:       lesense::WarmupMode::Normal,    /* Normal mode means LESENSE is allowed to dutycycle comparator and reference. */
+            .. Default::default()
         },
 
         dec_ctrl: lesense::DecCtrlDesc {
-            dec_input:   lesense::DecInput::SensorSt,
-            init_state:  0,
-            chk_state:   false,
-            int_map:     true,
             hyst_prs0:   false,
             hyst_prs1:   false,
             hyst_prs2:   false,
             hyst_irq:    false,
             prs_count:   true,
-            prs_ch_sel0: lesense::PRSSel::PRSCh0,
-            prs_ch_sel1: lesense::PRSSel::PRSCh1,
-            prs_ch_sel2: lesense::PRSSel::PRSCh2,
-            prs_ch_sel3: lesense::PRSSel::PRSCh3
+            .. Default::default()
         }
     };
 
@@ -152,28 +129,30 @@ fn setup_lesense() {
     /* Only one channel is configured for the lightsense application. */
     let init_lesense_ch = lesense::ChDesc {
         ena_scan_ch:      true,
-        ena_pin:          false,                 /* Pin is input, no enabling needed. Separate pin is exciting the sensor. */
-        ena_int:          true,                  /* Enable interrupt for this channel. */
-        ch_pin_ex_mode:   lesense::ChPinExMode::High,    /* Excite by pullin pin high. */
-        ch_pin_idle_mode: lesense::ChPinIdleMode::Dis,   /* During Idle, excite pin should be disabled (tri-stated). */
-        use_alt_ex:       true,                  /* Use alternate excite pin. */
-        shift_res:        false,                 /* Not applicable, only for decoder operation. */
-        inv_res:          false,                 /* No need to invert result. */
-        store_cnt_res:    true,                  /* Not applicable, don't care really. */
-        ex_clk:           lesense::ChClk::LF,          /* Using low frequency clock for timing the excitation. */
-        sample_clk:       lesense::ChClk::LF,          /* Using low frequency clock for timing the sample instant. */
-        ex_time:          0x01,                  /* 1 LFclk cycle is enough excitation time, this depends on response time of light sensor. */
-        sample_delay:     0x01,                  /* Sampling should happen when excitation ends, it it happens earlier, excitation time might as well be reduced. */
-        meas_delay:       0x00,                  /* Not used here, basically only used for applications which uses the counting feature. */
-        acmp_thres:       ACMP_THRESHOLD,        /* This is the analog comparator threshold setting, determines when the acmp triggers. */
-        sample_mode:      lesense::ChSampleMode::ACMP, /* Sampling acmp, not counting. */
-        int_mode:         lesense::ChIntMode::SetIntNegEdge,  /* Interrupt when voltage falls below threshold. */
-        cnt_thres:        0x0000,                /* Not applicable. */
-        comp_mode:        lesense::ChCompMode::Less    /* Not applicable. */
+        ena_pin:          false,                             /* Pin is input, no enabling needed. Separate pin is exciting the sensor. */
+        ena_int:          true,                              /* Enable interrupt for this channel. */
+        ch_pin_ex_mode:   lesense::ChPinExMode::High,        /* Excite by pullin pin high. */
+        ch_pin_idle_mode: lesense::ChPinIdleMode::Dis,       /* During Idle, excite pin should be disabled (tri-stated). */
+        use_alt_ex:       true,                              /* Use alternate excite pin. */
+        shift_res:        false,                             /* Not applicable, only for decoder operation. */
+        inv_res:          false,                             /* No need to invert result. */
+        store_cnt_res:    true,                              /* Not applicable, don't care really. */
+        ex_clk:           lesense::ChClk::LF,                /* Using low frequency clock for timing the excitation. */
+        sample_clk:       lesense::ChClk::LF,                /* Using low frequency clock for timing the sample instant. */
+        ex_time:          0x01,                              /* 1 LFclk cycle is enough excitation time, this depends on response time of light sensor. */
+        sample_delay:     0x01,                              /* Sampling should happen when excitation ends, it it happens earlier, excitation time might as well be reduced. */
+        meas_delay:       0x00,                              /* Not used here, basically only used for applications which uses the counting feature. */
+        acmp_thres:       ACMP_THRESHOLD,                    /* This is the analog comparator threshold setting, determines when the acmp triggers. */
+        sample_mode:      lesense::ChSampleMode::ACMP,       /* Sampling acmp, not counting. */
+        int_mode:         lesense::ChIntMode::SetIntNegEdge, /* Interrupt when voltage falls below threshold. */
+        cnt_thres:        0x0000,                            /* Not applicable. */
+        comp_mode:        lesense::ChCompMode::Less          /* Not applicable. */
     };
 
-    let mut init_alt_ex: lesense::ConfAltEx = Default::default();
-    init_alt_ex.alt_ex_map = lesense::AltExMap::ALTEX;
+    let mut init_alt_ex = lesense::ConfAltEx {
+        alt_ex_map: lesense::AltExMap::ALTEX,
+        .. Default::default()
+    };
     init_alt_ex.alt_ex[0] = lesense::AltExDesc {
         enable_pin: true,
         idle_conf: lesense::AltExPinIdle::Dis,
@@ -200,14 +179,6 @@ fn setup_lesense() {
 
     /* Start scan. */
     lesense::scan_start();
-}
-
-fn lesense_lightsense_altex_dis_ch_conf() -> lesense::AltExDesc {
-    lesense::AltExDesc {
-        enable_pin: false,
-        idle_conf: lesense::AltExPinIdle::Dis,
-        always_ex: false
-    }
 }
 
 #[no_mangle]
