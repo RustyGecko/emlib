@@ -5,7 +5,6 @@ pub enum Clock {
     CORE   = 0x40020,
     DMA    = 0x40300,
     I2C0   = 0x2b200,
-    USART0 = 0x20200,
     HFPER  = 0x28110,
     GPIO   = 0x2d200,
     CORELE = 0x44300,
