@@ -22,6 +22,7 @@ pub mod cmu;
 pub mod emu;
 pub mod dma;
 pub mod gpio;
+pub mod i2c;
 pub mod irq;
 pub mod rtc;
 pub mod timer;
