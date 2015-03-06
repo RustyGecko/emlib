@@ -73,7 +73,9 @@ fn prod_config(config: &mut Config) -> &mut Config {
 
         .include("efm32-common/kits/common/bsp")
         .include("src/timer")
+        .include("src/adc")
 
+        .file("efm32-common/emlib/src/em_adc.c")
         .file("efm32-common/emlib/src/em_dma.c")
         .file("efm32-common/emlib/src/em_ebi.c")
         .file("efm32-common/emlib/src/em_rtc.c")
@@ -82,6 +84,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/emlib/src/em_int.c")
         .file("efm32-common/emlib/src/em_i2c.c")
 
+        .file("src/adc/adc.c")
         .file("src/chip/chip.c")
         .file("src/cmsis/cmsis.c")
         .file("src/emu/emu.c")
@@ -93,6 +96,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/timer/timer.c")
         .file("src/usart/usart.c")
 
+        .file("src/adc/get_adc.c")
         .file("src/timer/get_timer.c")
 
         .include("efm32-common/kits/common/drivers")
@@ -115,12 +119,14 @@ fn test_config(config: &mut Config) -> &mut Config {
         .include("test/lib/Unity/src")
         .include("test/lib/cmock/src")
         .include("src/timer")
+        .include("src/adc")
 
         .file("src/chip/chip.c")
         .file("src/cmsis/cmsis.c")
         .file("src/gpio/gpio.c")
         .file("src/usart/usart.c")
 
+        .file("src/adc/get_adc.c")
         .file("src/timer/get_timer.c")
 
         .file("test/lib/Unity/src/unity.c")
@@ -129,10 +135,13 @@ fn test_config(config: &mut Config) -> &mut Config {
 
         // Mocks
         .include("test/mocks")
+        .file("test/mocks/Mockem_adc.c")
         .file("test/mocks/Mockem_timer.c")
+        .file("test/mocks/Mockadc.c")
         .file("test/mocks/Mocktimer.c")
 
         // Tests
+        .file("test/tests/adc.c")
         .file("test/tests/timer.c")
 }
 

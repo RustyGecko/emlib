@@ -17,6 +17,7 @@ extern crate collections;
 pub mod utils;
 
 // emlib bindings
+pub mod adc;
 pub mod chip;
 pub mod cmu;
 pub mod emu;
