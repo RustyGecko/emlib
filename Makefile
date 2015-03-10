@@ -20,7 +20,7 @@ FLASH = eACommander
 
 -include .emlib_hash
 
-TARGET_DIR = target/$(TARGET)
+TARGET_DIR = target/$(TARGET)/debug
 TARGET_OUT = $(TARGET_DIR)/$(EX)
 
 .PHONY: all setup proj flash test clean
