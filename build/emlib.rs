@@ -10,15 +10,12 @@ use std::fs::File;
 use std::io::Error;
 use std::io::prelude::*;
 
-#[cfg(feature = "dk3750")]
-use dk3750::kit_config;
-
-#[cfg(feature = "stk3700")]
-use stk3700::kit_config;
+#[cfg(feature = "dk3750")] use dk3750 as kit;
+#[cfg(feature = "stk3700")] use stk3700 as kit;
 
 // Kit-specific gcc configuration
-mod dk3750;
-mod stk3700;
+#[cfg(feature = "dk3750")] mod dk3750;
+#[cfg(feature = "stk3700")] mod stk3700;
 
 fn main() {
     compile_emlib_library();
@@ -75,7 +72,7 @@ fn common_config(config: &mut Config) -> &mut Config {
 
 fn prod_config(config: &mut Config) -> &mut Config {
 
-    kit_config(config)
+    kit::kit_config(config)
 
         .include("efm32-common/kits/common/bsp")
         .include("src/timer")
@@ -116,7 +113,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
 
 fn test_config(config: &mut Config) -> &mut Config {
 
-    kit_config(config)
+    kit::kit_config(config)
 
         .flag("-DUNITY_OUTPUT_CHAR=print_char")
         .flag("-DNULL=0")

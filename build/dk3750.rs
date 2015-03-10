@@ -1,7 +1,6 @@
 
 use gcc::Config;
 
-#[allow(dead_code)]
 pub fn kit_config(config: &mut Config) -> &mut Config {
     println!("Configuring DK3750");
     super::common_config(config)

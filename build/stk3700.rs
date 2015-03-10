@@ -1,7 +1,6 @@
 
 use gcc::Config;
 
-#[allow(dead_code)]
 pub fn kit_config(config: &mut Config) -> &mut Config {
     println!("Configuring STK3700");
     super::common_config(config)
