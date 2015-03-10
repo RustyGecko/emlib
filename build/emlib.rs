@@ -1,5 +1,5 @@
 #![deny(warnings)]
-#![feature(core, fs, io, old_path)]
+#![feature(core, io, old_path)]
 
 extern crate gcc;
 
