@@ -113,13 +113,29 @@ pub struct CapsenseInit {
     pub enable:                      bool,
 }
 
+impl Default for CapsenseInit {
+    fn default() -> CapsenseInit {
+        CapsenseInit {
+            full_bias:                   false,
+            half_bias:                   false,
+            bias_prog:                   0x7,
+            warm_time:                   WarmTime::_512,
+            hysteresis_level:            HysteresisLevel::_5,
+            resistor:                    CapsenseResistor::_3,
+            low_power_reference_enabled: false,
+            vdd_level:                   0x3D,
+            enable:                      true,
+        }
+    }
+}
+
 #[repr(u8)]
 #[derive(Copy)]
 pub enum CapsenseResistor {
-    Resistor0 = 0x0,
-    Resistor1 = 0x1,
-    Resistor2 = 0x2,
-    Resistor3 = 0x3,
+    _0 = 0x0,
+    _1 = 0x1,
+    _2 = 0x2,
+    _3 = 0x3,
 }
 
 #[repr(u8)]
