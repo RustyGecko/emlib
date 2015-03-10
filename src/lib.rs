@@ -37,11 +37,16 @@ pub mod emdrv;
 // cmsis bindings
 pub mod cmsis;
 
-// stk utils
+// higher-level modules depending on the bindings
+pub mod modules;
+
+// Temporary kit dependencies
+#[cfg(feature = "dk3750")]
+pub mod dk;
+
+#[cfg(feature = "stk3700")]
 pub mod stk;
 
 mod std {
     pub use core::*;
 }
-
-pub mod modules;
