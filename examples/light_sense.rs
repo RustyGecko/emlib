@@ -35,7 +35,7 @@ fn setup_cmu() {
     cmu::clock_enable(cmu::Clock::GPIO, true);
     /* Low energy peripherals
     *   LESENSE
-    *   LFRCO clock must be enables prior to enabling
+    *   LFRCO clock must be enabled prior to enabling
     *   clock for the low energy peripherals */
     cmu::clock_select_set(cmu::Clock::LFA, cmu::Select::LFRCO);
     cmu::clock_enable(cmu::Clock::CORELE, true);
