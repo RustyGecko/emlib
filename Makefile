@@ -43,6 +43,8 @@ RUSTFLAGS += --emit=dep-info,link --verbose
 
 FLASHFLAGS = --verify --reset
 
+-include test/Makefile
+
 %.elf: $(EXAMPLE_DIR)/$(@:.elf=.rs)
 	BUILD_ENV=prod cargo build --target thumbv7m-none-eabi --verbose
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
@@ -65,7 +67,7 @@ burn: all
 test: $(notdir $(EXAMPLES:.rs=.elf))
 	@echo Done
 
-run-tests: $(TEST_DIR)/run_all_tests.rs
+run-tests: $(TEST_DIR)/run_all_tests.rs mocks
 	@mkdir -p test/mocks
 	rm -rf target/build/emlib-$(HASH)
 	BUILD_ENV=test cargo build --target thumbv7m-none-eabi --verbose
