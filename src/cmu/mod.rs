@@ -4,13 +4,17 @@ pub enum Clock {
     LFA    = 0x60002,
     CORE   = 0x40020,
     DMA    = 0x40300,
+    I2C0   = 0x2b200,
     HFPER  = 0x28110,
     GPIO   = 0x2d200,
     CORELE = 0x44300,
     HF     = 0x51,
     TIMER0 = 0x25200,
+    USART0 = 0x20200,
     USART1 = 0x21200,
+    USART2 = 0x22200,
     UART1  = 0x24200,
+    ADC0   = 0x30200,
     RTC    = 0x81430,
 }
 

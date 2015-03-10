@@ -1,13 +1,14 @@
 #![deny(warnings)]
-#![feature(core, old_io, old_path)]
+#![feature(core, fs, io, old_path)]
 
 extern crate gcc;
 
 use gcc::Config;
 
 use std::env;
-use std::old_io::File;
-use std::old_io::IoResult;
+use std::fs::File;
+use std::io::Error;
+use std::io::prelude::*;
 
 fn main() {
     compile_emlib_library();
@@ -40,6 +41,8 @@ fn compile_emlib_library() {
 
 fn base_config(config: &mut Config) -> &mut Config {
 
+    let path = env::var("CARGO_MANIFEST_DIR").ok().unwrap();
+
     config
         .define("EFM32GG990F1024", None)
 
@@ -62,6 +65,8 @@ fn base_config(config: &mut Config) -> &mut Config {
         .flag("-mthumb")
         .flag("-mcpu=cortex-m3")
 
+        .flag(format!("-fdebug-prefix-map={}=.", path).as_slice())
+
 }
 
 fn prod_config(config: &mut Config) -> &mut Config {
@@ -70,27 +75,38 @@ fn prod_config(config: &mut Config) -> &mut Config {
 
         .include("efm32-common/kits/common/bsp")
         .include("src/timer")
+        .include("src/adc")
 
+        .file("efm32-common/emlib/src/em_adc.c")
         .file("efm32-common/emlib/src/em_dma.c")
+        .file("efm32-common/emlib/src/em_ebi.c")
         .file("efm32-common/emlib/src/em_rtc.c")
         .file("efm32-common/emlib/src/em_system.c")
         .file("efm32-common/emlib/src/em_timer.c")
+        .file("efm32-common/emlib/src/em_i2c.c")
 
+        .file("src/adc/adc.c")
         .file("src/chip/chip.c")
         .file("src/cmsis/cmsis.c")
         .file("src/emu/emu.c")
         .file("src/dma/dma.c")
         .file("src/gpio/gpio.c")
+        .file("src/i2c/i2c.c")
         .file("src/irq/irq.c")
         .file("src/rtc/rtc.c")
         .file("src/timer/timer.c")
         .file("src/usart/usart.c")
 
+        .file("src/adc/get_adc.c")
         .file("src/timer/get_timer.c")
 
         .include("efm32-common/kits/common/drivers")
+        .file("efm32-common/kits/common/drivers/nandflash.c")
         .file("efm32-common/kits/common/drivers/dmactrl.c")
         .file("efm32-common/kits/common/drivers/retargetio.c")
+
+        .file("efm32-common/kits/common/bsp/bsp_stk.c")
+        .file("efm32-common/kits/common/bsp/bsp_bcc.c")
 
 }
 
@@ -104,6 +120,7 @@ fn test_config(config: &mut Config) -> &mut Config {
         .include("test/lib/Unity/src")
         .include("test/lib/cmock/src")
         .include("src/timer")
+        .include("src/adc")
 
         .file("src/chip/chip.c")
         .file("src/cmsis/cmsis.c")
@@ -111,6 +128,7 @@ fn test_config(config: &mut Config) -> &mut Config {
         .file("src/irq/irq.c")
         .file("src/usart/usart.c")
 
+        .file("src/adc/get_adc.c")
         .file("src/timer/get_timer.c")
 
         .file("test/lib/Unity/src/unity.c")
@@ -119,14 +137,17 @@ fn test_config(config: &mut Config) -> &mut Config {
 
         // Mocks
         .include("test/mocks")
+        .file("test/mocks/Mockem_adc.c")
         .file("test/mocks/Mockem_timer.c")
+        .file("test/mocks/Mockadc.c")
         .file("test/mocks/Mocktimer.c")
 
         // Tests
+        .file("test/tests/adc.c")
         .file("test/tests/timer.c")
 }
 
-fn write_emlib_hash() -> IoResult<()> {
+fn write_emlib_hash() -> Result<(), Error> {
     // Get OUT_DIR and convert it from OsString to String
     let out_dir = env::var("OUT_DIR").ok().unwrap();
     // Extract the hash
@@ -138,5 +159,5 @@ fn write_emlib_hash() -> IoResult<()> {
     // Write to .emlib_hash file
     let emlib_hash_file = env::var("CARGO_MANIFEST_DIR").ok().unwrap() + "/.emlib_hash";
     let mut f = try!(File::create(&Path::new(emlib_hash_file)));
-    f.write_line(emlib_hash.as_slice())
+    f.write_all(emlib_hash.as_bytes())
 }
