@@ -88,7 +88,6 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/emlib/src/em_system.c")
         .file("efm32-common/emlib/src/em_timer.c")
 
-        .file("src/acmp/acmp.c")
         .file("src/adc/adc.c")
         .file("src/chip/chip.c")
         .file("src/cmsis/cmsis.c")
@@ -102,6 +101,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/timer/timer.c")
         .file("src/usart/usart.c")
 
+        .file("src/acmp/get_acmp.c")
         .file("src/adc/get_adc.c")
         .file("src/timer/get_timer.c")
 
