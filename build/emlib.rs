@@ -1,13 +1,14 @@
 #![deny(warnings)]
-#![feature(core, old_io, old_path)]
+#![feature(core, fs, io, old_path)]
 
 extern crate gcc;
 
 use gcc::Config;
 
 use std::env;
-use std::old_io::File;
-use std::old_io::IoResult;
+use std::fs::File;
+use std::io::Error;
+use std::io::prelude::*;
 
 fn main() {
     compile_emlib_library();
@@ -145,7 +146,7 @@ fn test_config(config: &mut Config) -> &mut Config {
         .file("test/tests/timer.c")
 }
 
-fn write_emlib_hash() -> IoResult<()> {
+fn write_emlib_hash() -> Result<(), Error> {
     // Get OUT_DIR and convert it from OsString to String
     let out_dir = env::var("OUT_DIR").ok().unwrap();
     // Extract the hash
@@ -157,5 +158,5 @@ fn write_emlib_hash() -> IoResult<()> {
     // Write to .emlib_hash file
     let emlib_hash_file = env::var("CARGO_MANIFEST_DIR").ok().unwrap() + "/.emlib_hash";
     let mut f = try!(File::create(&Path::new(emlib_hash_file)));
-    f.write_line(emlib_hash.as_slice())
+    f.write_all(emlib_hash.as_bytes())
 }
