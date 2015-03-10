@@ -76,14 +76,18 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .include("efm32-common/kits/common/bsp")
         .include("src/timer")
         .include("src/adc")
+        .include("src/lesense")
 
+        .file("efm32-common/emlib/src/em_acmp.c")
         .file("efm32-common/emlib/src/em_adc.c")
         .file("efm32-common/emlib/src/em_dma.c")
         .file("efm32-common/emlib/src/em_ebi.c")
+        .file("efm32-common/emlib/src/em_int.c")
+        .file("efm32-common/emlib/src/em_i2c.c")
+        .file("efm32-common/emlib/src/em_lesense.c")
         .file("efm32-common/emlib/src/em_rtc.c")
         .file("efm32-common/emlib/src/em_system.c")
         .file("efm32-common/emlib/src/em_timer.c")
-        .file("efm32-common/emlib/src/em_i2c.c")
 
         .file("src/adc/adc.c")
         .file("src/chip/chip.c")
@@ -93,10 +97,12 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/gpio/gpio.c")
         .file("src/i2c/i2c.c")
         .file("src/irq/irq.c")
+        .file("src/lesense/lesense.c")
         .file("src/rtc/rtc.c")
         .file("src/timer/timer.c")
         .file("src/usart/usart.c")
 
+        .file("src/acmp/get_acmp.c")
         .file("src/adc/get_adc.c")
         .file("src/timer/get_timer.c")
 
