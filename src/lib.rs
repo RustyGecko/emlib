@@ -17,6 +17,7 @@ extern crate collections;
 pub mod utils;
 
 // emlib bindings
+pub mod acmp;
 pub mod adc;
 pub mod chip;
 pub mod cmu;
@@ -25,6 +26,7 @@ pub mod dma;
 pub mod gpio;
 pub mod i2c;
 pub mod irq;
+pub mod lesense;
 pub mod rtc;
 pub mod timer;
 pub mod usart;
