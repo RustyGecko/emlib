@@ -28,7 +28,7 @@ const LIGHTSENSE_EXCITE_PIN: u32  = 6;
 const LIGHTSENSE_SENSOR_PORT: gpio::Port = gpio::Port::C;
 const LIGHTSENSE_SENSOR_PIN: u32  = 6;
 const LCSENSE_SCAN_FREQ: u32      = 20;
-const LIGHTSENSE_INTERRUPT: u32   = (0x1 << 6); // LESENSE_IF_CH6
+const LIGHTSENSE_INTERRUPT: u32   = lesense::IF_CH6;
 
 fn setup_cmu() {
     cmu::clock_enable(cmu::Clock::ACMP0, true);

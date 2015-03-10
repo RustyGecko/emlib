@@ -1,5 +1,7 @@
 use core::default::Default;
 
+pub const IF_CH6: u32 = 0x1 << 6;
+
 #[repr(C)]
 #[derive(Copy)]
 pub struct Init {
@@ -219,7 +221,7 @@ pub enum DACRef {
 
 #[repr(u8)]
 #[derive(Copy)]
-pub enum ControlACMP{
+pub enum ControlACMP {
     Disable  = 0x0,
     Mux      = 0x1,
     MuxThres = 0x2,
