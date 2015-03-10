@@ -1,38 +1,4 @@
-compiler:
-  path: gcc
-  source_path:     '../src/'
-  unit_tests_path: &unit_tests_path '.'
-  build_path:      &build_path 'build/'
-  options:
-    - -c
-  includes:
-    prefix: '-I'
-    items:
-      - 'mocks/'
-      - *unit_tests_path
-  defines:
-    prefix: '-D'
-    items:
-      - __monitor
-  object_files:
-    prefix: '-o'
-    extension: '.o'
-    destination: *build_path
-linker:
-  path: gcc
-  options:
-    - -lm
-  includes:
-    prefix: '-I'
-  object_files:
-    path: *build_path
-    extension: '.o'
-  bin_files:
-    prefix: '-o'
-    extension: '.exe'
-    destination: *build_path
 :cmock:
+  :mock_path: ./test/mocks
   :plugins: [array]
   :when_ptr: :compare_data
-
-colour: true

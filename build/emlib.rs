@@ -58,6 +58,7 @@ fn base_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/emlib/src/em_gpio.c")
         .file("efm32-common/emlib/src/em_usart.c")
         .file("efm32-common/emlib/src/em_emu.c")
+        .file("efm32-common/emlib/src/em_int.c")
 
         .flag("-g")
         .flag("-Wall")
@@ -82,7 +83,6 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/emlib/src/em_rtc.c")
         .file("efm32-common/emlib/src/em_system.c")
         .file("efm32-common/emlib/src/em_timer.c")
-        .file("efm32-common/emlib/src/em_int.c")
         .file("efm32-common/emlib/src/em_i2c.c")
 
         .file("src/adc/adc.c")
@@ -125,6 +125,7 @@ fn test_config(config: &mut Config) -> &mut Config {
         .file("src/chip/chip.c")
         .file("src/cmsis/cmsis.c")
         .file("src/gpio/gpio.c")
+        .file("src/irq/irq.c")
         .file("src/usart/usart.c")
 
         .file("src/adc/get_adc.c")
