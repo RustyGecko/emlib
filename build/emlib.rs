@@ -11,10 +11,14 @@ use std::io::Error;
 use std::io::prelude::*;
 
 #[cfg(feature = "dk3750")]
-use dk3750_base_config as base_config;
+use dk3750::kit_config;
 
 #[cfg(feature = "stk3700")]
-use stk3700_base_config as base_config;
+use dk3750::kit_config;
+
+// Kit-specific gcc configuration
+mod dk3750;
+mod stk3700;
 
 fn main() {
     compile_emlib_library();
@@ -69,29 +73,9 @@ fn common_config(config: &mut Config) -> &mut Config {
         .flag(&format!("-fdebug-prefix-map={}=.", path))
 }
 
-#[allow(dead_code)]
-fn stk3700_base_config(config: &mut Config) -> &mut Config {
-    println!("Configuring STK3700");
-    common_config(config)
-        .include("efm32-common/kits/EFM32GG_STK3700/config")
-
-        .file("efm32-common/kits/common/bsp/bsp_stk.c")
-        .file("efm32-common/kits/common/bsp/bsp_bcc.c")
-}
-
-#[allow(dead_code)]
-fn dk3750_base_config(config: &mut Config) -> &mut Config {
-    println!("Configuring DK3750");
-    common_config(config)
-        .include("efm32-common/kits/EFM32GG_DK3750/config")
-
-        .file("efm32-common/kits/common/bsp/bsp_dk_3201.c")
-        .file("efm32-common/kits/common/bsp/bsp_dk_leds.c")
-}
-
 fn prod_config(config: &mut Config) -> &mut Config {
 
-    base_config(config)
+    kit_config(config)
 
         .include("efm32-common/kits/common/bsp")
         .include("src/timer")
@@ -127,7 +111,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
 
 fn test_config(config: &mut Config) -> &mut Config {
 
-    base_config(config)
+    kit_config(config)
 
         .flag("-DUNITY_OUTPUT_CHAR=print_char")
         .flag("-DNULL=0")
