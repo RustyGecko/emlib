@@ -26,4 +26,4 @@ git = "https://github.com/RustyGecko/rust-collections.git"
 git = "https://github.com/RustyGecko/rust-libc.git"
 
 [target.thumbv7m-none-eabi.dependencies.rlibc]
-git = "https://github.com/RustyGecko/rlibc.git"
+git = "https://github.com/havardh/rust-librlibc.git"

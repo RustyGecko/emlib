@@ -1,5 +1,5 @@
 device EFM32GG990F1024
-loadbin target/thumbv7m-none-eabi/debug/out.hex, 0x00
+loadbin target/thumbv7m-none-eabi/out.hex, 0x00
 r
 g
 q
