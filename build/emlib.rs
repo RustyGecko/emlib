@@ -1,5 +1,5 @@
 #![deny(warnings)]
-#![feature(core, fs, io, old_path)]
+#![feature(fs, io, old_path)]
 
 extern crate gcc;
 
@@ -9,6 +9,13 @@ use std::env;
 use std::fs::File;
 use std::io::Error;
 use std::io::prelude::*;
+
+#[cfg(feature = "dk3750")] use dk3750 as kit;
+#[cfg(feature = "stk3700")] use stk3700 as kit;
+
+// Kit-specific gcc configuration
+#[cfg(feature = "dk3750")] mod dk3750;
+#[cfg(feature = "stk3700")] mod stk3700;
 
 fn main() {
     compile_emlib_library();
@@ -20,7 +27,6 @@ fn main() {
 }
 
 fn compile_emlib_library() {
-
     println!("The ARM embedded toolchain must be available in the PATH");
     env::set_var("CC", "arm-none-eabi-gcc");
     env::set_var("AR", "arm-none-eabi-ar");
@@ -34,13 +40,9 @@ fn compile_emlib_library() {
     };
 
     config.compile("libcompiler-rt.a");
-
 }
 
-
-
-fn base_config(config: &mut Config) -> &mut Config {
-
+fn common_config(config: &mut Config) -> &mut Config {
     let path = env::var("CARGO_MANIFEST_DIR").ok().unwrap();
 
     config
@@ -48,7 +50,7 @@ fn base_config(config: &mut Config) -> &mut Config {
 
         .include("efm32-common/CMSIS/Include")
         .include("efm32-common/Device/EFM32GG/Include")
-        .include("efm32-common/kits/EFM32GG_STK3700/config")
+        .include("efm32-common/kits/common/bsp")
         .include("efm32-common/emlib/inc")
 
         .file("efm32-common/Device/EFM32GG/Source/GCC/startup_efm32gg.S")
@@ -58,20 +60,19 @@ fn base_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/emlib/src/em_gpio.c")
         .file("efm32-common/emlib/src/em_usart.c")
         .file("efm32-common/emlib/src/em_emu.c")
+        .file("efm32-common/emlib/src/em_ebi.c")
         .file("efm32-common/emlib/src/em_int.c")
 
         .flag("-g")
         .flag("-Wall")
         .flag("-mthumb")
         .flag("-mcpu=cortex-m3")
-
-        .flag(format!("-fdebug-prefix-map={}=.", path).as_slice())
-
+        .flag(&format!("-fdebug-prefix-map={}=.", path))
 }
 
 fn prod_config(config: &mut Config) -> &mut Config {
 
-    base_config(config)
+    kit::kit_config(config)
 
         .include("efm32-common/kits/common/bsp")
         .include("src/timer")
@@ -81,8 +82,6 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/emlib/src/em_acmp.c")
         .file("efm32-common/emlib/src/em_adc.c")
         .file("efm32-common/emlib/src/em_dma.c")
-        .file("efm32-common/emlib/src/em_ebi.c")
-        .file("efm32-common/emlib/src/em_int.c")
         .file("efm32-common/emlib/src/em_i2c.c")
         .file("efm32-common/emlib/src/em_lesense.c")
         .file("efm32-common/emlib/src/em_rtc.c")
@@ -110,15 +109,11 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/kits/common/drivers/nandflash.c")
         .file("efm32-common/kits/common/drivers/dmactrl.c")
         .file("efm32-common/kits/common/drivers/retargetio.c")
-
-        .file("efm32-common/kits/common/bsp/bsp_stk.c")
-        .file("efm32-common/kits/common/bsp/bsp_bcc.c")
-
 }
 
 fn test_config(config: &mut Config) -> &mut Config {
 
-    base_config(config)
+    kit::kit_config(config)
 
         .flag("-DUNITY_OUTPUT_CHAR=print_char")
         .flag("-DNULL=0")
