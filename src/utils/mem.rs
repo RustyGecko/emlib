@@ -10,6 +10,11 @@ pub unsafe fn __aeabi_memmove(dest: *mut u8, src: *const u8,
 }
 
 #[no_mangle]
+pub unsafe fn __aeabi_memset(s: *mut u8, c: i32, n: usize) -> *mut u8 {
+    rlibc::memset(s, c, n)
+}
+
+#[no_mangle]
 pub extern fn posix_memalign(memptr: *mut *mut c_void, alignment: size_t, size: size_t) -> c_int {
     unsafe { memalign(memptr, alignment, size) }
 }
