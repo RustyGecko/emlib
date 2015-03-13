@@ -20,6 +20,8 @@ pub enum Clock {
     USART2      = 0x22200,
     UART1       = 0x24200,
     RTC         = 0x81430,
+    LEUART0     = 0x140540,
+    LEUART1     = 0x161540,
 }
 
 /** High frequency RC bands. */
