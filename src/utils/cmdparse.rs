@@ -62,7 +62,7 @@ fn get_line() -> String {
 
 }
 
-fn is_printable(ch: u8) {
+fn is_printable(ch: u8) -> bool{
     ch >= ' ' as u8 && ch <= '~' as u8
 }
 
