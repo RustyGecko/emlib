@@ -46,8 +46,65 @@ pub fn clk_div_set(clk: ChClk, clk_div: ClkPresc) {
     unsafe { LESENSE_ClkDivSet(clk, clk_div) }
 }
 
+// Lesense peripheral accessor functions
+pub fn decoder_stop() {
+    unsafe { STATIC_INLINE_LESENSE_DecoderStop() }
+}
+
+pub fn status_get() -> u32 {
+    unsafe { STATIC_INLINE_LESENSE_StatusGet() }
+}
+
+pub fn status_wait(flag: u32) {
+    unsafe { STATIC_INLINE_LESENSE_StatusWait(flag) }
+}
+
+pub fn channel_active_get() -> u32 {
+    unsafe { STATIC_INLINE_LESENSE_ChannelActiveGet() }
+}
+
+pub fn scan_result_get() -> u32 {
+    unsafe { STATIC_INLINE_LESENSE_ScanResultGet() }
+}
+
+pub fn scan_result_data_get() -> u32 {
+    unsafe { STATIC_INLINE_LESENSE_ScanResultDataGet() }
+}
+
+pub fn scan_result_data_buffer_get(idx: u32) -> u32 {
+    unsafe { STATIC_INLINE_LESENSE_ScanResultDataBufferGet(idx) }
+}
+
+pub fn sensor_state_get() -> u32 {
+    unsafe { STATIC_INLINE_LESENSE_SensorStateGet() }
+}
+
+pub fn ram_power_down() {
+    unsafe { STATIC_INLINE_LESENSE_RAMPowerDown() }
+}
+
 pub fn int_clear(flags: u32) {
     unsafe { STATIC_INLINE_LESENSE_IntClear(flags) }
+}
+
+pub fn int_enable(flags: u32) {
+    unsafe { STATIC_INLINE_LESENSE_IntEnable(flags) }
+}
+
+pub fn int_disable(flags: u32) {
+    unsafe { STATIC_INLINE_LESENSE_IntDisable(flags) }
+}
+
+pub fn int_set(flags: u32) {
+    unsafe { STATIC_INLINE_LESENSE_IntSet(flags) }
+}
+
+pub fn int_get() -> u32 {
+    unsafe { STATIC_INLINE_LESENSE_IntGet() }
+}
+
+pub fn int_get_enabled() -> u32 {
+    unsafe { STATIC_INLINE_LESENSE_IntGetEnabled() }
 }
 
 #[repr(C)]
@@ -450,5 +507,20 @@ extern {
     fn LESENSE_ScanFreqSet(ref_freq: u32, scan_freq: u32) -> u32;
     fn LESENSE_ClkDivSet(clk: ChClk, clk_div: ClkPresc);
 
+    // Lesense peripheral accessor functions
+    fn STATIC_INLINE_LESENSE_DecoderStop();
+    fn STATIC_INLINE_LESENSE_StatusGet() -> u32;
+    fn STATIC_INLINE_LESENSE_StatusWait(flag: u32);
+    fn STATIC_INLINE_LESENSE_ChannelActiveGet() -> u32;
+    fn STATIC_INLINE_LESENSE_ScanResultGet() -> u32;
+    fn STATIC_INLINE_LESENSE_ScanResultDataGet() -> u32;
+    fn STATIC_INLINE_LESENSE_ScanResultDataBufferGet(idx: u32) -> u32;
+    fn STATIC_INLINE_LESENSE_SensorStateGet() -> u32;
+    fn STATIC_INLINE_LESENSE_RAMPowerDown();
     fn STATIC_INLINE_LESENSE_IntClear(flags: u32);
+    fn STATIC_INLINE_LESENSE_IntEnable(flags: u32);
+    fn STATIC_INLINE_LESENSE_IntDisable(flags: u32);
+    fn STATIC_INLINE_LESENSE_IntSet(flags: u32);
+    fn STATIC_INLINE_LESENSE_IntGet() -> u32;
+    fn STATIC_INLINE_LESENSE_IntGetEnabled() -> u32;
 }
