@@ -50,18 +50,20 @@ fn get_line() -> String {
             line.pop();
         } else {
 
-            if ch < ' ' as u8 || ch > '~' as u8 {
-                continue;
+            if is_printable(ch) {
+                line.push(ch as char);
+                usart.putc(ch);
             }
 
-            line.push(ch as char);
-
-            usart.putc(ch);
         }
     }
 
     line
 
+}
+
+fn is_printable(ch: u8) {
+    ch >= ' ' as u8 && ch <= '~' as u8
 }
 
 fn parse(line: String) -> Cmd {
