@@ -3,3 +3,5 @@
 mod lang_items;
 
 pub mod mem;
+
+pub mod cmdparse;
