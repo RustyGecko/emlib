@@ -1,6 +1,4 @@
 #![allow(dead_code)]
-
-
 use core::intrinsics::transmute;
 use core::slice::SliceExt;
 use core::cmp::min;
@@ -13,6 +11,7 @@ pub enum c_void {
     __variant2,
 }
 
+pub const REQ_ADC0_SINGLE: u32 =  ((8 << 16) + 0);
 pub const DMAREQ_TIMER0_UFOF: u32 = ((24 << 16) + 0);
 
 pub type FuncPtr = extern fn(channel: u32, primary: bool, user: u32);
@@ -46,6 +45,21 @@ impl DMA {
                 n - 1
             );
         }
+    }
+
+    pub fn activate_basic<T>(&self, primary: bool, use_burst: bool, dst: *mut c_void, src: *mut c_void, n_minus_1: u32) {
+
+        unsafe {
+            DMA_ActivateBasic(
+                self.channel,
+                primary,
+                use_burst,
+                dst,
+                src,
+                n_minus_1
+            );
+        }
+
     }
 }
 
@@ -146,6 +160,14 @@ extern {
     fn DMA_CfgDescr(channel: u32, primary: bool, cfg: *const CfgDescriptor);
     fn DMA_ActivateAuto(
         channel: u32,
+        primary: bool,
+        dst: *mut c_void,
+        src: *mut c_void,
+        n_minus_1: u32);
+
+    fn DMA_ActivateBasic(
+        channel: u32,
+        primary: bool,
         use_burst: bool,
         dst: *mut c_void,
         src: *mut c_void,

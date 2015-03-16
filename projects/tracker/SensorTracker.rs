@@ -10,7 +10,7 @@ extern crate collections;
 use core::prelude::*;
 use core::default::Default;
 
-use emlib::{chip, adc};
+use emlib::{chip, adc, emu};
 use emlib::modules::Usart;
 
 use ram_store as store;
@@ -26,17 +26,42 @@ pub extern fn main() {
 
     chip::init();
 
-    temperature::init();
+
+    let buffer = circular_buffer::get();
+
+    temperature::init(buffer);
     store::init();
-    circular_buffer::on_wraparound(on_wraparound);
 
     let mut uart: Usart = Default::default();
     uart.init_async();
 
-    loop {}
+
+    let mut page: usize = 0;
+    loop {
+
+
+        let uart: Usart = Default::default();
+
+        let s = format!("Printing data starting at {}\n\r", page);
+        uart.write_line(&s);
+
+        store::read(page, unsafe { &mut DATA });
+
+        for &ch in unsafe { &DATA }.iter() {
+            let s = format!("{:02x} ", ch);
+            uart.write_line(&s);
+        }
+
+        uart.putc('\n' as u8);
+        uart.putc('\r' as u8);
+
+        page += 1;
+    }
 }
 
-fn on_wraparound(buffer: &[u8]) {
+fn on_dma_finished() {
+
+    let buffer = circular_buffer::get();
 
     let mut page: usize = 0;
     let uart: Usart = Default::default();
