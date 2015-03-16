@@ -1,5 +1,4 @@
-#![deny(warnings)]
-#![feature(core, io, old_path)]
+#![feature(core)]
 
 extern crate gcc;
 
@@ -7,8 +6,16 @@ use gcc::Config;
 
 use std::env;
 use std::fs::File;
+use std::path::Path;
 use std::io::Error;
 use std::io::prelude::*;
+
+#[cfg(feature = "dk3750")] use dk3750 as kit;
+#[cfg(feature = "stk3700")] use stk3700 as kit;
+
+// Kit-specific gcc configuration
+#[cfg(feature = "dk3750")] mod dk3750;
+#[cfg(feature = "stk3700")] mod stk3700;
 
 fn main() {
     compile_emlib_library();
@@ -20,7 +27,6 @@ fn main() {
 }
 
 fn compile_emlib_library() {
-
     println!("The ARM embedded toolchain must be available in the PATH");
     env::set_var("CC", "arm-none-eabi-gcc");
     env::set_var("AR", "arm-none-eabi-ar");
@@ -34,13 +40,9 @@ fn compile_emlib_library() {
     };
 
     config.compile("libcompiler-rt.a");
-
 }
 
-
-
-fn base_config(config: &mut Config) -> &mut Config {
-
+fn common_config(config: &mut Config) -> &mut Config {
     let path = env::var("CARGO_MANIFEST_DIR").ok().unwrap();
 
     config
@@ -48,7 +50,7 @@ fn base_config(config: &mut Config) -> &mut Config {
 
         .include("efm32-common/CMSIS/Include")
         .include("efm32-common/Device/EFM32GG/Include")
-        .include("efm32-common/kits/EFM32GG_STK3700/config")
+        .include("efm32-common/kits/common/bsp")
         .include("efm32-common/emlib/inc")
 
         .file("efm32-common/Device/EFM32GG/Source/GCC/startup_efm32gg.S")
@@ -58,32 +60,31 @@ fn base_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/emlib/src/em_gpio.c")
         .file("efm32-common/emlib/src/em_usart.c")
         .file("efm32-common/emlib/src/em_emu.c")
+        .file("efm32-common/emlib/src/em_ebi.c")
         .file("efm32-common/emlib/src/em_int.c")
 
         .flag("-g")
         .flag("-Wall")
         .flag("-mthumb")
         .flag("-mcpu=cortex-m3")
-
-        .flag(format!("-fdebug-prefix-map={}=.", path).as_slice())
-
+        .flag(&format!("-fdebug-prefix-map={}=.", path))
 }
 
 fn prod_config(config: &mut Config) -> &mut Config {
 
-    base_config(config)
+    kit::kit_config(config)
 
         .include("efm32-common/kits/common/bsp")
         .include("src/timer")
         .include("src/adc")
+        .include("src/leuart")
         .include("src/lesense")
 
         .file("efm32-common/emlib/src/em_acmp.c")
         .file("efm32-common/emlib/src/em_adc.c")
         .file("efm32-common/emlib/src/em_dma.c")
-        .file("efm32-common/emlib/src/em_ebi.c")
-        .file("efm32-common/emlib/src/em_int.c")
         .file("efm32-common/emlib/src/em_i2c.c")
+        .file("efm32-common/emlib/src/em_leuart.c")
         .file("efm32-common/emlib/src/em_lesense.c")
         .file("efm32-common/emlib/src/em_rtc.c")
         .file("efm32-common/emlib/src/em_system.c")
@@ -97,6 +98,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/gpio/gpio.c")
         .file("src/i2c/i2c.c")
         .file("src/irq/irq.c")
+        .file("src/leuart/leuart.c")
         .file("src/lesense/lesense.c")
         .file("src/rtc/rtc.c")
         .file("src/timer/timer.c")
@@ -105,20 +107,17 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/acmp/get_acmp.c")
         .file("src/adc/get_adc.c")
         .file("src/timer/get_timer.c")
+        .file("src/leuart/get_leuart.c")
 
         .include("efm32-common/kits/common/drivers")
         .file("efm32-common/kits/common/drivers/nandflash.c")
         .file("efm32-common/kits/common/drivers/dmactrl.c")
         .file("efm32-common/kits/common/drivers/retargetio.c")
-
-        .file("efm32-common/kits/common/bsp/bsp_stk.c")
-        .file("efm32-common/kits/common/bsp/bsp_bcc.c")
-
 }
 
 fn test_config(config: &mut Config) -> &mut Config {
 
-    base_config(config)
+    kit::kit_config(config)
 
         .flag("-DUNITY_OUTPUT_CHAR=print_char")
         .flag("-DNULL=0")
@@ -164,6 +163,6 @@ fn write_emlib_hash() -> Result<(), Error> {
 
     // Write to .emlib_hash file
     let emlib_hash_file = env::var("CARGO_MANIFEST_DIR").ok().unwrap() + "/.emlib_hash";
-    let mut f = try!(File::create(&Path::new(emlib_hash_file)));
+    let mut f = try!(File::create(&Path::new(emlib_hash_file.as_slice())));
     f.write_all(emlib_hash.as_bytes())
 }
