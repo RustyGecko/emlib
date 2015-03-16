@@ -25,7 +25,7 @@ pub fn device_info() -> &'static Info {
     unsafe { transmute(NANDFLASH_DeviceInfo()) }
 }
 
-pub fn write(address: u32, buffer: &'static mut[u8]) -> i32 {
+pub fn write(address: u32, buffer: &[u8]) -> i32 {
     unsafe { NANDFLASH_WritePage(address, transmute(buffer.as_ptr())) }
 }
 
