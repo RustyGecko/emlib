@@ -1,5 +1,5 @@
 #![deny(warnings)]
-#![feature(core, io, old_path)]
+#![feature(core)]
 
 extern crate gcc;
 
@@ -7,6 +7,7 @@ use gcc::Config;
 
 use std::env;
 use std::fs::File;
+use std::path::Path;
 use std::io::Error;
 use std::io::prelude::*;
 
@@ -159,6 +160,6 @@ fn write_emlib_hash() -> Result<(), Error> {
 
     // Write to .emlib_hash file
     let emlib_hash_file = env::var("CARGO_MANIFEST_DIR").ok().unwrap() + "/.emlib_hash";
-    let mut f = try!(File::create(&Path::new(emlib_hash_file)));
+    let mut f = try!(File::create(&Path::new(emlib_hash_file.as_slice())));
     f.write_all(emlib_hash.as_bytes())
 }
