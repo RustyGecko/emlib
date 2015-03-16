@@ -28,6 +28,7 @@ pub mod i2c;
 pub mod irq;
 pub mod leuart;
 pub mod lesense;
+pub mod prs;
 pub mod rtc;
 pub mod timer;
 pub mod usart;

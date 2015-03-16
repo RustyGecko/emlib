@@ -19,6 +19,7 @@ pub enum Clock {
     USART1      = 0x21200,
     USART2      = 0x22200,
     UART1       = 0x24200,
+    PRS         = 0x2f200,
     RTC         = 0x81430,
     LEUART0     = 0x140540,
     LEUART1     = 0x161540,
