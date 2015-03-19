@@ -15,7 +15,7 @@ pub fn write(buffer: &[u8]) {
 
 }
 
-pub fn read(page: usize, buffer: &'static mut[u8]) {
+pub fn read(page: usize, buffer: &mut[u8]) {
 
     for i in range(0, 512) {
         buffer[i] = unsafe { STORE[page % 8][i] };

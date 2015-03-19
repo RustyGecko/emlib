@@ -1,6 +1,6 @@
 use core::prelude::*;
 
-const PAGE_SIZE: usize = 512;
+const PAGE_SIZE: usize = 4;
 //const BUFFER_SIZE: usize = PAGE_SIZE * 2 * 30;
 const BUFFER_SIZE: usize = PAGE_SIZE;
 
