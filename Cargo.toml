@@ -31,3 +31,6 @@ git = "https://github.com/RustyGecko/rust-libc.git"
 
 [target.thumbv7m-none-eabi.dependencies.rlibc]
 git = "https://github.com/RustyGecko/rlibc.git"
+
+[target.thumbv7m-none-eabi.dependencies.alloc]
+git = "https://github.com/RustyGecko/rust-alloc.git"

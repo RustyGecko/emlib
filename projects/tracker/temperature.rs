@@ -1,26 +1,22 @@
-use emlib::{cmu, adc, timer, prs, dma};
+use emlib;
+use emlib::{cmu, timer, prs};
+use emlib::modules::{dma, adc};
 use emlib::cmsis::nvic;
 use core::prelude::*;
 use core::intrinsics::transmute;
 use core::default::Default;
-use core::ptr;
+use libc::c_void;
+use alloc::boxed::Box;
 
-static mut DATA: [u8; 512] = [0; 512];
+pub static mut DATA: [u8; 512] = [0; 512];
 
-use circular_buffer;
 use ram_store as store;
-
-static CB: dma::CB = dma::CB {
-    cb_func: transfer_complete,
-    user_ptr: 0,
-    primary: 0
-};
 
 pub fn get() -> u32 {
 
-    let adc = adc::Adc::adc0();
-    adc.start(adc::Start::Single);
-    while adc.STATUS & adc::STATUS_SINGLEACT != 0 {}
+    let adc = emlib::adc::Adc::adc0();
+    adc.start(emlib::adc::Start::Single);
+    while adc.STATUS & emlib::adc::STATUS_SINGLEACT != 0 {}
     adc.data_single_get()
 }
 
@@ -30,22 +26,6 @@ pub fn init() {
     setup_timer();
     setup_dma();
     setup_adc();
-
-}
-
-extern fn transfer_complete(_channel: u32, primary: bool, _user: u32) {
-
-    let dma = dma::DMA::channel0();
-
-    dma.activate_basic::<u8>(
-        true,
-        false,
-        unsafe { transmute(ptr::null::<u8>()) },
-        unsafe { transmute(ptr::null::<u8>()) },
-        512 - 1
-    );
-
-    store::write(unsafe { &DATA });
 
 }
 
@@ -63,9 +43,6 @@ fn setup_timer() {
     let top = freq / 4;
     timer.top_set(top);
 
-    timer.int_enable(timer::TIMER_IF_OF);
-    nvic::enable_irq(nvic::IRQn::TIMER0);
-
     timer.enable(true);
 
 }
@@ -73,56 +50,41 @@ fn setup_timer() {
 fn setup_adc() {
     cmu::clock_enable(cmu::Clock::ADC0, true);
 
-    let adc = adc::Adc::adc0();
-    adc.init(&adc::Init {
-        warm_up_mode: adc::Warmup::KeepADCWarm,
-        timebase: adc::timebase_calc(0),
-        prescale: adc::prescale_calc(400_000, 0),
+    let adc = emlib::adc::Adc::adc0();
+    adc.init(&emlib::adc::Init {
+        warm_up_mode: emlib::adc::Warmup::KeepADCWarm,
+        timebase: emlib::adc::timebase_calc(0),
+        prescale: emlib::adc::prescale_calc(400_000, 0),
         ..Default::default()
     });
 
-    adc.init_single(&adc::InitSingle {
-        prs_sel: adc::PRSSEL::Ch0,
+    adc.init_single(&emlib::adc::InitSingle {
+        prs_sel: emlib::adc::PRSSEL::Ch0,
         prs_enable: true,
-        reference: adc::Ref::Ref1V25,
-        input: adc::SingleInput::Temp,
-        resolution: adc::Res::Res12Bit,
+        reference: emlib::adc::Ref::Ref1V25,
+        input: emlib::adc::SingleInput::Temp,
+        resolution: emlib::adc::Res::Res12Bit,
         ..Default::default()
     });
 
-    adc.int_enable(adc::IEN_SINGLE);
-    nvic::enable_irq(nvic::IRQn::ADC0);
+}
+
+fn cb(dma: &mut dma::Dma) {
+
+    dma.refresh().then(cb);
+    store::write(unsafe { &DATA });
 }
 
 fn setup_dma() {
-    dma::init(&dma::Init {
-        hprot: 0,
-        control_block: dma::dma_control_block(),
-    });
 
-    let dma = dma::DMA::channel0();
-    dma.configure_channel(&dma::CfgChannel {
-        high_pri: true,
-        enable_int: true,
-        select: dma::REQ_ADC0_SINGLE,
-        cb: &CB
-    });
+    dma::init();
 
-    dma.configure_descriptor(true, &dma::CfgDescriptor {
-        dst_inc: dma::DataInc::Inc1,
-        src_inc: dma::DataInc::IncNone,
-        size: dma::DataSize::Size1,
-        arb_rate: dma::ArbiterConfig::Arbitrate1,
-        hprot: 0
-    });
+    let dma: &mut dma::Dma = unsafe {&mut dma::dma0};
 
-    let adc = adc::Adc::adc0();
-    dma.activate_basic::<u8>(
-        true,
-        false,
-        unsafe { transmute((&DATA).as_ptr()) },
-        unsafe { transmute(&adc.SINGLEDATA) },
-        512 - 1
-    );
+    dma.start_basic(
+        &adc::Adc { device: emlib::adc::Adc::adc0() },
+        &dma::Buffer { buffer: unsafe {&DATA} },
+        dma::Signal::AdcSingle
+    ).then(cb);
 
 }

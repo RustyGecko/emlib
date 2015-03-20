@@ -2,8 +2,12 @@
 #![no_main]
 #![feature(lang_items, start, core, no_std)]
 
+#[macro_use]
 extern crate core;
 extern crate emlib;
+extern crate libc;
+extern crate alloc;
+
 #[macro_use]
 extern crate collections;
 
@@ -58,21 +62,4 @@ fn read(page_num: usize)  {
 
     uart.putc('\n' as u8);
     uart.putc('\r' as u8);
-}
-
-#[no_mangle]
-#[allow(non_snake_case)]
-pub extern fn TIMER0_IRQHandler() {
-    let timer = timer::Timer::timer0();
-    timer.int_clear(timer::TIMER_IF_OF);
-
-}
-
-#[no_mangle]
-#[allow(non_snake_case)]
-pub extern fn ADC0_IRQHandler() {
-    let adc = adc::Adc::adc0();
-    adc.int_clear(adc::IF_SINGLE);
-
-
 }
