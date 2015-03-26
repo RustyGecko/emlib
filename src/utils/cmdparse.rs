@@ -68,9 +68,9 @@ fn is_printable(ch: u8) -> bool{
 
 fn parse(line: String) -> Cmd {
 
-    let tokens: Vec<&str> = line.as_slice().split(' ').collect();
+    let tokens: Vec<&str> = line.as_ref().split(' ').collect();
 
-    match tokens.as_slice() {
+    match tokens.as_ref() {
         ["w", num] => match from_str_radix::<u32>(num, 10) {
             Ok(num) => Cmd::Write(num),
             _ => Cmd::Unknown
