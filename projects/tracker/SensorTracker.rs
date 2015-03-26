@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 #![feature(lang_items, start, core, no_std)]
+#![feature(collections, alloc)]
 
 #[macro_use]
 extern crate core;
@@ -14,34 +15,66 @@ extern crate collections;
 use core::prelude::*;
 use core::default::Default;
 
-use emlib::{chip, adc, emu, timer};
-use emlib::modules::Usart;
+use emlib::{chip, emu, rtc};
+use emlib::modules::{Usart};
 use emlib::utils::cmdparse::{get_command, Cmd};
+use emlib::stk::io::Button;
 
 use ram_store as store;
 
 mod temperature;
-mod circular_buffer;
 mod ram_store;
 
-static mut PRIM: [u8; 512] = [0; 512];
+enum State {
+    Connected,
+    Unconnected
+}
+
+static mut MODE: State = State::Unconnected;
 
 #[no_mangle]
 pub extern fn main() {
 
     chip::init();
 
-    temperature::init();
+    Button::init_pb0().on_click(btn0_cb);
+    Button::init_pb1().on_click(btn1_cb);
+
+    temperature::init(10, false);
     store::init();
 
     let mut uart: Usart = Default::default();
     uart.init_async();
 
     loop {
-        match get_command() {
-            Cmd::Read(page) => read(page as usize),
-            _ => ()
+        match unsafe { &MODE } {
+            &State::Connected => match get_command() {
+                Cmd::Read(page) => read(page as usize),
+                _ => ()
+            },
+            _ => emu::enter_em3(true)
         }
+    }
+}
+
+#[no_mangle]
+#[allow(non_snake_case)]
+pub extern fn RTC_IRQHandler() {
+
+    rtc::int_clear(rtc::RTC_IEN_COMP0);
+    temperature::on_rtc();
+
+}
+
+fn btn0_cb(_pin: u8) {
+    unsafe {
+        MODE = State::Connected;
+    }
+}
+
+fn btn1_cb(_pin: u8) {
+    unsafe {
+        MODE = State::Unconnected;
     }
 }
 
@@ -62,4 +95,5 @@ fn read(page_num: usize)  {
 
     uart.putc('\n' as u8);
     uart.putc('\r' as u8);
+
 }
