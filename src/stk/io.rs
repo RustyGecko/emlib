@@ -1,4 +1,3 @@
-use emdrv::gpioint;
 use {cmu, gpio};
 
 use modules::GpioPin;
