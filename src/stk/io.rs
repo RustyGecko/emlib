@@ -1,5 +1,4 @@
-use {cmu, gpio};
-
+use gpio;
 use modules::GpioPin;
 
 pub const PB0: GpioPin = GpioPin { port: gpio::Port::B, pin: 9 };
