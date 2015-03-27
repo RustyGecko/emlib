@@ -3,8 +3,8 @@
 #![crate_name="emlib"]
 #![allow(warnings)]
 #![feature(lang_items, no_std, asm)]
-#![feature(core, collections, convert)]
-#![feature(slice_patterns)]
+#![feature(alloc, core, collections, convert)]
+#![feature(slice_patterns, unboxed_closures)]
 
 #[macro_use]
 extern crate core;
@@ -12,6 +12,7 @@ extern crate core;
 extern crate rlibc;
 extern crate libc;
 
+extern crate alloc;
 extern crate collections;
 
 // emlib library utilities
