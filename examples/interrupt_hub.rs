@@ -9,8 +9,7 @@ extern crate emlib;
 use core::default::Default;
 
 use emlib::cmsis::nvic;
-use emlib::cmu;
-use emlib::rtc;
+use emlib::{cmu, rtc, gpio};
 use emlib::modules::irq;
 use emlib::modules::irq::{Hub, Event};
 
@@ -29,18 +28,17 @@ pub extern fn main() {
 
 }
 
-pub fn init(rtc: &mut Rtc) {
-
+pub fn init() {
+    rtc_setup();
+    gpio_setup();
 }
 
-pub fn run(hub: &mut Hub, rtc: &mut Rtc) {
-
-    rtc.on_tick(Box::new(|| {
-
-    });
+pub fn run(hub: &mut Hub) {
 
     hub.on(Event::RTC, Box::new(|| {
         rtc::int_clear(rtc::RTC_IEN_COMP0);
+
+        gpio::pin_out_toggle(gpio::Port::E, 2);
 
     }));
 
@@ -48,6 +46,13 @@ pub fn run(hub: &mut Hub, rtc: &mut Rtc) {
 
 const LFXO_FREQ: u32 = 32768;
 const RTC_TIMEOUT_S: u32 = 2;
+
+fn gpio_setup() {
+    cmu::clock_enable(cmu::Clock::GPIO, true);
+
+    gpio::pin_mode_set(gpio::Port::E, 2, gpio::Mode::PushPullDrive, 0);
+    gpio::pin_out_clear(gpio::Port::E, 2);
+}
 
 fn rtc_setup() {
     let rtc_init = rtc::Init { enable: false, .. Default::default() };
