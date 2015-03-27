@@ -1,12 +1,12 @@
 #![allow(dead_code)]
 use core::intrinsics::transmute;
-use core::slice::SliceExt;
-use core::cmp::min;
 use libc::c_void;
 
 
-pub const REQ_ADC0_SINGLE: u32 = ((8 << 16) + 0);
-pub const REQ_ADC0_SCAN: u32   = ((8 << 16) + 1);
+pub const REQ_ADC0_SINGLE: u32    = ((8 << 16) + 0);
+pub const REQ_ADC0_SCAN: u32      = ((8 << 16) + 1);
+pub const REQ_USART1_RXDATAV: u32 = ((13 << 16) + 0);
+pub const REQ_USART1_TXBL: u32    = ((13 << 15) + 1);
 pub const DMAREQ_TIMER0_UFOF: u32 = ((24 << 16) + 0);
 
 pub type FuncPtr = extern fn(channel: u32, primary: bool, user: *mut c_void);
@@ -27,16 +27,14 @@ impl DMA {
         unsafe { DMA_CfgDescr(self.channel, primary, cfg) }
     }
 
-    pub fn activate_auto<T>(&self, primary: bool, dst: &'static mut[T], src: &'static mut[T]) {
+    pub fn activate_auto<T>(&self, primary: bool, dst: *mut c_void, src: *mut c_void, n: u32) {
         unsafe {
-
-            let n = min(dst.len(), src.len()) as u32;
 
             DMA_ActivateAuto(
                 self.channel,
                 primary,
-                transmute(dst.as_ptr()),
-                transmute(src.as_ptr()),
+                dst,
+                src,
                 n - 1
             );
         }

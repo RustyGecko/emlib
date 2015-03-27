@@ -17,9 +17,22 @@ pub static mut DMA0_CB: CB = CB {
     primary: 0
 };
 
+pub static mut dma1: Dma = Dma {
+    device: dma::DMA{ channel: 1 },
+    callback: None
+};
+
+pub static mut DMA1_CB: CB = CB {
+    cb_func: transfer_complete,
+    user_ptr: unsafe { &dma1 },
+    primary: 0
+};
+
 pub extern fn transfer_complete(_channel: u32, _primary: bool, user: *mut Dma) {
 
-    let dma: &mut Dma = unsafe { transmute(user) };
+    let dma: &mut Dma = unsafe {
+        transmute(user)
+    };
 
     match dma.callback {
         Some(func) => {
@@ -45,12 +58,20 @@ pub trait Writable {
 #[derive(Copy)]
 pub enum Signal {
     AdcSingle,
-    AdcScan
+    AdcScan,
+
+    Usart1RxDataV,
+    Usart1TxBL,
 }
 
 impl Signal {
     fn get(&self) -> u32 {
-        dma::REQ_ADC0_SINGLE
+        match self {
+            &Signal::AdcSingle     => dma::REQ_ADC0_SINGLE,
+            &Signal::AdcScan       => dma::REQ_ADC0_SCAN,
+            &Signal::Usart1RxDataV => dma::REQ_USART1_RXDATAV,
+            &Signal::Usart1TxBL    => dma::REQ_USART1_TXBL,
+        }
     }
 }
 
@@ -74,7 +95,13 @@ impl Dma {
             high_pri: true,
             enable_int: true,
             select: on.get(),
-            cb: unsafe { transmute(&DMA0_CB) }
+            cb: unsafe {
+                transmute(match self.device.channel {
+                    0 => &DMA0_CB,
+                    1 => &DMA1_CB,
+                    _ => panic!()
+                })
+            }
         });
 
         self.device.configure_descriptor(true, &dma::CfgDescriptor {
@@ -90,15 +117,39 @@ impl Dma {
         self
     }
 
+    pub fn start_auto(&mut self, src: &Readable, dst: &Writable) -> &mut Dma {
+
+        self.device.configure_channel(&dma::CfgChannel {
+            high_pri: false,
+            enable_int: true,
+            select: 0,
+            cb: unsafe {
+                transmute(match self.device.channel {
+                    0 => &DMA0_CB,
+                    1 => &DMA1_CB,
+                    _ => panic!()
+                })
+            }
+        });
+
+        self.device.configure_descriptor(true, &dma::CfgDescriptor {
+            dst_inc: dst.inc_size(),
+            src_inc: src.inc_size(),
+            size: dst.size(),
+            arb_rate: dma::ArbiterConfig::Arbitrate1,
+            hprot: 0
+        });
+
+        self.device.activate_auto::<u8>(true, dst.as_ptr(), src.as_ptr(), self.size() - 1);
+
+        self
+    }
+
     pub fn then(&mut self, callback: fn(&mut Dma)) -> &mut Dma {
         self.callback = Some(callback);
 
         self
     }
-
-    /*pub fn register(&self) {
-        unsafe { CB.user_ptr = transmute(self) }
-    }*/
 
     pub fn refresh(&mut self) -> &mut Dma {
 

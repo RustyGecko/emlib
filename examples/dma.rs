@@ -24,7 +24,7 @@ pub extern fn main() {
     setup_dma();
 
     let dma0 = dma::DMA::channel0();
-    unsafe { dma0.activate_auto(true, &mut DATA_DST, &mut DATA_SRC); }
+    unsafe { dma0.activate_auto(true, &mut DATA_DST, &mut DATA_SRC, 8); }
 
     loop {}
 }

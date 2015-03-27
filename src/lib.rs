@@ -3,7 +3,7 @@
 #![crate_name="emlib"]
 #![deny(warnings)]
 #![feature(lang_items, no_std, asm)]
-#![feature(core, collections)]
+#![feature(core, collections, convert)]
 
 #[macro_use]
 extern crate core;

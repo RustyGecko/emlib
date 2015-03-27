@@ -12,7 +12,7 @@ use ram_store as store;
 pub fn init(interval: u32, force_dma: bool) {
     cmu::clock_enable(cmu::Clock::HFPER, true);
 
-    if force_dma || interval < 1000 {
+    if force_dma {
         setup_timer(interval);
         setup_dma();
         setup_adc();
@@ -35,7 +35,7 @@ fn setup_timer(interval: u32) {
         ..Default::default()
     });
     let freq = cmu::clock_freq_get(cmu::Clock::HFPER);
-    let top = ((freq / 1000) * interval);
+    let top = (freq / 1000) * interval;
     timer.top_set(top);
 
     timer.enable(true);
@@ -76,9 +76,9 @@ fn setup_adc() {
     adc.init_single(&emlib::adc::InitSingle {
         prs_sel: emlib::adc::PRSSEL::Ch0,
         prs_enable: true,
-        reference: emlib::adc::Ref::Ref1V25,
+        reference: emlib::adc::Ref::Ref2V5,
         input: emlib::adc::SingleInput::Temp,
-        resolution: emlib::adc::Res::Res12Bit,
+        resolution: emlib::adc::Res::Res8Bit,
         ..Default::default()
     });
 }
@@ -92,10 +92,10 @@ pub fn on_rtc() {
 
     while adc.STATUS & emlib::adc::STATUS_SINGLEACT != 0 {}
 
-    let data = adc.data_single_get() as u8;
+    let data = adc.data_single_get();
 
     unsafe {
-        DATA[INDEX] = data;
+        DATA[INDEX] = data as u8;
         INDEX = INDEX + 1;
 
         if INDEX >= 512 {

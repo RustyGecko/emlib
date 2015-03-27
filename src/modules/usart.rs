@@ -122,7 +122,7 @@ impl Usart {
 
         loop {
             match self.getc() as char {
-                c if self.line_break.contains_char(c) => { break; }
+                c if self.line_break.contains(c) => { break; }
                 c => { bytes.push(c as u8); }
             }
         }
