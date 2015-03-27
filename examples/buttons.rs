@@ -18,10 +18,10 @@ fn led1(_pin: u8) {
 
 #[no_mangle]
 pub extern fn main() {
-    Button::init(&PB0);
-    Button::init(&PB1);
-    Led::init(&LED0);
-    Led::init(&LED1);
+    PB0.init();
+    PB1.init();
+    LED0.init();
+    LED1.init();
 
     PB0.on_click(led0);
     PB1.on_click(led1);
