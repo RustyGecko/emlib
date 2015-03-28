@@ -90,6 +90,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/adc/adc.c")
         .file("src/chip/chip.c")
         .file("src/cmsis/cmsis.c")
+        .file("src/ebi/ebi.c")
         .file("src/emu/emu.c")
         .file("src/dma/dma.c")
         .file("src/gpio/gpio.c")

@@ -21,6 +21,7 @@ pub mod acmp;
 pub mod adc;
 pub mod chip;
 pub mod cmu;
+pub mod ebi;
 pub mod emu;
 pub mod dma;
 pub mod gpio;
