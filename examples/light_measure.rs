@@ -10,8 +10,9 @@ use core::default::Default;
 
 use emlib::cmsis::nvic;
 use emlib::{acmp, cmu, gpio, irq, lesense, emu, rtc};
-use emlib::modules::Usart;
-use emlib::stk::{bsp, io};
+use emlib::modules::{Button, Led, Usart};
+use emlib::stk::bsp;
+use emlib::stk::io::{PB0, PB1};
 use emlib::emdrv::flash;
 
 // RTC
@@ -153,11 +154,11 @@ fn setup_gpio() {
     gpio::pin_mode_set(LIGHTSENSE_EXCITE_PORT, LIGHTSENSE_EXCITE_PIN, gpio::Mode::PushPull, 0);
     gpio::pin_mode_set(LIGHTSENSE_SENSOR_PORT, LIGHTSENSE_SENSOR_PIN, gpio::Mode::Disabled, 0);
 
-    let b0 = io::Button::init_pb0();
-    b0.on_click(print_light_sense);
+    PB0.init();
+    PB0.on_click(print_light_sense);
 
-    let b1 = io::Button::init_pb1();
-    b1.on_click(read_sense_data);
+    PB1.init();
+    PB1.on_click(read_sense_data);
 
 }
 
