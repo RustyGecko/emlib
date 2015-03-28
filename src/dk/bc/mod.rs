@@ -1,5 +1,10 @@
+#![allow(non_snake_case)]
+#![allow(dead_code)]
+
+use core::intrinsics::transmute;
 
 // DK3750board controller register definition
+#[repr(C)]
 pub struct BC {
     pub RESERVERD0:        u16,
     pub EM:                u16,
@@ -74,5 +79,5 @@ impl BC {
 }
 
 extern {
-    #[allow(dead_code)] #[inline] fn GET_BC_REGISTER0() -> *mut BC;
+    #[allow(dead_code)] #[inline] fn GET_BC_REGISTER() -> *mut BC;
 }
