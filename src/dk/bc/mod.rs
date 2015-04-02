@@ -3,6 +3,12 @@
 
 use core::intrinsics::transmute;
 
+// AEM button state
+// BC controls buttons
+pub const UIF_AEM_BC: u16 = 0;
+// EFM32 controls buttons
+pub const UIF_AEM_EFM: u16 = 1;
+
 // DK3750board controller register definition
 #[repr(C)]
 pub struct BC {
