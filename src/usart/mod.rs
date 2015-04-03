@@ -25,7 +25,7 @@ use core::intrinsics::transmute;
 use core::default::Default;
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[allow(non_snake_case)]
 pub struct Usart {
     pub CTRL: u32,
@@ -137,7 +137,7 @@ impl Default for InitAsync {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Enable {
     Disable = 0x0,
     Rx      = 0x1 << 0,
@@ -146,7 +146,7 @@ pub enum Enable {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum OVS {
     OVS16 = 0x0 << 5,
     OVS8  = 0x1 << 5,
@@ -155,7 +155,7 @@ pub enum OVS {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Databits {
     Databits4  = 0x1,
     Databits5  = 0x2,
@@ -173,7 +173,7 @@ pub enum Databits {
 }
 
 #[repr(u16)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Parity {
     NoParity   = 0x0 << 8,
     EvenParity = 0x2 << 8,
@@ -181,7 +181,7 @@ pub enum Parity {
 }
 
 #[repr(u16)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Stopbits {
     Stopbits0p5 = 0x0 << 12,
     Stopbits1   = 0x1 << 12,
@@ -190,7 +190,7 @@ pub enum Stopbits {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum PrsRxCh {
     Ch0  = 0x0,
     Ch1  = 0x1,

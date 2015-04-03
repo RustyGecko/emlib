@@ -4,7 +4,7 @@ use core::default::Default;
 pub const RTC_IEN_COMP0: u32 = (0x1 << 1);
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct Init {
     pub enable: bool,
     pub debug_run: bool,

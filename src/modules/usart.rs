@@ -10,7 +10,7 @@ use gpio::Port;
 use self::Location::*;
 
 /// Possible locations for the different Usart's. Not all locations are available for every Usart.
-#[derive(Copy, Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum Location {
     Loc0,
     Loc1,
@@ -21,7 +21,7 @@ pub enum Location {
 }
 
 /// Possible different Usart's to configure.
-#[derive(Copy, Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum Config {
     Usart0(Location),
     Usart1(Location),

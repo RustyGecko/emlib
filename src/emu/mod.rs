@@ -1,12 +1,12 @@
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub enum BodMode {
     Active,
     Inactive
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub enum Em4Oscillator {
     Ulfrco = 0x0,    // 0x0u64,
@@ -14,7 +14,7 @@ pub enum Em4Oscillator {
     Lfrco  = 0x1,    // 0x1u64
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub struct Em4Init{
     lock_config: bool,
@@ -34,7 +34,7 @@ impl Em4Init {
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub enum Probe {
     Disable = 0x0, // EMU_BUCTRL_PROBE_DISABLE,
@@ -43,7 +43,7 @@ pub enum Probe {
     BUOUT   = 0x3, // EMU_BUCTRL_PROBE_BUOUT
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub enum Resistor {
     Res0 = 0x0, // EMU_PWRCONF_PWRRES_RES0
@@ -52,7 +52,7 @@ pub enum Resistor {
     Res3 = 0x3, // EMU_PWRCONF_PWRRES_RES3
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub enum Power {
     None    = 0x0, // EMU_BUINACT_PWRCON_NONE
@@ -61,7 +61,7 @@ pub enum Power {
     NoDiode = 0x3, // EMU_BUINACT_PWRCON_NODIODE
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub struct BupdInit {
     probe: Probe,

@@ -37,7 +37,7 @@ use core::intrinsics::transmute;
 use core::default::Default;
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[allow(non_snake_case)]
 pub struct Leuart {
     pub CTRL: u32,
@@ -150,7 +150,7 @@ impl Default for Init {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Enable {
     Disable = 0x0,
     Rx      = 0x1 << 0,
@@ -159,14 +159,14 @@ pub enum Enable {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Databits {
     Databits8  = 0x0 << 1,
     Databits9  = 0x1 << 1,
 }
 
 #[repr(u16)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Parity {
     NoParity   = 0x0 << 2,
     EvenParity = 0x2 << 2,
@@ -174,7 +174,7 @@ pub enum Parity {
 }
 
 #[repr(u16)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Stopbits {
     Stopbits1   = 0x1 << 4,
     Stopbits2   = 0x3 << 4,
