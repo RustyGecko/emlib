@@ -159,8 +159,8 @@ fn write_emlib_hash() -> Result<(), io::Error> {
     // Get OUT_DIR and convert it from OsString to String
     let out_dir = env::var("OUT_DIR").ok().unwrap();
     // Extract the hash
-    let hash_token: String = out_dir.rsplitn(2, '/').nth(1).unwrap()
-                                    .rsplitn(1, '-').nth(0).unwrap().to_string();
+    let hash_token: String = out_dir.rsplitn(3, '/').nth(1).unwrap()
+                                    .rsplit('-').nth(0).unwrap().to_string();
     let emlib_hash = format!("HASH={}", hash_token);
     println!("{}", emlib_hash);
 

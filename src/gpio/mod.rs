@@ -1,11 +1,11 @@
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub enum Port {
     A = 0, B = 1, C = 2,
     D = 3, E = 4, F = 5,
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub enum DriveMode {
     Standard = 0x0,
@@ -14,7 +14,7 @@ pub enum DriveMode {
     Low      = 0x3,
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub enum Mode {
     Disabled                  = 0x0,
@@ -44,7 +44,7 @@ extern {
         fallingEdge: bool,
         enable: bool
     );
-    
+
     pub fn GPIO_PinModeSet(
         port: Port,
         pins: u32,

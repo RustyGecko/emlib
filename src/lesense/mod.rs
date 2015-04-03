@@ -3,7 +3,7 @@ use core::default::Default;
 pub const IF_CH6: u32 = 0x1 << 6;
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct Init {
     pub core_ctrl: CoreCtrlDesc,
     pub time_ctrl: TimeCtrlDesc,
@@ -108,7 +108,7 @@ pub fn int_get_enabled() -> u32 {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct CoreCtrlDesc {
     pub scan_start:     ScanMode,
     pub prs_sel:        PRSSel,
@@ -144,7 +144,7 @@ impl Default for CoreCtrlDesc {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ScanMode {
   StartPeriodic = 0x0 << 0,
   StartOneShot  = 0x1 << 0,
@@ -152,7 +152,7 @@ pub enum ScanMode {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum PRSSel {
     PRSCh0 = 0,
     PRSCh1 = 1,
@@ -165,7 +165,7 @@ pub enum PRSSel {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ScanConfSel {
     DirMap = 0x0 << 6,
     InvMap = 0x1 << 6,
@@ -174,14 +174,14 @@ pub enum ScanConfSel {
 }
 
 #[repr(u32)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum BufTrigLevel {
     Half = 0x0 << 18,
     Full = 0x1 << 18,
 }
 
 #[repr(u32)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum DMAWakeUp {
     Disable  = 0x0 << 20,
     BufValid = 0x1 << 20,
@@ -189,7 +189,7 @@ pub enum DMAWakeUp {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum BiasMode {
     DutyCycle = 0x0 << 0,
     HighAcc   = 0x1 << 0,
@@ -197,7 +197,7 @@ pub enum BiasMode {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct TimeCtrlDesc {
     pub start_delay: u8,
 }
@@ -211,7 +211,7 @@ impl Default for TimeCtrlDesc {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct PerCtrlDesc {
     pub dac_ch0_data:      ControlDACData,
     pub dac_ch0_conv_mode: ControlDACConv,
@@ -245,14 +245,14 @@ impl Default for PerCtrlDesc {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ControlDACData {
   DACIfData = 0x0,
   ACMPThres = 0x1,
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ControlDACConv {
     ModeDisable    = 0x0,
     ModeContinuous = 0x1,
@@ -261,7 +261,7 @@ pub enum ControlDACConv {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ControlDACOut {
     ModeDisable    = 0x0,
     ModePin        = 0x1,
@@ -270,14 +270,14 @@ pub enum ControlDACOut {
 }
 
 #[repr(u32)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum DACRef {
     Vdd     = 0x0 << 18,
     BandGap = 0x1 << 18,
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ControlACMP {
     Disable  = 0x0,
     Mux      = 0x1,
@@ -285,7 +285,7 @@ pub enum ControlACMP {
 }
 
 #[repr(u32)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum WarmupMode {
     Normal   = 0x0 << 26,
     ACMP     = 0x1 << 26,
@@ -294,7 +294,7 @@ pub enum WarmupMode {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct DecCtrlDesc {
     pub dec_input:   DecInput,
     pub init_state:  u32,
@@ -332,14 +332,14 @@ impl Default for DecCtrlDesc {
 }
 
 #[repr(u16)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum DecInput {
     SensorSt = 0x0 << 8,
     PRS      = 0x1 << 8,
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct ChDesc {
     pub ena_scan_ch:      bool,
     pub ena_pin:          bool,
@@ -389,7 +389,7 @@ impl Default for ChDesc {
 }
 
 #[repr(u32)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ChPinExMode {
     Dis    = 0x0 << 15,
     High   = 0x1 << 15,
@@ -398,7 +398,7 @@ pub enum ChPinExMode {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ChPinIdleMode {
     Dis    = 0x0,
     High   = 0x1,
@@ -408,21 +408,21 @@ pub enum ChPinIdleMode {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ChClk {
     LF = 0x0,
     HF = 0x1,
 }
 
 #[repr(u16)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ChSampleMode {
     Counter = 0x0 << 12,
     ACMP    = 0x1 << 12,
 }
 
 #[repr(u16)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ChIntMode {
     SetIntNone    = 0x0 << 13,
     SetIntLevel   = 0x1 << 13,
@@ -431,14 +431,14 @@ pub enum ChIntMode {
 }
 
 #[repr(u32)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ChCompMode {
     Less        = 0x0 << 16,
     GreaterOrEq = 0x1 << 16,
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct ConfAltEx {
     pub alt_ex_map: AltExMap,
     pub alt_ex:     [AltExDesc; 16],
@@ -454,14 +454,14 @@ impl Default for ConfAltEx {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum AltExMap {
     ALTEX = 0x0,
     ACMP  = 0x1,
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct AltExDesc {
     pub enable_pin: bool,
     pub idle_conf:  AltExPinIdle,
@@ -479,7 +479,7 @@ impl Default for AltExDesc {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum AltExPinIdle {
     Dis  = 0x0,
     High = 0x1,
@@ -487,7 +487,7 @@ pub enum AltExPinIdle {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ClkPresc {
     ClkDiv1   = 0,
     ClkDiv2   = 1,

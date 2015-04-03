@@ -1,5 +1,5 @@
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Clock {
     ACMP0       = 0x29200,
     ACMP1       = 0x2a200,
@@ -26,7 +26,7 @@ pub enum Clock {
 
 /** High frequency RC bands. */
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum HFRCOBand {
     _1MHz  = 0x00000000,
     _7MHz  = 0x00000001,
@@ -38,7 +38,7 @@ pub enum HFRCOBand {
 
 /** Oscillator types. */
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Osc {
     LFXO,
     LFRCO,
@@ -50,7 +50,7 @@ pub enum Osc {
 
 /** Selectable clock sources. */
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Select {
     Error,
     Disabled,

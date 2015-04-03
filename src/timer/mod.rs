@@ -13,7 +13,7 @@ pub const TIMER_IF_ICBOF1: u32 = (0x1 << 9);
 pub const TIMER_IF_ICBOF2: u32 = (0x1 << 10);
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[allow(non_snake_case)]
 pub struct CC {
     pub CTRL: u32,
@@ -23,7 +23,7 @@ pub struct CC {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[allow(non_snake_case)]
 pub struct Timer {
     pub CTRL: u32,
@@ -170,7 +170,7 @@ impl Timer {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum CCMode {
     Off = 0x0,
     Capture = 0x1,
@@ -179,7 +179,7 @@ pub enum CCMode {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ClkSel {
     HFPerClk = 0x0,
     CC1 = 0x1,
@@ -187,7 +187,7 @@ pub enum ClkSel {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Edge {
     Rising = 0x0,
     Falling = 0x1,
@@ -196,7 +196,7 @@ pub enum Edge {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Event {
     EveryEdge = 0x0,
     Every2ndEdge = 0x1,
@@ -205,7 +205,7 @@ pub enum Event {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum InputAction {
     None = 0x0,
     Start = 0x1,
@@ -214,7 +214,7 @@ pub enum InputAction {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Mode {
     Up = 0x0,
     Down = 0x1,
@@ -223,7 +223,7 @@ pub enum Mode {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum OutputAction {
     None = 0x0,
     Toggle = 0x1,
@@ -232,7 +232,7 @@ pub enum OutputAction {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Prescale {
     Prescale1    = 0x0,
     Prescale2    = 0x1,
@@ -248,7 +248,7 @@ pub enum Prescale {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum PRSSEL {
     Ch0 = 0x0,
     Ch1 = 0x1,
@@ -265,7 +265,7 @@ pub enum PRSSEL {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum DtiFaultAction {
     None = 0x0,
     Inactive = 0x1,
@@ -274,7 +274,7 @@ pub enum DtiFaultAction {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct Init {
     pub enable: bool,
     pub debug_run: bool,
@@ -312,7 +312,7 @@ impl Default for Init {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct InitCC {
     event_ctrl: Event,
     edge: Edge,
@@ -346,7 +346,7 @@ impl Default for InitCC {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct InitDTI {
     enable: bool,
     active_low_out: bool,
