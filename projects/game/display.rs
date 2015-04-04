@@ -2,15 +2,8 @@ use core::default::Default;
 
 use emlib::ebi;
 use emlib::ebi::{TFTInit};
-use emlib::cmu;
-use emlib::gpio;
-use emlib::cmsis;
 use emlib::cmsis::nvic;
 use emlib::emdrv::tft;
-
-use emlib::modules::{Usart, Config, Location};
-use emlib::modules::{Button, GpioPin};
-use emlib::dk::{bc, bsp};
 
 pub const D_WIDTH: u32 = 320;
 pub const D_HEIGHT: u32 = 240;
