@@ -6,7 +6,7 @@ use core::slice::SliceExt;
 use core::cmp::min;
 
 #[repr(u8)]
-#[derive(Copy)]
+    #[derive(Copy, Clone)]
 #[allow(non_camel_case_types)]
 pub enum c_void {
     __variant1,
@@ -17,7 +17,7 @@ pub const DMAREQ_TIMER0_UFOF: u32 = ((24 << 16) + 0);
 
 pub type FuncPtr = extern fn(channel: u32, primary: bool, user: u32);
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct DMA { channel: u32 }
 
 impl DMA {
@@ -49,7 +49,7 @@ impl DMA {
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub struct Init {
     pub hprot: u8,
@@ -57,7 +57,7 @@ pub struct Init {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct CfgChannel {
     pub high_pri: bool,
     pub enable_int: bool,
@@ -66,7 +66,7 @@ pub struct CfgChannel {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct CfgDescriptor {
     pub dst_inc: DataInc,
     pub src_inc: DataInc,
@@ -76,7 +76,7 @@ pub struct CfgDescriptor {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[allow(non_snake_case)]
 pub struct Descriptor {
     pub SRCEND: u32,
@@ -85,8 +85,9 @@ pub struct Descriptor {
     pub USER: u32,
 }
 
+// FIXME: Removed derive_Copy because it requires Clone, and FuncPtr cant inherit Clone. We need to
+// figure out what to do here...
 #[repr(C)]
-#[derive(Copy)]
 pub struct CB {
     pub cb_func: FuncPtr,
     pub user_ptr: u32,
@@ -94,7 +95,7 @@ pub struct CB {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum DataInc {
     Inc1 = 0x0,
     Inc2 = 0x1,
@@ -103,7 +104,7 @@ pub enum DataInc {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum DataSize {
     Size1 = 0x0,
     Size2 = 0x1,
@@ -111,7 +112,7 @@ pub enum DataSize {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum ArbiterConfig {
     Arbitrate1 = 0x0,
     Arbitrate2 = 0x1,

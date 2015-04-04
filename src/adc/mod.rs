@@ -4,7 +4,7 @@ use core::intrinsics::transmute;
 pub const STATUS_SINGLEACT:u32 = 0x1;
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[allow(non_snake_case)]
 pub struct Adc {
     pub CTRL: u32,
@@ -58,7 +58,7 @@ pub fn prescale_calc(adc_freq: u32, hfper_freq: u32) -> u8 {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[allow(non_snake_case)]
 pub struct Init {
     pub ovs_rate_sel: OvsRateSel,
@@ -70,7 +70,7 @@ pub struct Init {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[allow(non_snake_case)]
 pub struct InitSingle {
     pub prs_sel: PRSSEL,
@@ -85,7 +85,7 @@ pub struct InitSingle {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum PRSSEL {
     Ch0 = 0x0,
     Ch1 = 0x1,
@@ -98,7 +98,7 @@ pub enum PRSSEL {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum AcqTime {
     Time1   = 0x0,
     Time2   = 0x1,
@@ -112,7 +112,7 @@ pub enum AcqTime {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Ref {
     Ref1V25      = 0x0,
     Ref2V5       = 0x1,
@@ -124,7 +124,7 @@ pub enum Ref {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Res {
     Res12Bit = 0x0,
     Res8Bit  = 0x1,
@@ -133,7 +133,7 @@ pub enum Res {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum OvsRateSel {
     Sel2    = 0x0,
     Sel4    = 0x1,
@@ -152,7 +152,7 @@ pub enum OvsRateSel {
 
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum LPFilter {
     Bypass = 0x0,
     RC     = 0x1,
@@ -160,7 +160,7 @@ pub enum LPFilter {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Warmup {
     Normal          = 0x0,
     FastBG          = 0x1,
@@ -169,7 +169,7 @@ pub enum Warmup {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum SingleInput
 {
     Ch0      = 0x0,
@@ -197,7 +197,7 @@ pub enum SingleInput
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Start {
     Single = 0x1,
     Scan = 0x1 << 2,

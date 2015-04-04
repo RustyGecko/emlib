@@ -1,7 +1,7 @@
 use core::slice::SliceExt;
 use core::intrinsics::transmute;
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 #[repr(C)]
 pub struct Info {
     pub base_address: u32,
