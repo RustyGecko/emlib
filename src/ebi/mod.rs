@@ -51,6 +51,8 @@ pub fn tfth_stride_set(nbytes: u32) {
     unsafe { STATIC_INLINE_EBI_TFTHStrideSet(nbytes) }
 }
 
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct TFTInit {
     pub bank:            TFTBank,
     pub width:           TFTWidth,
@@ -82,6 +84,7 @@ pub struct TFTInit {
 
 
 #[repr(u32)]
+#[derive(Copy, Clone)]
 pub enum TFTBank {
     _0 = (0x00000000 << 20),
     _1 = (0x00000001 << 20),
@@ -90,18 +93,21 @@ pub enum TFTBank {
 }
 
 #[repr(u32)]
+#[derive(Copy, Clone)]
 pub enum TFTWidth {
     Byte     = (0x00000000 << 16),
     HalfWord = (0x00000001 << 16),
 }
 
 #[repr(u16)]
+#[derive(Copy, Clone)]
 pub enum TFTColorSrc {
     Mem    = (0x00000000 << 12),
     Pixel1 = (0x00000001 << 12),
 }
 
 #[repr(u16)]
+#[derive(Copy, Clone)]
 pub enum TFTInterleave {
     Unlimited  = (0x00000000 << 10),
     OnePerDClk = (0x00000001 << 10),
@@ -109,12 +115,14 @@ pub enum TFTInterleave {
 }
 
 #[repr(u16)]
+#[derive(Copy, Clone)]
 pub enum TFTFrameBufTrigger {
     VSync = (0x00000000 << 9),
     HSync = (0x00000001 << 9),
 }
 
 #[repr(u8)]
+#[derive(Copy, Clone)]
 pub enum TFTMaskBlend {
     Disabled   = (0x00000000 << 2),
     IMask      = (0x00000001 << 2),
@@ -126,6 +134,7 @@ pub enum TFTMaskBlend {
 }
 
 #[repr(u8)]
+#[derive(Copy, Clone)]
 pub enum TFTDDMode {
     Disabled = (0x00000000 << 0),
     Internal = (0x00000001 << 0),
@@ -133,6 +142,7 @@ pub enum TFTDDMode {
 }
 
 #[repr(u8)]
+#[derive(Copy, Clone)]
 pub enum Polarity {
     ActiveLow  = 0,
     ActiveHigh = 1,

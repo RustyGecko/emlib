@@ -11,6 +11,7 @@ pub const UIF_AEM_EFM: u16 = 1;
 
 // DK3750board controller register definition
 #[repr(C)]
+#[derive(Copy, Clone)]
 pub struct BC {
     pub RESERVERD0:        u16,
     pub EM:                u16,
