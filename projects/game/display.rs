@@ -1,4 +1,5 @@
 use core::default::Default;
+use core::slice::from_raw_parts_mut;
 
 use emlib::ebi;
 use emlib::ebi::{TFTInit};
@@ -39,6 +40,70 @@ pub static tft_init: TFTInit = TFTInit {
     hold_cycles:     0,
 };
 
+
+static numbers: [[[bool; 3]; 5]; 10] = [[
+    [true, true, true],
+    [true, false, true],
+    [true, false, true],
+    [true, false, true],
+    [true, true, true],
+],[
+    [false, false, true],
+    [false, false, true],
+    [false, false, true],
+    [false, false, true],
+    [false, false, true],
+],[
+    [true, true, true],
+    [false, false, true],
+    [true, true, true],
+    [true, false, false],
+    [true, true, true],
+],[
+    [true, true, true],
+    [false, false, true],
+    [true, true, true],
+    [false, false, true],
+    [true, true, true],
+],[
+    [true, false, true],
+    [true, false, true],
+    [true, true, true],
+    [false, false, true],
+    [false, false, true],
+],[
+    [true, true, true],
+    [true, false, false],
+    [true, true, true],
+    [false, false, true],
+    [true, true, true],
+],[
+    [true, true, true],
+    [true, false, false],
+    [true, true, true],
+    [true, false, true],
+    [true, true, true],
+],[
+    [true, true, true],
+    [false, false, true],
+    [false, true, true],
+    [false, true, false],
+    [false, true, false],
+],[
+    [true, true, true],
+    [true, false, true],
+    [true, true, true],
+    [true, false, true],
+    [true, true, true],
+],[
+    [true, true, true],
+    [true, false, true],
+    [true, true, true],
+    [false, false, true],
+    [false, false, true],
+],];
+
+
 pub fn init() -> bool {
     tft::direct_init(&tft_init)
 }
@@ -52,12 +117,79 @@ pub fn irq_enable(flags: u32) {
     nvic::enable_irq(nvic::IRQn::EBI);
 }
 
-pub fn clear() {
-    // Clear entire display using 32-bit write operations.
-    // TODO: Verify that this actually works...
-    for i in 0 .. ((V_WIDTH * V_HEIGHT) / 2) {
-        let framebuffer: &mut u32 = &mut (ebi::bank_address(ebi::BANK2) + i);
-        *framebuffer = 0x0;
-    }
+trait BufferLen {
+    fn buffer_len() -> usize;
 }
 
+impl BufferLen for u8 {
+    fn buffer_len() -> usize { (V_WIDTH * V_HEIGHT * 2) as usize }
+}
+
+impl BufferLen for u16 {
+    fn buffer_len() -> usize { (V_WIDTH * V_HEIGHT) as usize }
+}
+
+impl BufferLen for u32 {
+    fn buffer_len() -> usize { (V_WIDTH * V_HEIGHT / 2) as usize }
+}
+
+impl BufferLen for u64 {
+    fn buffer_len() -> usize { (V_WIDTH * V_HEIGHT / 4) as usize }
+}
+
+// Treat ebi::BANK2 to a slice of data
+fn frame_buffer<'a, T: BufferLen>() -> &'a mut [T] {
+    let address = ebi::bank_address(ebi::BANK2) as *mut T;
+    unsafe { from_raw_parts_mut(address, T::buffer_len()) }
+}
+
+pub fn clear() {
+    // Clear entire display using 32-bit write operations.
+
+    // It is cleaner to treat the framebuffer like an array, but it might be slower due to
+    // bounds checking, so probably not the optimal solution.
+    let mut buf = frame_buffer::<u32>();
+    for i in 0 .. buf.len() {
+        buf[i] = 0x00000000;
+    }
+
+    // Alternate solution:
+    // let mut framebuffer: *mut u32 = ebi::bank_address(ebi::BANK2) as *mut u32;
+    // for i in 0 .. ((V_WIDTH * V_HEIGHT) / 2) {
+    //     unsafe {
+    //         *framebuffer = 0x00000000;
+    //         framebuffer = framebuffer.offset(1);
+    //     }
+    // }
+}
+
+pub fn draw_number(number: usize, mut pos: usize, color: u16) {
+    let mut current_score = number;
+    pos = pos + 16; // Start with the third position
+
+    let mut buf = frame_buffer::<u16>();
+    for figures in 0 .. 3 {
+        let mut num: usize = current_score % 10;
+        current_score = current_score / 10;
+        let mut yy: usize = 0;
+        for y in 0 .. 5 {
+            let mut xx: usize = 0;
+            for x in 0 .. 3 {
+                buf[pos+xx+yy] = if numbers[num][y][x] { color } else { 0 };
+                xx += 1;
+                buf[pos+xx+yy] = if numbers[num][y][x] { color } else { 0 };
+                xx += 1;
+            }
+            yy += V_WIDTH as usize;
+            xx = 0;
+            for x in 0 .. 3 {
+                buf[pos+xx+yy] = if numbers[num][y][x] { color } else { 0 };
+                xx += 1;
+                buf[pos+xx+yy] = if numbers[num][y][x] { color } else { 0 };
+                xx += 1;
+            }
+            yy += V_WIDTH as usize;
+        }
+        pos -= 8;
+    }
+}
