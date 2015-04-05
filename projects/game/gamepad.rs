@@ -12,23 +12,11 @@ pub static SW8: &'static Button = &GpioPin { port: gpio::Port::C, pin: 7 };
 
 pub fn init() {
     SW1.init();
-    SW1.on_click(callback);
     SW2.init();
-    SW2.on_click(callback);
     SW3.init();
-    SW3.on_click(callback);
     SW4.init();
-    SW4.on_click(callback);
     SW5.init();
-    SW5.on_click(callback);
     SW6.init();
-    SW6.on_click(callback);
     SW7.init();
-    SW7.on_click(callback);
     SW8.init();
-    SW8.on_click(callback);
-}
-
-fn callback(pin: u8) {
-
 }

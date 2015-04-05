@@ -6,6 +6,8 @@ use emlib::ebi::{TFTInit};
 use emlib::cmsis::nvic;
 use emlib::emdrv::tft;
 
+use game::utils;
+
 pub const D_WIDTH: u32 = 320;
 pub const D_HEIGHT: u32 = 240;
 pub const V_WIDTH: u32 = 672;
@@ -191,5 +193,14 @@ pub fn draw_number(number: usize, mut pos: usize, color: u16) {
             yy += V_WIDTH as usize;
         }
         pos -= 8;
+    }
+}
+
+pub fn debug_count() {
+    let mut num = 999;
+    loop {
+        draw_number(num, (250 + 10 * V_WIDTH) as usize, 0xffffffff);
+        num = if num == 0 { 999 } else { num - 1 };
+        utils::delay(10);
     }
 }

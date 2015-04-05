@@ -14,7 +14,6 @@ pub fn delay(num_ticks: u32) {
     }
 }
 
-
 pub fn blink(n: u32) {
     for _ in 0 .. n {
         bsp::leds_set(0xffff);

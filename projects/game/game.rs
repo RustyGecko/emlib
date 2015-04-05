@@ -59,10 +59,6 @@ pub unsafe extern fn EBI_IRQHandler() {
 }
 
 pub fn run() {
-    let mut usart: Usart = Default::default();
-    usart.init_async();
-    usart.write_line("Starting.......\n\r");
-
     let mut redraw: bool = false;
 
     // Configure for 48MHz HFXO operation of core clock
@@ -90,6 +86,17 @@ pub fn run() {
     bsp::leds_set(0xf731);
 
     loop {
-        display::draw_number(999, (250 + 10 * display::V_WIDTH) as usize, 0xffffffff);
+        // TODO: The gamepad does this automatically, so can be removed
+        // Clear any gpio interrupts
+        let flags = gpio::int_get();
+        gpio::int_clear(flags);
+
+        // TODO: The initialization of the gamepad can be made smaller, since we don't treat
+        // the pins as buttons...
+        // Read status of gpio pins
+        let buttons = gpio::port_in_get(gpio::Port::C);
+
+        display::draw_number(buttons as usize, (250 + 10 * display::V_WIDTH) as usize, 0xffffffff);
+        utils::delay(10);
     }
 }
