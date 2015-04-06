@@ -119,7 +119,47 @@ pub fn irq_enable(flags: u32) {
     nvic::enable_irq(nvic::IRQn::EBI);
 }
 
-trait BufferLen {
+// Keep track of horizontal offset
+static mut hz_offset: u32 = 0;
+static mut h_pos: u32 = 0;
+static mut frame_ctr: u32 = 0;
+
+#[no_mangle]
+pub unsafe extern fn EBI_IRQHandler() {
+    let flags = ebi::int_get();
+    ebi::int_clear(flags);
+
+    let mut line_number: u32 = 0;
+
+    // Process vertical sync interrupt
+    if ((flags & ebi::IF_VFPORCH) != 0) {
+        // Keep track of number of frames drawn
+        frame_ctr += 1;
+
+        // Increase this increment to 2/4/8 to increase scroll speed
+        hz_offset += 1;
+
+        // TODO: Not sure if this if-statement is required or not. What does it do?
+        // Wrap around when a full screen has been displayed
+        // if (hz_offset == (D_WIDTH + font16x28.c_width)) {
+        //     hz_offset = 0;
+        // }
+    }
+
+    // Process horizontal sync interrupt
+    if ((flags & ebi::IF_HSYNC) != 0) {
+        line_number = ebi::tftv_count();
+
+        // Adjust for porch size
+        if (line_number >= 3) {
+            line_number -= 3;
+        }
+
+        ebi::tft_frame_base_set(line_number * V_WIDTH * 2);
+    }
+}
+
+pub trait BufferLen {
     fn buffer_len() -> usize;
 }
 
@@ -140,7 +180,7 @@ impl BufferLen for u64 {
 }
 
 // Treat ebi::BANK2 to a slice of data
-fn frame_buffer<'a, T: BufferLen>() -> &'a mut [T] {
+pub fn frame_buffer<'a, T: BufferLen>() -> &'a mut [T] {
     let address = ebi::bank_address(ebi::BANK2) as *mut T;
     unsafe { from_raw_parts_mut(address, T::buffer_len()) }
 }

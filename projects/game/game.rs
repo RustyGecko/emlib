@@ -18,43 +18,73 @@ pub mod gamepad;
 pub mod utils;
 pub mod display;
 
-// Keep track of horizontal offset
-static mut hz_offset: u32 = 0;
-static mut h_pos: u32 = 0;
-static mut frame_ctr: u32 = 0;
+static mut color1: u16 = 2000;
+static mut color2: u16 = 12000;
 
-#[no_mangle]
-pub unsafe extern fn EBI_IRQHandler() {
-    let flags = ebi::int_get();
-    ebi::int_clear(flags);
+const circle_samples: usize = 4 + 33 * 4;
+static mut circle1_center: u32 = 100 * display::V_WIDTH + 100;
+static mut circle2_center: u32 = 174 * display::V_WIDTH + 174;
 
-    let mut line_number: u32 = 0;
+static mut circle_offsets: [i32; circle_samples] = [0; circle_samples];
+static circleY: [i32; 35] = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,20,21,21,22,22,23,23,23,23,24,24,24,24,24];
+static circleX: [i32; 35] = [24,24,24,24,24,23,23,23,23,22,22,21,21,20,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0];
 
-    // Process vertical sync interrupt
-    if ((flags & ebi::IF_VFPORCH) != 0) {
-        // Keep track of number of frames drawn
-        frame_ctr += 1;
+fn calculate_circle_offsets() {
+    let mut quadranttop = true;
+    let mut quadrantright = false;
+    let mut j = 0;
 
-        // Increase this increment to 2/4/8 to increase scroll speed
-        hz_offset += 1;
+    unsafe {
+        for i in 0 .. circle_samples {
+            let x = if quadrantright { circleX[j] } else { -circleX[j] };
+            let y = if quadranttop { -circleY[j] } else { circleY[j] };
+            circle_offsets[i] = x as i32 + y as i32 * display::V_WIDTH as i32;
 
-        // TODO: Not sure if this if-statement is required or not. What does it do?
-        // Wrap around when a full screen has been displayed
-        // if (hz_offset == (D_WIDTH + font16x28.c_width)) {
-        //     hz_offset = 0;
-        // }
-    }
+            match i {
+                34  => quadrantright = true,
+                68  => quadranttop = false,
+                102 => quadrantright = false,
+                _   => ()
+            }
 
-    // Process horizontal sync interrupt
-    if ((flags & ebi::IF_HSYNC) != 0) {
-        line_number = ebi::tftv_count();
-
-        // Adjust for porch size
-        if (line_number >= 3) {
-            line_number -= 3;
+            if quadrantright && quadranttop || !quadrantright && !quadranttop {
+                j -= 1;
+            } else {
+                j += 1;
+            }
         }
+    }
+}
 
-        ebi::tft_frame_base_set(line_number * display::V_WIDTH * 2);
+fn clear_circle(center: u32) {
+    let mut buf = display::frame_buffer::<u16>();
+    unsafe {
+        for i in 0 .. circle_samples {
+            let idx = (center as i32 + circle_offsets[i]);
+            if idx > 0 {
+                buf[idx as usize] = 0;
+            }
+        }
+    }
+}
+
+fn draw_circle(center: u32, mut color: u16) {
+    let mut buf = display::frame_buffer::<u16>();
+    unsafe {
+        for i in 0 .. circle_samples {
+            let idx = (center as i32 + circle_offsets[i]);
+            if idx > 0 {
+                buf[idx as usize] = color;
+                color += 32;
+            }
+        }
+    }
+}
+
+fn increment_color(color: &mut u16, default: u16) {
+    *color += 32;
+    if *color + 64 > default + circle_samples as u16 * 32 {
+        *color = default;
     }
 }
 
@@ -83,20 +113,66 @@ pub fn run() {
     display::clear();
 
     gamepad::init();
-    bsp::leds_set(0xf731);
 
-    loop {
-        // TODO: The gamepad does this automatically, so can be removed
+    calculate_circle_offsets();
+
+    unsafe { loop {
         // Clear any gpio interrupts
         let flags = gpio::int_get();
         gpio::int_clear(flags);
 
-        // TODO: The initialization of the gamepad can be made smaller, since we don't treat
-        // the pins as buttons...
         // Read status of gpio pins
         let buttons = gpio::port_in_get(gpio::Port::C);
 
-        display::draw_number(buttons as usize, (250 + 10 * display::V_WIDTH) as usize, 0xffffffff);
+        clear_circle(circle1_center);
+        clear_circle(circle2_center);
+
+        if buttons & 0x1 == 0 {
+            circle1_center -= 1;
+            // rect1.dx -= 1;
+            // draw_rect1.dx -= 1;
+        }
+        if buttons & 0x2 == 0 {
+            circle1_center -= display::V_WIDTH;
+            // rect1.dy -= 1;
+            // draw_rect1.dy -= 1;
+        }
+        if buttons & 0x4 == 0 {
+            circle1_center += 1;
+            // rect1.dx += 1;
+        }
+        if buttons & 0x8 == 0 {
+            circle1_center += display::V_WIDTH;
+            // rect1.dy += 1;
+        }
+        if buttons & 0x10 == 0 {
+            circle2_center -= 1;
+            // rect2.dx -= 1;
+            // draw_rect2.dx -= 1;
+        }
+        if buttons & 0x20 == 0 {
+            circle2_center -= display::V_WIDTH;
+            // rect2.dy -= 1;
+            // draw_rect2.dy -= 1;
+        }
+        if buttons & 0x40 == 0 {
+            circle2_center += 1;
+            // rect2.dx += 1;
+        }
+        if buttons & 0x80 == 0 {
+            circle2_center += display::V_WIDTH;
+            // rect2.dy += 1;
+        }
+
+        // Draw circles
+        let mut buf = display::frame_buffer::<u16>();
+        draw_circle(circle1_center, color1);
+        increment_color(&mut color1, 2000);
+
+        draw_circle(circle2_center, color2);
+        increment_color(&mut color2, 12000);
+
+        display::draw_number(buttons as usize, (10 + 10 * display::V_WIDTH) as usize, 0xffffffff);
         utils::delay(10);
-    }
+    } }
 }
