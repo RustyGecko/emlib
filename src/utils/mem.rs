@@ -4,6 +4,11 @@ use rlibc;
 use libc::{c_void, size_t, c_int};
 
 #[no_mangle]
+pub unsafe fn __aeabi_memcpy(dest: *mut u8, src: *const u8, n: usize) -> *mut u8 {
+    rlibc::memcpy(dest, src, n)
+}
+
+#[no_mangle]
 pub unsafe fn __aeabi_memmove(dest: *mut u8, src: *const u8,
                              n: usize) -> *mut u8 {
     rlibc::memmove(dest, src, n)
