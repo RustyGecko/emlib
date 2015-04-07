@@ -14,6 +14,10 @@ use emlib::modules::{Usart, Config, Location};
 use emlib::modules::{Button, GpioPin};
 use emlib::dk::{bc, bsp};
 
+use game::gamepad::Gamepad;
+
+pub mod dkpad;
+pub mod tdtpad;
 pub mod gamepad;
 pub mod utils;
 pub mod display;
@@ -82,7 +86,10 @@ pub fn run() {
     display::irq_enable(ebi::IF_VFPORCH | ebi::IF_HSYNC);
     display::clear();
 
-    gamepad::init();
+    //let gamepad = dkpad::DKPad::new();
+    let gamepad = tdtpad::TDTPad::new();
+    gamepad.init();
+
     bsp::leds_set(0xf731);
 
     loop {
@@ -94,9 +101,10 @@ pub fn run() {
         // TODO: The initialization of the gamepad can be made smaller, since we don't treat
         // the pins as buttons...
         // Read status of gpio pins
-        let buttons = gpio::port_in_get(gpio::Port::C);
 
-        display::draw_number(buttons as usize, (250 + 10 * display::V_WIDTH) as usize, 0xffffffff);
+        let buttons = gamepad.get();
+
+        display::draw_number(buttons, (250 + 10 * display::V_WIDTH) as usize, 0xffffffff);
         utils::delay(10);
     }
 }
