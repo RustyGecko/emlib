@@ -14,6 +14,18 @@ pub fn leds_set(leds: u32) -> i32 {
     }
 }
 
+pub fn joystick_get() -> u16 {
+    unsafe {
+        BSP_JoystickGet()
+    }
+}
+
+pub fn push_buttons_get() -> u16 {
+    unsafe {
+        BSP_PushButtonsGet()
+    }
+}
+
 pub fn register_read(addr: &u16) -> u16 {
     unsafe {
         BSP_RegisterRead(addr)
@@ -23,5 +35,7 @@ pub fn register_read(addr: &u16) -> u16 {
 extern {
     fn BSP_Init(flags: u32) -> i32;
     fn BSP_LedsSet(lefs: u32) -> i32;
+    fn BSP_JoystickGet() -> u16;
+    fn BSP_PushButtonsGet() -> u16;
     fn BSP_RegisterRead(addr: &u16) -> u16;
 }
