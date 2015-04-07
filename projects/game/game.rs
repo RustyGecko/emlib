@@ -22,6 +22,10 @@ pub mod gamepad;
 pub mod utils;
 pub mod display;
 
+fn rand() -> i32 {
+    1
+}
+
 #[no_mangle]
 pub extern fn main() {
     bsp::init(bsp::EBI);
@@ -223,10 +227,10 @@ unsafe fn generate_obstacle() {
     for i in 0 .. display::WIDTH as usize {
         obstacle[i] = true;
     }
-    gap2_active = false; // rand()%2;
+    gap2_active = rand() % 2 == 1;
     let gap_size = if gap2_active { 70 } else { 90 };
-    // let gap_area = if gap2_active { 90 } else { 230 };
-    gap1_start = 100; // + rand::rand() % gap_area;
+    let gap_area = if gap2_active { 90 } else { 230 };
+    gap1_start = 70 + rand() % gap_area;
     gap1_end = gap1_start + gap_size + 1;
 
     let i = (gap1_start + 1) as usize;
@@ -234,7 +238,7 @@ unsafe fn generate_obstacle() {
         obstacle[i + j] = false;
     }
     if gap2_active {
-        gap2_start = 160; // + rand() % gapArea;
+        gap2_start = 160 + rand() % gap_area;
         gap2_end = gap2_start + gap_size + 1;
         let i = (gap2_start + 1) as usize;
         for j in 0 .. gap_size as usize {
@@ -282,7 +286,7 @@ unsafe fn update_obstacle() {
 
 unsafe fn restart() {
     circle1_center = 100 * display::V_WIDTH as i32 + 100;
-    circle2_center = 174 * display::V_WIDTH as i32 + 174;
+    circle2_center = 174 * display::V_WIDTH as i32 + 200;
     obstacle_pos = 0;
     gap1_start = 0;
     gap1_end = 0;
@@ -301,7 +305,7 @@ unsafe fn restart() {
     circle1_rect.width = 51;
     circle1_rect.height = 51;
 
-    circle2_rect.dx = 150;
+    circle2_rect.dx = 176;
     circle2_rect.dy = 150;
     circle2_rect.width = 51;
     circle2_rect.height = 51;
