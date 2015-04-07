@@ -3,6 +3,7 @@ use emlib::dk::bsp;
 static mut ms_ticks: u32 = 0;
 
 #[no_mangle]
+#[allow(non_snake_case)]
 pub unsafe extern fn SysTick_Handler() {
     ms_ticks += 1;
 }
@@ -10,7 +11,7 @@ pub unsafe extern fn SysTick_Handler() {
 pub fn delay(num_ticks: u32) {
     unsafe {
         let cur_ticks = ms_ticks;
-        while ((ms_ticks - cur_ticks) < num_ticks) {}
+        while (ms_ticks - cur_ticks) < num_ticks {}
     }
 }
 

@@ -1,5 +1,3 @@
-use emlib::gpio;
-
 /*
 This approach makes button interrupts a lot faster, probably due to the way interrupts
 are handled by the 'gpioint' module. This way we ignore everything with functions specific for
