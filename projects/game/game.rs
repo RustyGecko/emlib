@@ -1,5 +1,15 @@
-#![allow(unsigned_negation)]
+#![no_std]
+#![no_main]
 #![warn(warnings)]
+#![allow(unsigned_negation)]
+#![feature(lang_items, core, no_std, asm)]
+#![feature(collections)]
+#![feature(negate_unsigned)]
+
+#[macro_use(assert, panic)] extern crate core;
+#[macro_use(format)] extern crate collections;
+
+extern crate emlib;
 
 use emlib::ebi;
 use emlib::cmu;
@@ -11,6 +21,13 @@ use emlib::dk::{bc, bsp};
 pub mod gamepad;
 pub mod utils;
 pub mod display;
+
+#[no_mangle]
+pub extern fn main() {
+    bsp::init(bsp::EBI);
+    init();
+    run();
+}
 
 #[derive(Copy, Clone)]
 pub struct Rectangle {
@@ -297,7 +314,7 @@ unsafe fn restart() {
     frame = 0;
 }
 
-pub fn run() {
+fn init() {
     // Configure for 48MHz HFXO operation of core clock
     cmu::clock_select_set(cmu::Clock::HF, cmu::Select::HFXO);
 
@@ -323,7 +340,9 @@ pub fn run() {
 
     unsafe { restart(); }
     calculate_circle_offsets();
+}
 
+fn run() {
     unsafe { loop {
         // Clear any gpio interrupts
         let flags = gpio::int_get();

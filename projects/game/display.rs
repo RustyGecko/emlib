@@ -5,7 +5,7 @@ use emlib::ebi::{TFTInit};
 use emlib::cmsis::nvic;
 use emlib::emdrv::tft;
 
-use game::utils;
+use utils;
 
 pub const WIDTH: usize = 320;
 pub const HEIGHT: usize = 240;
