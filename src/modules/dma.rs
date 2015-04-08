@@ -3,12 +3,14 @@
 use libc::c_void;
 use core::intrinsics::transmute;
 use core::prelude::*;
+use core::cmp::min;
 use core::ptr;
 use dma;
 
 pub static mut dma0: Dma = Dma {
     device: dma::DMA{ channel: 0 },
-    callback: None
+    callback: None,
+    n: 0
 };
 
 pub static mut DMA0_CB: CB = CB {
@@ -19,7 +21,8 @@ pub static mut DMA0_CB: CB = CB {
 
 pub static mut dma1: Dma = Dma {
     device: dma::DMA{ channel: 1 },
-    callback: None
+    callback: None,
+    n: 0
 };
 
 pub static mut DMA1_CB: CB = CB {
@@ -47,12 +50,14 @@ pub trait Readable {
     fn as_ptr(&self) -> *mut c_void;
     fn inc_size(&self) -> dma::DataInc;
     fn size(&self) -> dma::DataSize;
+    fn n(&self) -> Option<u32>;
 }
 
 pub trait Writable {
     fn as_ptr(&self) -> *mut c_void;
     fn inc_size(&self) -> dma::DataInc;
     fn size(&self) -> dma::DataSize;
+    fn n(&self) -> Option<u32>;
 }
 
 #[derive(Copy, Clone)]
@@ -77,7 +82,8 @@ impl Signal {
 
 pub struct Dma {
     pub device: dma::DMA,
-    pub callback: Option<fn(&mut Dma)>
+    pub callback: Option<fn(&mut Dma)>,
+    pub n: u32
 }
 
 pub fn init() {
@@ -112,7 +118,9 @@ impl Dma {
             hprot: 0
         });
 
-        self.device.activate_basic::<u8>(true, false, dst.as_ptr(), src.as_ptr(), self.size() - 1);
+        self.n = self.calculate_n(src, dst);
+
+        self.device.activate_basic::<u8>(true, false, dst.as_ptr(), src.as_ptr(), self.n - 1);
 
         self
     }
@@ -140,7 +148,9 @@ impl Dma {
             hprot: 0
         });
 
-        self.device.activate_auto::<u8>(true, dst.as_ptr(), src.as_ptr(), self.size() - 1);
+        self.n = self.calculate_n(src, dst);
+
+        self.device.activate_auto::<u8>(true, dst.as_ptr(), src.as_ptr(), self.n - 1);
 
         self
     }
@@ -154,13 +164,20 @@ impl Dma {
     pub fn refresh(&mut self) -> &mut Dma {
 
         let null: *mut c_void = unsafe { transmute(ptr::null::<u8>()) };
-        self.device.activate_basic::<u8>(true, false, null, null, self.size() - 1);
+        self.device.activate_basic::<u8>(true, false, null, null, self.n - 1);
 
         self
     }
 
-    fn size(&self) -> u32 {
-        512
+    fn calculate_n(&self, src: &Readable, dst: &Writable) -> u32 {
+
+        match (src.n(), dst.n()) {
+            (Some(n), Some(m)) => min(n, m),
+            (Some(n), None) => n,
+            (None, Some(n)) => n,
+            (None, None) => 1,
+        }
+
     }
 }
 
@@ -191,6 +208,10 @@ impl Writable for Buffer {
     fn size(&self) -> dma::DataSize {
         dma::DataSize::Size1
     }
+
+    fn n(&self) -> Option<u32> {
+        Some(self.buffer.len() as u32)
+    }
 }
 
 impl Readable for Buffer {
@@ -205,5 +226,9 @@ impl Readable for Buffer {
 
     fn size(&self) -> dma::DataSize {
         dma::DataSize::Size1
+    }
+
+    fn n(&self) -> Option<u32> {
+        Some(self.buffer.len() as u32)
     }
 }

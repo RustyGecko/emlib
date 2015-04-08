@@ -4,7 +4,7 @@ use {adc, dma};
 
 use libc::c_void;
 use core::intrinsics::transmute;
-
+use core::prelude::*;
 
 #[derive(Copy, Clone)]
 pub struct Adc {
@@ -23,5 +23,9 @@ impl Readable for Adc {
 
     fn size(&self) -> dma::DataSize {
         dma::DataSize::Size1
+    }
+
+    fn n(&self) -> Option<u32> {
+        None
     }
 }
