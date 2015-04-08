@@ -6,7 +6,7 @@ pub fn source_signal_set(ch: u32, source: u32, signal: u32, edge: Edge) {
 }
 
 #[repr(u32)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Edge {
     Off  = 0x0 << 24,
     Pos  = 0x1 << 24,

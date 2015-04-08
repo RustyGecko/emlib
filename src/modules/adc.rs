@@ -6,7 +6,7 @@ use libc::c_void;
 use core::intrinsics::transmute;
 
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct Adc {
     pub device: &'static adc::Adc
 }

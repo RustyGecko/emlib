@@ -55,7 +55,7 @@ pub trait Writable {
     fn size(&self) -> dma::DataSize;
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Signal {
     AdcSingle,
     AdcScan,
@@ -167,14 +167,13 @@ impl Dma {
 pub type FuncPtr = extern fn(channel: u32, primary: bool, user: *mut Dma);
 
 #[repr(C)]
-#[derive(Copy)]
 pub struct CB {
     pub cb_func: FuncPtr,
     pub user_ptr: *const Dma,
     pub primary: u8,
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct Buffer {
     pub buffer: &'static [u8]
 }
