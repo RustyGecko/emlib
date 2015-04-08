@@ -99,7 +99,7 @@ impl Dma {
                 transmute(match self.device.channel {
                     0 => &DMA0_CB,
                     1 => &DMA1_CB,
-                    _ => panic!()
+                    _ => panic!("Channel not supported: {}", self.device.channel)
                 })
             }
         });
@@ -127,7 +127,7 @@ impl Dma {
                 transmute(match self.device.channel {
                     0 => &DMA0_CB,
                     1 => &DMA1_CB,
-                    _ => panic!()
+                    _ => panic!("Channel not supported: {}", self.device.channel)
                 })
             }
         });
