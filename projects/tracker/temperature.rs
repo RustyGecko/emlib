@@ -5,9 +5,32 @@ use emlib::modules::{dma, adc};
 use core::prelude::*;
 use core::default::Default;
 
-pub static mut DATA: [u8; 512] = [0; 512];
-
 use ram_store as store;
+
+static mut BUFFER : StaticBuffer<u8> = StaticBuffer {
+    index: 0,
+    data: [0; 512]
+};
+
+struct StaticBuffer<T> {
+    index: usize,
+    data: [T; 512]
+}
+
+impl<T> StaticBuffer<T> {
+
+    pub fn push(&mut self, val: T) -> bool {
+        self.data[self.index] = val;
+        self.index = self.index + 1;
+
+        if self.index >= 512 {
+            self.index = 0;
+            true
+        } else {
+            false
+        }
+    }
+}
 
 pub fn init(interval: u32, force_dma: bool) {
     cmu::clock_enable(cmu::Clock::HFPER, true);
@@ -83,8 +106,6 @@ fn setup_adc() {
     });
 }
 
-static mut INDEX: usize = 0;
-
 pub fn on_rtc() {
 
     let adc = emlib::adc::Adc::adc0();
@@ -95,13 +116,8 @@ pub fn on_rtc() {
     let data = adc.data_single_get();
 
     unsafe {
-        DATA[INDEX] = data as u8;
-        INDEX = INDEX + 1;
-
-        if INDEX >= 512 {
-            INDEX = 0;
-
-            store::write(&DATA);
+        if BUFFER.push(data as u8) {
+            store::write(&BUFFER.data);
         }
     }
 }
@@ -109,7 +125,7 @@ pub fn on_rtc() {
 fn cb(dma: &mut dma::Dma) {
 
     dma.refresh().then(cb);
-    store::write(unsafe { &DATA });
+    store::write(unsafe { &BUFFER.data });
 }
 
 fn setup_dma() {
@@ -120,7 +136,7 @@ fn setup_dma() {
 
     dma.start_basic(
         &adc::Adc { device: emlib::adc::Adc::adc0() },
-        &dma::Buffer { buffer: unsafe {&DATA} },
+        &dma::Buffer { buffer: unsafe {&BUFFER.data} },
         dma::Signal::AdcSingle
     ).then(cb);
 
