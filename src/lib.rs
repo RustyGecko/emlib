@@ -1,9 +1,10 @@
 #![no_std]
 #![crate_type="lib"]
 #![crate_name="emlib"]
-#![deny(warnings)]
+#![allow(warnings)]
 #![feature(lang_items, no_std, asm)]
 #![feature(core, collections, convert)]
+#![feature(slice_patterns)]
 
 #[macro_use]
 extern crate core;

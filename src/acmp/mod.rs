@@ -2,7 +2,7 @@ use core::intrinsics::transmute;
 use core::default::Default;
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct Init {
     pub full_bias:                   bool,
     pub half_bias:                   bool,
@@ -37,7 +37,7 @@ impl Default for Init {
 
 #[allow(non_snake_case)]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct Acmp {
     pub CTRL:     u32,
     pub INPUTSEL: u32,
@@ -74,7 +74,7 @@ impl Acmp {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum WarmTime {
     _4   = 0x0,
     _8   = 0x1,
@@ -87,7 +87,7 @@ pub enum WarmTime {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum HysteresisLevel {
     _0 = 0x0,
     _1 = 0x1,
@@ -100,7 +100,7 @@ pub enum HysteresisLevel {
 }
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct CapsenseInit {
     pub full_bias:                   bool,
     pub half_bias:                   bool,
@@ -130,7 +130,7 @@ impl Default for CapsenseInit {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum CapsenseResistor {
     _0 = 0x0,
     _1 = 0x1,
@@ -139,7 +139,7 @@ pub enum CapsenseResistor {
 }
 
 #[repr(u8)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Channel {
     _0        = 0x0,
     _1        = 0x1,

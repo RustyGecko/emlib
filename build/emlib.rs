@@ -1,13 +1,10 @@
-#![feature(core)]
-
 extern crate gcc;
 
 use gcc::Config;
 
 use std::env;
 use std::fs::File;
-use std::path::Path;
-use std::io::Error;
+use std::io;
 use std::io::prelude::*;
 
 #[cfg(feature = "dk3750")] use dk3750 as kit;
@@ -153,17 +150,17 @@ fn test_config(config: &mut Config) -> &mut Config {
         .file("test/tests/timer.c")
 }
 
-fn write_emlib_hash() -> Result<(), Error> {
+fn write_emlib_hash() -> Result<(), io::Error> {
     // Get OUT_DIR and convert it from OsString to String
     let out_dir = env::var("OUT_DIR").ok().unwrap();
     // Extract the hash
-    let hash_token: String = out_dir.rsplitn(2, '/').nth(1).unwrap()
-                                    .rsplitn(1, '-').nth(0).unwrap().to_string();
+    let hash_token: String = out_dir.rsplitn(3, '/').nth(1).unwrap()
+                                    .rsplit('-').nth(0).unwrap().to_string();
     let emlib_hash = format!("HASH={}", hash_token);
     println!("{}", emlib_hash);
 
     // Write to .emlib_hash file
     let emlib_hash_file = env::var("CARGO_MANIFEST_DIR").ok().unwrap() + "/.emlib_hash";
-    let mut f = try!(File::create(&Path::new(emlib_hash_file.as_slice())));
+    let mut f = try!(File::create(&emlib_hash_file));
     f.write_all(emlib_hash.as_bytes())
 }

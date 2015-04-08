@@ -27,7 +27,7 @@ const LED1: u32 = 3;
 const PB0: u32 = 9;
 const PB1: u32 = 10;
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 enum Mode {
     Receive,
     Send,

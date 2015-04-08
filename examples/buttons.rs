@@ -5,30 +5,26 @@
 extern crate core;
 extern crate emlib;
 
-use emlib::stk::io::{Button, Led};
+use emlib::stk::io::{PB0, PB1, LED0, LED1};
+use emlib::modules::{Button, Led};
 
 fn led0(_pin: u8) {
-    Led::led0().toggle();
+    LED0.toggle();
 }
 
 fn led1(_pin: u8) {
-    Led::led1().toggle();
+    LED1.toggle();
 }
 
 #[no_mangle]
 pub extern fn main() {
+    PB0.init();
+    PB1.init();
+    LED0.init();
+    LED1.init();
 
-    let btn0 = Button::pb0();
-    let btn1 = Button::pb1();
-
-    btn0.init();
-    btn1.init();
-
-    Led::init_led0();
-    Led::init_led1();
-
-    btn0.on_click(led0);
-    btn1.on_click(led1);
+    PB0.on_click(led0);
+    PB1.on_click(led1);
 
     loop {}
 }

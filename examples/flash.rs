@@ -7,7 +7,8 @@ extern crate emlib;
 
 use emlib::emdrv::flash;
 use emlib::stk::bsp;
-use emlib::stk::io::{Button, Led};
+use emlib::stk::io::{PB0, PB1, LED0, LED1};
+use emlib::modules::{Button, Led};
 
 const PAGE_SIZE: usize = 512;
 static PAGE_NUM: u32 = 0;
@@ -22,8 +23,8 @@ pub extern fn main() {
     bsp::ebi_init();
     flash::init(1);
 
-    let btn0 = Button::init_pb0();
-    let btn1 = Button::init_pb1();
+    PB0.init();
+    PB1.init();
 
     unsafe {
         SRC[0] = 0xB;
@@ -32,11 +33,11 @@ pub extern fn main() {
         SRC[3] = 0xF;
     }
 
-    btn0.on_click(write_data);
-    btn1.on_click(verify_data);
+    PB0.on_click(write_data);
+    PB1.on_click(verify_data);
 
-    Led::init_led0();
-    Led::init_led1();
+    LED0.init();
+    LED1.init();
 
     loop {}
 }
@@ -46,7 +47,7 @@ fn write_data(_pin: u8) {
     let addr = page_num_to_addr(PAGE_NUM);
 
     flash::write(addr, unsafe { &mut SRC });
-    Button::pb0().on_click(read_data);
+    PB0.on_click(read_data);
 }
 
 fn read_data(_pin: u8) {
@@ -54,17 +55,17 @@ fn read_data(_pin: u8) {
     let addr = page_num_to_addr(PAGE_NUM);
 
     flash::read(addr, unsafe { &mut DST });
-    Button::pb0().on_click(write_data);
+    PB0.on_click(write_data);
 }
 
 fn verify_data(_pin: u8) {
 
     if unsafe { DST[0] == 0xB && DST[1] == 0xE && DST[2] == 0xE && DST[3] == 0xF } {
-        Led::led0().on();
-        Led::led1().off();
+        LED0.on();
+        LED1.off();
     } else {
-        Led::led0().off();
-        Led::led1().on();
+        LED0.off();
+        LED1.on();
     }
 
 }

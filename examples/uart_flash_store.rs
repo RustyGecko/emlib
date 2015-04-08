@@ -10,7 +10,7 @@ extern crate collections;
 use core::prelude::*;
 use core::str::from_utf8;
 use core::default::Default;
-use core::iter::range_step;
+use core::iter::range_step_inclusive;
 
 use emlib::cmu;
 use emlib::emdrv::flash;
@@ -61,7 +61,7 @@ fn print_page(page: &[u8]) {
 
     let usart: Usart = Default::default();
 
-    for i in range_step(0, PAGE_SIZE, LINE_WIDTH) {
+    for i in range_step_inclusive(0, PAGE_SIZE, LINE_WIDTH) {
 
         let line = &unsafe { DATA }[i .. i+LINE_WIDTH];
 

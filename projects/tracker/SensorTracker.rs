@@ -18,7 +18,7 @@ use core::default::Default;
 use emlib::{chip, emu, rtc};
 use emlib::modules::{Usart};
 use emlib::utils::cmdparse::{get_command, Cmd};
-use emlib::stk::io::Button;
+use emlib::stk::io::{PB0, PB1};
 
 use ram_store as store;
 
@@ -37,8 +37,9 @@ pub extern fn main() {
 
     chip::init();
 
-    Button::init_pb0().on_click(btn0_cb);
-    Button::init_pb1().on_click(btn1_cb);
+    PB0.init(); PB0.on_click(btn0_cb);
+
+    PB1.init(); PB1.on_click(btn1_cb);
 
     temperature::init(10, false);
     store::init();
@@ -67,15 +68,11 @@ pub extern fn RTC_IRQHandler() {
 }
 
 fn btn0_cb(_pin: u8) {
-    unsafe {
-        MODE = State::Connected;
-    }
+    unsafe { MODE = State::Connected; }
 }
 
 fn btn1_cb(_pin: u8) {
-    unsafe {
-        MODE = State::Unconnected;
-    }
+    unsafe { MODE = State::Unconnected; }
 }
 
 fn read(page_num: usize)  {
