@@ -187,6 +187,9 @@ pub fn dma_control_block() -> &'static Descriptor {
     unsafe { transmute(GET_DMA_CONTROL_BLOCK()) }
 }
 
+pub fn null_cb() -> &'static CB {
+    unsafe { transmute(0 as *const CB) }
+}
 
 #[allow(warnings)]
 extern {
