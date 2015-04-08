@@ -9,9 +9,9 @@ BINARY_FORMAT = hex
 DEVICE=EFM32GG990F1024
 TARGET=thumbv7m-none-eabi
 
-EXAMPLE_DIR = examples
-EXAMPLES    = $(wildcard $(EXAMPLE_DIR)/*.rs)
-EX          = buttons_int
+DIR = examples
+EXAMPLES    = $(wildcard $(DIR)/*.rs)
+MAIN          = buttons_int
 
 TEST_DIR = test
 
@@ -21,12 +21,12 @@ FLASH = eACommander
 -include .emlib_hash
 
 TARGET_DIR = target/$(TARGET)/debug
-TARGET_OUT = $(TARGET_DIR)/$(EX)
+TARGET_OUT = $(TARGET_DIR)/$(MAIN)
 
 .PHONY: all setup proj flash test clean
 
 all:    proj
-proj:   $(EX).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
+proj:   $(MAIN).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
 
 AFLAGS   = -mthumb -mcpu=cortex-m3
 LDFLAGS  = $(AFLAGS) -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
@@ -48,7 +48,7 @@ FLASHFLAGS = --verify --reset
 
 -include test/Makefile
 
-%.elf: $(EXAMPLE_DIR)/$(@:.elf=.rs)
+%.elf: $(DIR)/$(@:.elf=.rs)
 	BUILD_ENV=prod cargo build --target thumbv7m-none-eabi --verbose $(FEATURES)
 	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
 	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
@@ -61,7 +61,7 @@ FLASHFLAGS = --verify --reset
 	$(OBJCOPY) -O binary $< $@
 
 flash: all
-	cp $(TARGET_DIR)/$(EX).$(BINARY_FORMAT) $(TARGET_DIR)/$(BINARY_NAME).$(BINARY_FORMAT)
+	cp $(TARGET_DIR)/$(MAIN).$(BINARY_FORMAT) $(TARGET_DIR)/$(BINARY_NAME).$(BINARY_FORMAT)
 	JLinkExe -commanderscript .execute.jlink || echo ""
 
 burn: all
