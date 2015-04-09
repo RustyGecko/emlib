@@ -6,31 +6,12 @@ use core::prelude::*;
 use core::default::Default;
 
 use ram_store as store;
+use buffer::FixedSizeBuffer512;
 
-static mut BUFFER : StaticBuffer<u8> = StaticBuffer {
+static mut BUFFER : FixedSizeBuffer512<u8> = FixedSizeBuffer512 {
     index: 0,
     data: [0; 512]
 };
-
-struct StaticBuffer<T> {
-    index: usize,
-    data: [T; 512]
-}
-
-impl<T> StaticBuffer<T> {
-
-    pub fn push(&mut self, val: T) -> bool {
-        self.data[self.index] = val;
-        self.index = self.index + 1;
-
-        if self.index >= 512 {
-            self.index = 0;
-            true
-        } else {
-            false
-        }
-    }
-}
 
 pub fn init(interval: u32, force_dma: bool) {
     cmu::clock_enable(cmu::Clock::HFPER, true);
@@ -117,7 +98,7 @@ pub fn on_rtc() {
 
     unsafe {
         if BUFFER.push(data as u8) {
-            store::write(&BUFFER.data);
+            store::write(store::Kind::InternalTemperature, &BUFFER.data);
         }
     }
 }
@@ -125,7 +106,7 @@ pub fn on_rtc() {
 fn cb(dma: &mut dma::Dma) {
 
     dma.refresh().then(cb);
-    store::write(unsafe { &BUFFER.data });
+    store::write(store::Kind::InternalTemperature, unsafe { &BUFFER.data });
 }
 
 fn setup_dma() {

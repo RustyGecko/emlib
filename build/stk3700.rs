@@ -8,4 +8,7 @@ pub fn kit_config(config: &mut Config) -> &mut Config {
 
         .file("efm32-common/kits/common/bsp/bsp_stk.c")
         .file("efm32-common/kits/common/bsp/bsp_bcc.c")
+
+        .include("src/emdrv")
+        .file("src/emdrv/i2c1drv.c")
 }

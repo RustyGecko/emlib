@@ -20,10 +20,13 @@ use emlib::modules::{Usart};
 use emlib::utils::cmdparse::{get_command, Cmd};
 use emlib::stk::io::{PB0, PB1};
 
+
 use ram_store as store;
 
-mod temperature;
+mod hr_temp;
+mod internal_temperature;
 mod ram_store;
+mod buffer;
 
 enum State {
     Connected,
@@ -41,7 +44,8 @@ pub extern fn main() {
 
     PB1.init(); PB1.on_click(btn1_cb);
 
-    temperature::init(10, false);
+    hr_temp::init();
+    internal_temperature::init(100, false);
     store::init();
 
     let mut uart: Usart = Default::default();
@@ -53,7 +57,7 @@ pub extern fn main() {
                 Cmd::Read(page) => read(page as usize),
                 _ => ()
             },
-            _ => emu::enter_em3(true)
+            _ => (),
         }
     }
 }
@@ -63,7 +67,8 @@ pub extern fn main() {
 pub extern fn RTC_IRQHandler() {
 
     rtc::int_clear(rtc::RTC_IEN_COMP0);
-    temperature::on_rtc();
+    internal_temperature::on_rtc();
+    hr_temp::on_rtc();
 
 }
 
@@ -83,7 +88,7 @@ fn read(page_num: usize)  {
 
     let mut page: [u8; 512] = [0; 512];
 
-    store::read(page_num, &mut page);
+    store::read(store::Kind::Temperature, page_num, &mut page);
 
     for ch in page.iter() {
         let s = format!("{:02x} ", ch);

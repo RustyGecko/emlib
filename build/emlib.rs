@@ -65,6 +65,8 @@ fn common_config(config: &mut Config) -> &mut Config {
         .flag("-mthumb")
         .flag("-mcpu=cortex-m3")
         .flag(&format!("-fdebug-prefix-map={}=.", path))
+        .flag(&format!("-fdebug-prefix-map=/home/vagrant=."))
+
 }
 
 fn prod_config(config: &mut Config) -> &mut Config {
@@ -109,6 +111,8 @@ fn prod_config(config: &mut Config) -> &mut Config {
 
         .include("efm32-common/kits/common/drivers")
         .file("efm32-common/kits/common/drivers/nandflash.c")
+        .file("efm32-common/kits/common/drivers/i2cdrv.c")
+        .file("efm32-common/kits/common/drivers/si7013.c")
         .file("efm32-common/kits/common/drivers/dmactrl.c")
         .file("efm32-common/kits/common/drivers/retargetio.c")
 }
