@@ -4,7 +4,7 @@ uint32_t STATIC_INLINE_EBI_IntGet() {
     return EBI_IntGet();
 }
 
-uint32_t STATIC_INLINE_EBI_IntClear(uint32_t flags) {
+void STATIC_INLINE_EBI_IntClear(uint32_t flags) {
     EBI_IntClear(flags);
 }
 
