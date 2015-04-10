@@ -14,12 +14,14 @@ extern crate collections;
 
 use core::prelude::*;
 use core::default::Default;
+use core::fmt::Debug;
+
+use collections::vec::Vec;
 
 use emlib::{chip, emu, rtc};
 use emlib::modules::{Usart};
 use emlib::utils::cmdparse::{get_command, Cmd};
 use emlib::stk::io::{PB0, PB1};
-
 
 use ram_store as store;
 
@@ -27,6 +29,7 @@ mod hr_temp;
 mod internal_temperature;
 mod ram_store;
 mod buffer;
+mod circular_buffer;
 
 enum State {
     Connected,
@@ -45,6 +48,11 @@ pub extern fn main() {
     PB1.init(); PB1.on_click(btn1_cb);
     store::init();
 
+    let mut it_store = Vec::new();
+    let mut hr_store = Vec::new();
+    let mut t_store = Vec::new();
+
+
     hr_temp::init();
     internal_temperature::init(100, false);
 
@@ -54,11 +62,23 @@ pub extern fn main() {
     loop {
         match unsafe { &MODE } {
             &State::Connected => match get_command() {
-                Cmd::Read(page) => read(page as usize),
+                Cmd::Read(page) => {
+                    match page % 3 {
+                        0 => read(&it_store[..]),
+                        1 => read(&hr_store[..]),
+                        2 => read(&t_store[..]),
+                        _ => ()
+                    }
+                },
                 _ => ()
             },
             _ => {
-                empty_queues();
+                empty_queues(
+                    &mut it_store,
+                    &mut hr_store,
+                    &mut t_store
+                );
+                emu::enter_em2(true);
             },
         }
     }
@@ -74,6 +94,31 @@ pub extern fn RTC_IRQHandler() {
 
 }
 
+fn empty_queues(it_store: &mut Vec<u8>, hr_store: &mut Vec<u32>, t_store: &mut Vec<i32>) {
+
+    loop {
+        match internal_temperature::pop() {
+            Ok(val) => it_store.push(val),
+            Err(_) => break,
+        }
+    }
+
+    loop {
+        match hr_temp::pop_hr() {
+            Ok(val) => hr_store.push(val),
+            Err(_) => break,
+        }
+    }
+
+    loop {
+        match hr_temp::pop_temp() {
+            Ok(val) => t_store.push(val),
+            Err(_) => break,
+        }
+    }
+
+}
+
 fn btn0_cb(_pin: u8) {
     unsafe { MODE = State::Connected; }
 }
@@ -82,18 +127,11 @@ fn btn1_cb(_pin: u8) {
     unsafe { MODE = State::Unconnected; }
 }
 
-fn read(page_num: usize)  {
+fn read<T: Debug>(samples: &[T])  {
     let uart: Usart = Default::default();
 
-    let s = format!("Printing data starting at {}\n\r", page_num);
-    uart.write_line(&s);
-
-    let mut page: [u8; 512] = [0; 512];
-
-    store::read(page_num, &mut page);
-
-    for ch in page.iter() {
-        let s = format!("{:02x} ", ch);
+    for sample in samples {
+        let s = format!("{:?} ", sample);
         uart.write_line(&s);
     }
 

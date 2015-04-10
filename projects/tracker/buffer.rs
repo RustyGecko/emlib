@@ -7,15 +7,12 @@ macro_rules! def_fixed_size_buffer(
 
         impl<T> $name<T> {
 
-            pub fn push(&mut self, val: T) -> bool {
+            pub fn push(&mut self, val: T) {
                 self.data[self.index % $size] = val;
                 self.index = self.index + 1;
 
                 if self.index >= $size {
                     self.index = 0;
-                    true
-                } else {
-                    false
                 }
             }
         }

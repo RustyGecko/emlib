@@ -6,11 +6,12 @@ use core::prelude::*;
 use core::default::Default;
 
 use ram_store as store;
-use buffer::FixedSizeBuffer512;
+use circular_buffer::CircularBuffer4;
 
-static mut BUFFER : FixedSizeBuffer512<u8> = FixedSizeBuffer512 {
-    index: 0,
-    data: [0; 512]
+static mut BUFFER: CircularBuffer4<u8> = CircularBuffer4 {
+    tail_index: 0,
+    head_index: 0,
+    data: [0; 4]
 };
 
 pub fn init(interval: u32, force_dma: bool) {
@@ -18,7 +19,6 @@ pub fn init(interval: u32, force_dma: bool) {
 
     if force_dma {
         setup_timer(interval);
-        setup_dma();
         setup_adc();
     } else {
         setup_rtc(interval);
@@ -96,22 +96,26 @@ pub fn on_rtc() {
 
     let data = adc.data_single_get();
 
-    unsafe {
-        if BUFFER.push(data as u8) {
-            store::write(0, &BUFFER.data);
-        }
+
+    match unsafe { BUFFER.push(data as u8) } {
+        Err(msg) => panic!("{}", msg),
+        Ok(()) => (),
     }
 }
 
+pub fn pop() -> Result<u8, &'static str> {
+    unsafe { BUFFER.pop() }
+}
+/*
 fn cb(dma: &mut dma::Dma) {
 
     dma.refresh().then(cb);
     store::write(0, unsafe { &BUFFER.data });
 }
-
+*/
 fn setup_dma() {
 
-    dma::init();
+    /*dma::init();
 
     let dma: &mut dma::Dma = unsafe { &mut dma::dma0 };
 
@@ -119,6 +123,6 @@ fn setup_dma() {
         &adc::Adc { device: emlib::adc::Adc::adc0() },
         &dma::Buffer { buffer: unsafe {&BUFFER.data} },
         dma::Signal::AdcSingle
-    ).then(cb);
+    ).then(cb);*/
 
 }

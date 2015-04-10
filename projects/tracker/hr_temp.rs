@@ -1,21 +1,25 @@
 use core::default::Default;
 use core::intrinsics::transmute;
+use core::prelude::*;
 
 use emlib::emdrv;
 use emlib::sensors::si7013;
 use emlib::i2c;
 
+use circular_buffer::CircularBuffer4;
 use buffer::FixedSizeBuffer128;
 use ram_store as store;
 
-static mut RELATIVE_HUMIDITY_BUFFER: FixedSizeBuffer128<u32> = FixedSizeBuffer128 {
-    index: 0,
-    data: [0; 128]
+static mut RELATIVE_HUMIDITY_BUFFER: CircularBuffer4<u32> = CircularBuffer4 {
+    tail_index: 0,
+    head_index: 0,
+    data: [0; 4]
 };
 
-static mut TEMPERATURE_BUFFER: FixedSizeBuffer128<i32> = FixedSizeBuffer128 {
-    index: 0,
-    data: [0; 128]
+static mut TEMPERATURE_BUFFER: CircularBuffer4<i32> = CircularBuffer4 {
+    tail_index: 0,
+    head_index: 0,
+    data: [0; 4]
 };
 
 //let sensor = si7013::init(i2c::I2C::i2c1(), si7013::ADDR_0);
@@ -42,16 +46,14 @@ pub fn on_rtc() {
 
     let (relative_humidity, temperature) = measure();
 
-    unsafe {
-        if RELATIVE_HUMIDITY_BUFFER.push(relative_humidity) {
-            store::write(1, &RELATIVE_HUMIDITY_BUFFER.data);
-        }
-    }
+    unsafe { RELATIVE_HUMIDITY_BUFFER.push(relative_humidity); }
+    unsafe { TEMPERATURE_BUFFER.push(temperature); }
+}
 
-    unsafe {
-        if TEMPERATURE_BUFFER.push(temperature) {
-            store::write(2, &TEMPERATURE_BUFFER.data);
-        }
-    }
+pub fn pop_hr() -> Result<u32, &'static str> {
+    unsafe { RELATIVE_HUMIDITY_BUFFER.pop() }
+}
 
+pub fn pop_temp() -> Result<i32, &'static str> {
+    unsafe { TEMPERATURE_BUFFER.pop() }
 }
