@@ -44,13 +44,13 @@ pub fn on_rtc() {
 
     unsafe {
         if RELATIVE_HUMIDITY_BUFFER.push(relative_humidity) {
-            store::write(store::Kind::HumidityRelative, &RELATIVE_HUMIDITY_BUFFER.data);
+            store::write(1, &RELATIVE_HUMIDITY_BUFFER.data);
         }
     }
 
     unsafe {
         if TEMPERATURE_BUFFER.push(temperature) {
-            store::write(store::Kind::Temperature, &TEMPERATURE_BUFFER.data);
+            store::write(2, &TEMPERATURE_BUFFER.data);
         }
     }
 

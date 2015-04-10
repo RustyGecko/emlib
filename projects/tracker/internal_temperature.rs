@@ -98,7 +98,7 @@ pub fn on_rtc() {
 
     unsafe {
         if BUFFER.push(data as u8) {
-            store::write(store::Kind::InternalTemperature, &BUFFER.data);
+            store::write(0, &BUFFER.data);
         }
     }
 }
@@ -106,7 +106,7 @@ pub fn on_rtc() {
 fn cb(dma: &mut dma::Dma) {
 
     dma.refresh().then(cb);
-    store::write(store::Kind::InternalTemperature, unsafe { &BUFFER.data });
+    store::write(0, unsafe { &BUFFER.data });
 }
 
 fn setup_dma() {

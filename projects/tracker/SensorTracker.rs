@@ -43,10 +43,10 @@ pub extern fn main() {
     PB0.init(); PB0.on_click(btn0_cb);
 
     PB1.init(); PB1.on_click(btn1_cb);
+    store::init();
 
     hr_temp::init();
     internal_temperature::init(100, false);
-    store::init();
 
     let mut uart: Usart = Default::default();
     uart.init_async();
@@ -57,7 +57,9 @@ pub extern fn main() {
                 Cmd::Read(page) => read(page as usize),
                 _ => ()
             },
-            _ => (),
+            _ => {
+                empty_queues();
+            },
         }
     }
 }
@@ -88,7 +90,7 @@ fn read(page_num: usize)  {
 
     let mut page: [u8; 512] = [0; 512];
 
-    store::read(store::Kind::Temperature, page_num, &mut page);
+    store::read(page_num, &mut page);
 
     for ch in page.iter() {
         let s = format!("{:02x} ", ch);
