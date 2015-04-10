@@ -83,6 +83,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/emlib/src/em_i2c.c")
         .file("efm32-common/emlib/src/em_leuart.c")
         .file("efm32-common/emlib/src/em_lesense.c")
+        .file("efm32-common/emlib/src/em_prs.c")
         .file("efm32-common/emlib/src/em_rtc.c")
         .file("efm32-common/emlib/src/em_system.c")
         .file("efm32-common/emlib/src/em_timer.c")

@@ -2,6 +2,9 @@ use core::default::Default;
 use core::intrinsics::transmute;
 
 pub const STATUS_SINGLEACT:u32 = 0x1;
+pub const IEN_SINGLE: u32 = 0x1 << 0;
+
+pub const IF_SINGLE: u32 = (0x1 << 0);
 
 #[repr(C)]
 #[derive(Copy, Clone)]
