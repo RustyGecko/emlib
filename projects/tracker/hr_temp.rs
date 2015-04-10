@@ -42,7 +42,7 @@ pub fn measure() -> (u32, i32) {
     (relative_humidity, temperature)
 }
 
-pub fn on_rtc() {
+pub fn perform_measurement() {
 
     let (relative_humidity, temperature) = measure();
 

@@ -18,8 +18,9 @@ use core::fmt::Debug;
 
 use collections::vec::Vec;
 
-use emlib::{chip, emu, rtc};
-use emlib::modules::{Usart};
+use emlib::{chip, cmu, emu, rtc};
+use emlib::modules::Usart;
+use emlib::cmsis::nvic;
 use emlib::utils::cmdparse::{get_command, Cmd};
 use emlib::stk::io::{PB0, PB1};
 
@@ -35,6 +36,8 @@ enum State {
     Connected,
     Unconnected
 }
+
+const INTERVAL: u32 = 100; // Time in ms between each sample
 
 static mut MODE: State = State::Unconnected;
 
@@ -54,7 +57,9 @@ pub extern fn main() {
 
 
     hr_temp::init();
-    internal_temperature::init(100, false);
+    internal_temperature::init();
+
+    setup_rtc(100);
 
     let mut uart: Usart = Default::default();
     uart.init_async();
@@ -84,13 +89,37 @@ pub extern fn main() {
     }
 }
 
+fn setup_rtc(interval: u32) {
+
+    const LFXO_FREQ: u32 = 32768;
+    const RTC_TIMEOUT_S: u32 = 2;
+
+    cmu::clock_enable(cmu::Clock::CORELE, true);
+    cmu::clock_enable(cmu::Clock::RTC, true);
+    cmu::clock_select_set(cmu::Clock::LFA, cmu::Select::LFXO);
+
+    rtc::init(&rtc::Init {
+        enable: false,
+        ..Default::default()
+    });
+
+    let freq = (LFXO_FREQ * RTC_TIMEOUT_S) / 2;
+    rtc::compare_set(0, (freq / 1000) * interval);
+
+    nvic::enable_irq(nvic::IRQn::RTC);
+    rtc::int_enable(rtc::RTC_IEN_COMP0);
+
+    rtc::enable(true);
+
+}
+
 #[no_mangle]
 #[allow(non_snake_case)]
 pub extern fn RTC_IRQHandler() {
 
     rtc::int_clear(rtc::RTC_IEN_COMP0);
-    internal_temperature::on_rtc();
-    hr_temp::on_rtc();
+    internal_temperature::perform_measurement();
+    hr_temp::perform_measurement();
 
 }
 
