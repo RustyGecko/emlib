@@ -18,7 +18,7 @@ use core::fmt::Debug;
 
 use collections::vec::Vec;
 
-use emlib::{chip, cmu, emu, rtc};
+use emlib::{adc, chip, cmu, emu, i2c, rtc};
 use emlib::modules::Usart;
 use emlib::cmsis::nvic;
 use emlib::utils::cmdparse::{get_command, Cmd};
@@ -26,6 +26,9 @@ use emlib::stk::io::{PB0, PB1};
 
 use ram_store as store;
 use fixed_size_vector::FixedSizeVector;
+use sensor::Sensor;
+
+use circular_buffer::CircularBuffer4;
 
 mod hr_temp;
 mod internal_temperature;
@@ -33,6 +36,7 @@ mod ram_store;
 mod buffer;
 mod circular_buffer;
 mod fixed_size_vector;
+mod sensor;
 
 enum State {
     Connected,
@@ -52,13 +56,20 @@ pub extern fn main() {
 
     PB1.init(); PB1.on_click(btn1_cb);
 
+    cmu::clock_enable(cmu::Clock::ADC0, true);
+    let it_sense = internal_temperature::InternalTemperature::new(adc::Adc::adc0());
+    it_sense.init();
+
+    let hr_temp_sense = hr_temp::HumidityRelativeAndTemperatureSensor::new(i2c::I2C::i2c1());
+    hr_temp_sense.init();
+
+    if !hr_temp_sense.detect() {
+        panic!("Could not detect HumidityRelative and Temperature Sensor");
+    }
+
     let mut it_store = FixedSizeVector::new(1024);
     let mut hr_store = FixedSizeVector::new(1024);
     let mut t_store = FixedSizeVector::new(1024);
-
-
-    hr_temp::init();
-    internal_temperature::init();
 
     setup_rtc(INTERVAL);
 
@@ -114,34 +125,70 @@ fn setup_rtc(interval: u32) {
 
 }
 
+static mut IT_BUFFER: CircularBuffer4<u8> = CircularBuffer4 {
+    tail_index: 0,
+    head_index: 0,
+    data: [0; 4]
+};
+
+static mut HR_BUFFER: CircularBuffer4<u32> = CircularBuffer4 {
+    tail_index: 0,
+    head_index: 0,
+    data: [0; 4]
+};
+
+static mut T_BUFFER: CircularBuffer4<i32> = CircularBuffer4 {
+    tail_index: 0,
+    head_index: 0,
+    data: [0; 4]
+};
+
+
 #[no_mangle]
 #[allow(non_snake_case)]
 pub extern fn RTC_IRQHandler() {
 
     rtc::int_clear(rtc::RTC_IEN_COMP0);
-    internal_temperature::perform_measurement();
-    hr_temp::perform_measurement();
+
+    let mut it_sense = internal_temperature::InternalTemperature::new(adc::Adc::adc0());
+    match unsafe { IT_BUFFER.push(it_sense.measure()) } {
+        Ok(_) => (),
+        Err(msg) => panic!("{}", msg),
+    }
+
+    let mut hr_temp_sense = hr_temp::HumidityRelativeAndTemperatureSensor::new(i2c::I2C::i2c1());
+    let (relative_humidity, temperature) = hr_temp_sense.measure();
+
+    match unsafe { HR_BUFFER.push(relative_humidity) } {
+        Ok(_) => (),
+        Err(msg) => panic!("{}", msg),
+    }
+
+    match unsafe { T_BUFFER.push(temperature)} {
+        Ok(_) => (),
+        Err(msg) => panic!("{}", msg),
+    }
 
 }
 
 fn empty_queues(it_store: &mut FixedSizeVector<u8>, hr_store: &mut FixedSizeVector<u32>, t_store: &mut FixedSizeVector<i32>) {
 
     loop {
-        match internal_temperature::pop() {
+        match unsafe { IT_BUFFER.pop() } {
             Ok(val) => it_store.push(val),
             Err(_) => break,
         }
     }
 
     loop {
-        match hr_temp::pop_hr() {
+        match unsafe { HR_BUFFER.pop() } {
             Ok(val) => hr_store.push(val),
             Err(_) => break,
         }
     }
 
     loop {
-        match hr_temp::pop_temp() {
+        match unsafe { T_BUFFER.pop() } {
             Ok(val) => t_store.push(val),
             Err(_) => break,
         }
