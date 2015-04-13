@@ -150,24 +150,25 @@ pub extern fn RTC_IRQHandler() {
 
     rtc::int_clear(rtc::RTC_IEN_COMP0);
 
+
     let mut it_sense = internal_temperature::InternalTemperature::new(adc::Adc::adc0());
-    match unsafe { IT_BUFFER.push(it_sense.measure()) } {
-        Ok(_) => (),
-        Err(msg) => panic!("{}", msg),
-    }
+
+    unsafe { IT_BUFFER.push(it_sense.measure()) }
+      .ok()
+      .expect("Circular buffer is full");
+
 
     let mut hr_temp_sense = hr_temp::HumidityRelativeAndTemperatureSensor::new(i2c::I2C::i2c1());
     let (relative_humidity, temperature) = hr_temp_sense.measure();
 
-    match unsafe { HR_BUFFER.push(relative_humidity) } {
-        Ok(_) => (),
-        Err(msg) => panic!("{}", msg),
-    }
+    unsafe { HR_BUFFER.push(relative_humidity) }
+      .ok()
+      .expect("Circular buffer is full");
 
-    match unsafe { T_BUFFER.push(temperature)} {
-        Ok(_) => (),
-        Err(msg) => panic!("{}", msg),
-    }
+    unsafe { T_BUFFER.push(temperature)}
+      .ok()
+      .expect("Circular buffer is full");
+
 
 }
 
