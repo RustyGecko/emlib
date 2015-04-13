@@ -196,7 +196,6 @@ fn read<T: Debug>(samples: &[T])  {
         uart.write_line(&s);
     }
 
-    uart.putc('\n' as u8);
-    uart.putc('\r' as u8);
+    uart.newline();
 
 }
