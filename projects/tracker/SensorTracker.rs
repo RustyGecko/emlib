@@ -25,19 +25,21 @@ use emlib::utils::cmdparse::{get_command, Cmd};
 use emlib::stk::io::{PB0, PB1};
 
 use ram_store as store;
+use fixed_size_vector::FixedSizeVector;
 
 mod hr_temp;
 mod internal_temperature;
 mod ram_store;
 mod buffer;
 mod circular_buffer;
+mod fixed_size_vector;
 
 enum State {
     Connected,
     Unconnected
 }
 
-const INTERVAL: u32 = 100; // Time in ms between each sample
+const INTERVAL: u32 = 50; // Time in ms between each sample
 
 static mut MODE: State = State::Unconnected;
 
@@ -49,17 +51,16 @@ pub extern fn main() {
     PB0.init(); PB0.on_click(btn0_cb);
 
     PB1.init(); PB1.on_click(btn1_cb);
-    store::init();
 
-    let mut it_store = Vec::new();
-    let mut hr_store = Vec::new();
-    let mut t_store = Vec::new();
+    let mut it_store = FixedSizeVector::new(1024);
+    let mut hr_store = FixedSizeVector::new(1024);
+    let mut t_store = FixedSizeVector::new(1024);
 
 
     hr_temp::init();
     internal_temperature::init();
 
-    setup_rtc(100);
+    setup_rtc(INTERVAL);
 
     let mut uart: Usart = Default::default();
     uart.init_async();
@@ -123,7 +124,7 @@ pub extern fn RTC_IRQHandler() {
 
 }
 
-fn empty_queues(it_store: &mut Vec<u8>, hr_store: &mut Vec<u32>, t_store: &mut Vec<i32>) {
+fn empty_queues(it_store: &mut FixedSizeVector<u8>, hr_store: &mut FixedSizeVector<u32>, t_store: &mut FixedSizeVector<i32>) {
 
     loop {
         match internal_temperature::pop() {
@@ -145,7 +146,6 @@ fn empty_queues(it_store: &mut Vec<u8>, hr_store: &mut Vec<u32>, t_store: &mut V
             Err(_) => break,
         }
     }
-
 }
 
 fn btn0_cb(_pin: u8) {
