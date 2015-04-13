@@ -52,10 +52,11 @@ pub extern fn main() {
 
     chip::init();
 
+    // Initialize buttons
     PB0.init(); PB0.on_click(btn0_cb);
-
     PB1.init(); PB1.on_click(btn1_cb);
 
+    // Setup Sensors
     cmu::clock_enable(cmu::Clock::ADC0, true);
     let it_sense = internal_temperature::InternalTemperature::new(adc::Adc::adc0());
     it_sense.init();
@@ -67,14 +68,17 @@ pub extern fn main() {
         panic!("Could not detect HumidityRelative and Temperature Sensor");
     }
 
+    // Setup RAM buffers for sensor samples
     let mut it_store = FixedSizeVector::new(1024);
     let mut hr_store = FixedSizeVector::new(1024);
     let mut t_store = FixedSizeVector::new(1024);
 
-    setup_rtc(INTERVAL);
-
+    // Setup the uart for communication with PC
     let mut uart: Usart = Default::default();
     uart.init_async();
+
+    // Start the RTC clock to provide interrupts
+    setup_rtc(INTERVAL);
 
     loop {
         match unsafe { &MODE } {
@@ -172,7 +176,10 @@ pub extern fn RTC_IRQHandler() {
 
 }
 
-fn empty_queues(it_store: &mut FixedSizeVector<u8>, hr_store: &mut FixedSizeVector<u32>, t_store: &mut FixedSizeVector<i32>) {
+fn empty_queues(
+    it_store: &mut FixedSizeVector<u8>,
+    hr_store: &mut FixedSizeVector<u32>,
+    t_store: &mut FixedSizeVector<i32>) {
 
     it_store.push_all(&unsafe { IT_BUFFER.pop_all() }[..]);
     hr_store.push_all(&unsafe { HR_BUFFER.pop_all() }[..]);
