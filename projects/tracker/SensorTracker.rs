@@ -173,26 +173,10 @@ pub extern fn RTC_IRQHandler() {
 
 fn empty_queues(it_store: &mut FixedSizeVector<u8>, hr_store: &mut FixedSizeVector<u32>, t_store: &mut FixedSizeVector<i32>) {
 
-    loop {
-        match unsafe { IT_BUFFER.pop() } {
-            Ok(val) => it_store.push(val),
-            Err(_) => break,
-        }
-    }
+    it_store.push_all(&unsafe { IT_BUFFER.pop_all() }[..]);
+    hr_store.push_all(&unsafe { HR_BUFFER.pop_all() }[..]);
+    t_store.push_all(&unsafe { T_BUFFER.pop_all() }[..]);
 
-    loop {
-        match unsafe { HR_BUFFER.pop() } {
-            Ok(val) => hr_store.push(val),
-            Err(_) => break,
-        }
-    }
-
-    loop {
-        match unsafe { T_BUFFER.pop() } {
-            Ok(val) => t_store.push(val),
-            Err(_) => break,
-        }
-    }
 }
 
 fn btn0_cb(_pin: u8) {

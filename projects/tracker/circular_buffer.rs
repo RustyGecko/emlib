@@ -1,4 +1,5 @@
 use core::prelude::*;
+use collections::vec::Vec;
 
 const WRAP_BIT: usize = 1 << 31;
 
@@ -78,6 +79,24 @@ macro_rules! def_fixed_size_buffer(
                     Ok(val)
                 }
             }
+
+            pub fn pop_all(&mut self) -> Vec<T> {
+                self.by_ref().collect::<Vec<T>>()
+            }
+        }
+
+        impl<T: Copy> Iterator for $name<T> {
+
+            type Item = T;
+
+            fn next(&mut self) -> Option<T> {
+
+                match self.pop() {
+                    Ok(val) => Some(val),
+                    Err(_) => None,
+                }
+            }
+
         }
     )
 );

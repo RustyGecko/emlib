@@ -1,6 +1,7 @@
 #![allow(unused_attributes)]
 #![feature(collections, core)]
 
+use core::clone::Clone;
 use collections::vec::Vec;
 use core::ops;
 
@@ -11,7 +12,7 @@ pub struct FixedSizeVector<T> {
     vec: Vec<T>
 }
 
-impl<T> FixedSizeVector<T> {
+impl<T: Clone> FixedSizeVector<T> {
 
     pub fn new(size: usize) -> FixedSizeVector<T> {
         FixedSizeVector {
@@ -23,6 +24,14 @@ impl<T> FixedSizeVector<T> {
 
         if !self.is_full() {
             self.vec.push(value);
+        }
+
+    }
+
+    pub fn push_all(&mut self, other: &[T]) {
+
+        if self.len() + other.len() <= self.capacity() {
+            self.vec.push_all(other);
         }
 
     }
@@ -110,5 +119,17 @@ mod tests {
 
         assert_eq!(&vec[..], &[3]);
     }
+
+    #[test]
+    fn should_provide_push_all() {
+        let v1 = vec![1, 2, 3];
+
+        let mut vec = FixedSizeVector::new(3);
+
+        vec.push_all(&v1[..]);
+
+        assert_eq!(&vec[..], &[1, 2, 3]);
+    }
+
 
 }
