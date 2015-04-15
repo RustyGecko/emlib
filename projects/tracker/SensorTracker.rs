@@ -23,6 +23,7 @@ use emlib::modules::Usart;
 use emlib::cmsis::nvic;
 use emlib::utils::cmdparse::{get_command, Cmd};
 use emlib::stk::io::{PB0, PB1};
+use emlib::stk::bsp;
 
 use ram_store as store;
 use fixed_size_vector::FixedSizeVector;
@@ -51,6 +52,7 @@ static mut MODE: State = State::Unconnected;
 pub extern fn main() {
 
     chip::init();
+    bsp::trace_swo_setup();
 
     // Initialize buttons
     PB0.init(); PB0.on_click(btn0_cb);
