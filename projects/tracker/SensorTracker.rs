@@ -35,6 +35,7 @@ mod hr_temp;
 mod internal_temperature;
 mod ram_store;
 mod buffer;
+#[macro_use]
 mod circular_buffer;
 mod fixed_size_vector;
 mod sensor;
@@ -129,24 +130,9 @@ fn setup_rtc(interval: u32) {
 
 }
 
-static mut IT_BUFFER: CircularBuffer4<u8> = CircularBuffer4 {
-    tail_index: 0,
-    head_index: 0,
-    data: [0; 4]
-};
-
-static mut HR_BUFFER: CircularBuffer4<u32> = CircularBuffer4 {
-    tail_index: 0,
-    head_index: 0,
-    data: [0; 4]
-};
-
-static mut T_BUFFER: CircularBuffer4<i32> = CircularBuffer4 {
-    tail_index: 0,
-    head_index: 0,
-    data: [0; 4]
-};
-
+static mut IT_BUFFER: CircularBuffer4<u8>  = CIRCULAR_BUFFER_INIT!(CircularBuffer4, 4);
+static mut HR_BUFFER: CircularBuffer4<u32> = CIRCULAR_BUFFER_INIT!(CircularBuffer4, 4);
+static mut T_BUFFER:  CircularBuffer4<i32> = CIRCULAR_BUFFER_INIT!(CircularBuffer4, 4);
 
 #[no_mangle]
 #[allow(non_snake_case)]

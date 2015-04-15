@@ -1,9 +1,15 @@
+#![allow(unused_attributes)]
+#![feature(collections, core)]
+
 use core::prelude::*;
 use collections::vec::Vec;
 
+#[cfg(test)] extern crate collections;
+#[cfg(test)] extern crate core;
+
 const WRAP_BIT: usize = 1 << 31;
 
-macro_rules! def_fixed_size_buffer(
+macro_rules! def_circular_buffer(
     ($name:ident, $size:expr) => (
 
         pub struct $name<T> {
@@ -101,29 +107,32 @@ macro_rules! def_fixed_size_buffer(
     )
 );
 
-def_fixed_size_buffer!(CircularBuffer4, 4);
-def_fixed_size_buffer!(CircularBuffer8, 8);
-def_fixed_size_buffer!(CircularBuffer16, 16);
-def_fixed_size_buffer!(CircularBuffer128, 128);
-def_fixed_size_buffer!(CircularBuffer512, 512);
+macro_rules! CIRCULAR_BUFFER_INIT (
+    ($name:ident, $size:expr) => (
+        $name {
+            tail_index: 0,
+            head_index: 0,
+            data: [0; $size]
+        }
+    )
+);
+
+
+def_circular_buffer!(CircularBuffer4, 4);
+def_circular_buffer!(CircularBuffer8, 8);
+def_circular_buffer!(CircularBuffer16, 16);
+def_circular_buffer!(CircularBuffer128, 128);
+def_circular_buffer!(CircularBuffer512, 512);
 
 #[cfg(test)]
 mod tests {
 
     use super::*;
 
-    fn new() -> CircularBuffer4<u8> {
-        CircularBuffer4 {
-            tail_index: 0,
-            head_index: 0,
-            data: [0; 4]
-        }
-    }
-
     #[test]
     fn should_read_and_write_4_elements() {
 
-        let mut buf = new();
+        let mut buf = CIRCULAR_BUFFER_INIT!(CircularBuffer4, 4);
 
         assert!(buf.push(1).is_ok());
         assert!(buf.push(2).is_ok());
@@ -140,7 +149,7 @@ mod tests {
     #[test]
     fn initial_read_should_trigger_underflow() {
 
-        let mut buf = new();
+        let mut buf = CIRCULAR_BUFFER_INIT!(CircularBuffer4, 4);
 
         assert_eq!(buf.pop(), Err("Underflow"));
 
@@ -149,7 +158,7 @@ mod tests {
     #[test]
     fn five_consecutive_writes_should_trigger_overflow() {
 
-        let mut buf = new();
+        let mut buf = CIRCULAR_BUFFER_INIT!(CircularBuffer4, 4);
 
         assert!(buf.push(1).is_ok());
         assert!(buf.push(2).is_ok());
@@ -163,7 +172,7 @@ mod tests {
     #[test]
     fn one_write_to_read_should_trigger_underflow() {
 
-        let mut buf = new();
+        let mut buf = CIRCULAR_BUFFER_INIT!(CircularBuffer4, 4);
 
         assert!(buf.push(1).is_ok());
         assert!(buf.pop().is_ok());
