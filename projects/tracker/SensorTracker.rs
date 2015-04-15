@@ -108,7 +108,6 @@ pub extern fn main() {
 fn setup_rtc(interval: u32) {
 
     const LFXO_FREQ: u32 = 32768;
-    const RTC_TIMEOUT_S: u32 = 2;
 
     cmu::clock_enable(cmu::Clock::CORELE, true);
     cmu::clock_enable(cmu::Clock::RTC, true);
@@ -119,8 +118,7 @@ fn setup_rtc(interval: u32) {
         ..Default::default()
     });
 
-    let freq = (LFXO_FREQ * RTC_TIMEOUT_S) / 2;
-    rtc::compare_set(0, (freq / 1000) * interval);
+    rtc::compare_set(0, (LFXO_FREQ / 1000) * interval);
 
     nvic::enable_irq(nvic::IRQn::RTC);
     rtc::int_enable(rtc::RTC_IEN_COMP0);
