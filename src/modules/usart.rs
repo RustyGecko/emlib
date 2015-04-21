@@ -95,6 +95,12 @@ impl Usart {
         self.usart.enable(usart::Enable::Enable);
     }
 
+    pub fn newline(&self) {
+        self.putc('\0' as u8);
+        self.putc('\n' as u8);
+        self.putc('\r' as u8);
+    }
+
     /// Performs a blocking send of one `char`.
     pub fn putc(&self, data: u8) {
         self.usart.tx(data);

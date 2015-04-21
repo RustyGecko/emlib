@@ -26,7 +26,7 @@ TARGET_OUT = $(TARGET_DIR)/$(MAIN)
 .PHONY: all setup proj flash test clean
 
 all:    proj
-proj:   $(MAIN).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
+proj:   $(MAIN).elf $(TARGET_OUT).hex $(TARGET_OUT).bin  $(TARGET_OUT).axf
 
 AFLAGS   = -mthumb -mcpu=cortex-m3
 LDFLAGS  = $(AFLAGS) -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
@@ -59,6 +59,10 @@ FLASHFLAGS = --verify --reset
 
 %.bin: %
 	$(OBJCOPY) -O binary $< $@
+
+%.axf: %
+	$(OBJCOPY) $< $@
+
 
 flash: all
 	cp $(TARGET_DIR)/$(MAIN).$(BINARY_FORMAT) $(TARGET_DIR)/$(BINARY_NAME).$(BINARY_FORMAT)

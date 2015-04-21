@@ -1,22 +1,41 @@
-static mut STORE: [[u8; 512]; 8] = [[0; 512]; 8];
-static mut INDEX: usize = 0;
+use core::intrinsics::copy_nonoverlapping;
+use core::mem::size_of;
+
+pub const PAGE_SIZE: usize = 512;
+pub const NUM_PAGES: usize = 3;
+
+static mut STORE: [[u8; PAGE_SIZE]; NUM_PAGES] = [[0; PAGE_SIZE]; NUM_PAGES];
 
 pub fn init() {}
 
-pub fn write(buffer: &[u8]) {
+pub fn write<T>(page: usize, buffer: &[T]) {
 
-    for i in (0 .. 512) {
-        unsafe{ STORE[INDEX][i] = buffer[i]; }
+    if page < NUM_PAGES {
+        unsafe {
+            copy_nonoverlapping(
+                buffer.as_ptr(),
+                STORE[page].as_mut_ptr() as *mut T,
+                size_of::<u8>() * PAGE_SIZE
+            );
+        }
+    } else {
+        panic!("Could not write to page {}: Out of bounds (NUM_PAGES: {})", page, NUM_PAGES)
     }
-
-    unsafe { INDEX = (INDEX + 1) % 8; }
 
 }
 
-pub fn read(page: usize, buffer: &mut[u8]) {
+pub fn read<T>(page: usize, buffer: &mut[T]) {
 
-    for i in (0 .. 512) {
-        buffer[i] = unsafe { STORE[page % 8][i] };
+    if page < NUM_PAGES {
+        unsafe {
+            copy_nonoverlapping(
+                STORE[page].as_ptr() as *const T,
+                buffer.as_mut_ptr(),
+                size_of::<u8>() * PAGE_SIZE
+            );
+        }
+    } else {
+        panic!("Could not write to page {}: Out of bounds (NUM_PAGES: {})", page, NUM_PAGES)
     }
 
 }
