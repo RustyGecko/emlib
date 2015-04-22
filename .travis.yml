@@ -4,10 +4,13 @@ before_script:
   - sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded -y
   - sudo apt-get update -q
   - sudo apt-get install gcc-arm-none-eabi
+  - git clone https://github.com/RustyGecko/cargo-linkargs.git
+  - cd cargo-linkargs
+  - cargo build
+  - export PATH=$PATH:`pwd`/target/release
 
 before_install:
   - git submodule update --init --recursive
 
 script:
-  - cargo build --target thumbv7m-none-eabi --verbose --features stk3700
   - make test
