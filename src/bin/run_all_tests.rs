@@ -8,10 +8,8 @@ extern crate emlib;
 use emlib::{cmu, gpio, usart};
 use core::default::Default;
 
-mod tests {
-    pub mod adc;
-    pub mod timer;
-}
+#[path = "../../test/tests/mod.rs"]
+mod tests;
 
 #[no_mangle]
 pub extern fn main() {
