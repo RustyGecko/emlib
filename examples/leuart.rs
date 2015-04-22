@@ -4,9 +4,10 @@
 
 extern crate core;
 extern crate emlib;
+extern crate cmsis;
 
 use emlib::{chip, cmu, emu, gpio, leuart};
-use emlib::cmsis::nvic;
+use cmsis::nvic;
 use core::default::Default;
 
 #[no_mangle]
