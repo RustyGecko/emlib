@@ -6,3 +6,4 @@ pub mod adc;
 pub mod dma;
 mod gpio;
 mod usart;
+pub mod irq;
