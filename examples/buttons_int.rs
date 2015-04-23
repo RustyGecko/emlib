@@ -3,12 +3,13 @@
 #![feature(core, no_std)]
 
 extern crate core;
+extern crate cmsis;
 extern crate emlib;
 
+use cmsis::nvic;
 use emlib::chip;
 use emlib::cmu;
 use emlib::gpio;
-use emlib::emdrv::gpioint;
 
 extern {
     pub fn BSP_TraceSwoSetup();
@@ -20,13 +21,20 @@ const LED1: u32 = 3;
 const PB0: u32 = 9;
 const PB1: u32 = 10;
 
-fn button_callback(pin: u8) {
+#[no_mangle]
+#[allow(non_snake_case)]
+pub extern fn GPIO_ODD_IRQHandler() {
 
-    if pin == 9 {
-        gpio::pin_out_toggle(gpio::Port::E, LED0);
-    } else {
-        gpio::pin_out_toggle(gpio::Port::E, LED1);
-    }
+    gpio::int_clear(gpio::int_get_enabled());
+    gpio::pin_out_toggle(gpio::Port::E, LED0);
+}
+
+#[no_mangle]
+#[allow(non_snake_case)]
+pub extern fn GPIO_EVEN_IRQHandler() {
+
+    gpio::int_clear(gpio::int_get_enabled());
+    gpio::pin_out_toggle(gpio::Port::E, LED1);
 }
 
 fn gpio_setup() {
@@ -35,10 +43,10 @@ fn gpio_setup() {
     gpio::pin_mode_set(gpio::Port::B, PB0, gpio::Mode::Input, 0);
     gpio::pin_mode_set(gpio::Port::B, PB1, gpio::Mode::Input, 0);
 
-    gpioint::init();
-
-    gpioint::register(PB0 as u8, button_callback);
-    gpioint::register(PB1 as u8, button_callback);
+    nvic::clear_pending_irq(nvic::IRQn::GPIO_ODD);
+    nvic::enable_irq(nvic::IRQn::GPIO_ODD);
+    nvic::clear_pending_irq(nvic::IRQn::GPIO_EVEN);
+    nvic::enable_irq(nvic::IRQn::GPIO_EVEN);
 
     gpio::int_config(gpio::Port::B, PB0, false, true, true);
     gpio::int_config(gpio::Port::B, PB1, false, true, true);

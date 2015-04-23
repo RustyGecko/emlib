@@ -3,8 +3,8 @@
 #![feature(start, no_std, alloc)]
 
 // for lang_items, memmove and memalign
-extern crate emlib;
 extern crate alloc;
+extern crate emlib;
 
 use alloc::boxed::Box;
 

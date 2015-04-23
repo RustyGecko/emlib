@@ -1,6 +1,6 @@
 #![no_std]
 #![no_main]
-#![feature(lang_items, core, no_std)]
+#![feature(core, no_std)]
 
 extern crate emlib;
 extern crate core;
