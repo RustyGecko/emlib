@@ -4,9 +4,10 @@
 
 extern crate core;
 extern crate emlib;
+extern crate cmsis;
 
 use emlib::{ chip, cmu, timer, gpio };
-use emlib::cmsis::nvic;
+use cmsis::nvic;
 use core::default::Default;
 
 const TOP: u32 = 27342;

@@ -4,10 +4,11 @@
 
 extern crate core;
 extern crate emlib;
+extern crate cmsis;
 
 use core::default::Default;
 
-use emlib::cmsis::nvic;
+use cmsis::nvic;
 use emlib::cmu;
 use emlib::chip;
 use emlib::gpio;

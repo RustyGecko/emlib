@@ -4,11 +4,12 @@
 
 extern crate emlib;
 extern crate core;
+extern crate cmsis;
 #[macro_use] extern crate collections;
 
 use core::default::Default;
 
-use emlib::cmsis::nvic;
+use cmsis::nvic;
 use emlib::{acmp, cmu, gpio, irq, lesense, emu, rtc};
 use emlib::modules::{Button, Led, Usart};
 use emlib::stk::bsp;

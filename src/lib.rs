@@ -14,6 +14,8 @@ extern crate libc;
 
 extern crate collections;
 
+extern crate cmsis;
+
 // emlib library utilities
 pub mod utils;
 
@@ -37,9 +39,6 @@ pub mod usart;
 
 // emlib driver bindings
 pub mod emdrv;
-
-// cmsis bindings
-pub mod cmsis;
 
 // higher-level modules depending on the bindings
 pub mod modules;
