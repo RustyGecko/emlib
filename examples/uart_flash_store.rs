@@ -10,7 +10,6 @@ extern crate collections;
 
 use core::prelude::*;
 use core::str::from_utf8;
-use core::iter::range_inclusive;
 
 use emlib::cmu;
 use emlib::emdrv::flash;
