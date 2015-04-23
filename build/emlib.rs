@@ -130,7 +130,6 @@ fn test_config(config: &mut Config) -> &mut Config {
         .include("src/adc")
 
         .file("src/chip/chip.c")
-        .file("src/cmsis/cmsis.c")
         .file("src/gpio/gpio.c")
         .file("src/irq/irq.c")
         .file("src/usart/usart.c")

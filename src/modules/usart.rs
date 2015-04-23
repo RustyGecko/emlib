@@ -1,5 +1,4 @@
 use core::prelude::*;
-use core::default::Default;
 
 use collections::vec::Vec;
 use collections::string::String;
