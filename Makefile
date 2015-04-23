@@ -14,8 +14,8 @@ EXAMPLES_DIR = $(TARGET_DIR)/examples
 EXAMPLES_OUT = $(EXAMPLES_DIR)/$(OUT)
 
 # cargo config
-LINKARGS  = "-mthumb -mcpu=cortex-m3 -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
-LINKARGS += --specs=nosys.specs -lgcc -lc -lnosys -lm"
+LINKARGS  = -mthumb -mcpu=cortex-m3 -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
+LINKARGS += --specs=nosys.specs -lgcc -lc -lnosys -lm
 
 FEATURES  = --features $(KIT)
 RSFLAGS   = --target $(TARGET) $(FEATURES) --verbose
@@ -32,12 +32,12 @@ FLASHFLAGS = --verify --reset
 all: example
 
 lib:
-	cargo linkargs $(LINKARGS) $(RSFLAGS) --lib
+	cargo linkargs "$(LINKARGS)" $(RSFLAGS) --lib
 
 example: $(OUT).elf $(EXAMPLES_OUT).hex $(EXAMPLES_OUT).bin $(EXAMPLES_OUT).axf
 
 %.elf: $(DIR)/$(@:.elf=.rs)
-	cargo linkargs $(LINKARGS) $(RSFLAGS) --example $(@:.elf=)
+	cargo linkargs "$(LINKARGS)" $(RSFLAGS) --example $(@:.elf=)
 
 %.hex: %
 	$(OBJCOPY) -O ihex $< $@
@@ -49,11 +49,11 @@ example: $(OUT).elf $(EXAMPLES_OUT).hex $(EXAMPLES_OUT).bin $(EXAMPLES_OUT).axf
 	$(OBJCOPY) $< $@
 
 test:
-	cargo linkargs $(LINKARGS) $(RSFLAGS) --build-examples
+	cargo linkargs "$(LINKARGS)" $(RSFLAGS) --build-examples
 
 -include test/Makefile
 build-tests: mock-dir mocks
-	BUILD_ENV=test cargo linkargs $(LINKARGS) $(RSFLAGS)
+	BUILD_ENV=test cargo linkargs "$(LINKARGS)" $(RSFLAGS)
 
 run-tests: build-tests
 	$(OBJCOPY) -O ihex $(TARGET_DIR)/run_all_tests $(TARGET_DIR)/$(BINARY_NAME).$(BINARY_FORMAT)
