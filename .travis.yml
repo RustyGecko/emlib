@@ -17,3 +17,5 @@ before_install:
 
 script:
   - make test
+  - make clean-emlib
+  - make build-tests
