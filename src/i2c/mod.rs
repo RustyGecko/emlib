@@ -52,6 +52,11 @@ impl I2C {
         unsafe { transmute(GET_I2C0()) }
     }
 
+    #[inline]
+    pub fn i2c1() -> &'static mut I2C {
+        unsafe { transmute(GET_I2C1()) }
+    }
+
     pub fn init(&self, init: &Init) {
         unsafe { I2C_Init(self, init) }
     }
@@ -75,7 +80,7 @@ impl I2C {
     pub fn int_disable(&self, flags: u32) {
         unsafe { STATIC_INLINE_I2C_IntDisable(self, flags) }
     }
-    
+
 }
 
 #[repr(C)]
@@ -126,7 +131,7 @@ pub enum TransferReturn {
 
 extern {
     fn GET_I2C0() -> &'static mut I2C;
-
+    fn GET_I2C1() -> &'static mut I2C;
 
     pub fn I2C_Init(i2c: &I2C, init: *const Init);
     pub fn I2C_TransferInit(i2c: &I2C, transfer_seq: *const TransferSeq) -> TransferReturn;

@@ -44,6 +44,9 @@ pub mod cmsis;
 // higher-level modules depending on the bindings
 pub mod modules;
 
+// drivers for Silabs sensors
+pub mod sensors;
+
 // Temporary kit dependencies
 #[cfg(feature = "dk3750")]
 pub mod dk;

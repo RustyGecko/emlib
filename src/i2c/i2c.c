@@ -4,6 +4,10 @@ I2C_TypeDef* GET_I2C0() {
     return I2C0;
 }
 
+I2C_TypeDef* GET_I2C1() {
+    return I2C1;
+}
+
 void STATIC_INLINE_I2C_IntClear(I2C_TypeDef *i2c, uint32_t flags) {
     I2C_IntClear(i2c, flags);
 }

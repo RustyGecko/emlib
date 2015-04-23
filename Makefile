@@ -11,6 +11,7 @@ OUT = buttons_int
 TARGET_DIR   = target/$(TARGET)/debug
 TARGET_OUT   = $(TARGET_DIR)/$(OUT)
 EXAMPLES_DIR = $(TARGET_DIR)/examples
+EXAMPLES_OUT = $(EXAMPLES_DIR)/$(OUT)
 
 # cargo config
 LINKARGS  = "-mthumb -mcpu=cortex-m3 -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
@@ -28,12 +29,12 @@ FLASHFLAGS = --verify --reset
 
 .PHONY: all example test build-tests run-tests flash burn clean clean-emlib mock-dir
 
-all:     example
+all: example
 
 lib:
 	cargo linkargs $(LINKARGS) $(RSFLAGS) --lib
 
-example: $(OUT).elf $(EXAMPLES_DIR)/$(OUT).hex $(EXAMPLES_DIR)/$(OUT).bin
+example: $(OUT).elf $(EXAMPLES_OUT).hex $(EXAMPLES_OUT).bin $(EXAMPLES_OUT).axf
 
 %.elf: $(DIR)/$(@:.elf=.rs)
 	cargo linkargs $(LINKARGS) $(RSFLAGS) --example $(@:.elf=)
@@ -43,6 +44,9 @@ example: $(OUT).elf $(EXAMPLES_DIR)/$(OUT).hex $(EXAMPLES_DIR)/$(OUT).bin
 
 %.bin: %
 	$(OBJCOPY) -O binary $< $@
+
+%.axf: %
+	$(OBJCOPY) $< $@
 
 test:
 	cargo linkargs $(LINKARGS) $(RSFLAGS) --build-examples

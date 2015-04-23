@@ -53,6 +53,8 @@ fn common_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/Device/EFM32GG/Source/GCC/startup_efm32gg.S")
         .file("efm32-common/Device/EFM32GG/Source/system_efm32gg.c")
 
+        .file("efm32-common/kits/common/bsp/bsp_trace.c")
+
         .file("efm32-common/emlib/src/em_cmu.c")
         .file("efm32-common/emlib/src/em_gpio.c")
         .file("efm32-common/emlib/src/em_usart.c")
@@ -65,6 +67,8 @@ fn common_config(config: &mut Config) -> &mut Config {
         .flag("-mthumb")
         .flag("-mcpu=cortex-m3")
         .flag(&format!("-fdebug-prefix-map={}=.", path))
+        .flag(&format!("-fdebug-prefix-map=/home/vagrant=."))
+
 }
 
 fn prod_config(config: &mut Config) -> &mut Config {
