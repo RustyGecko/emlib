@@ -11,9 +11,6 @@ pub fn kit_config(config: &mut Config) -> &mut Config {
 
         .file("src/dk/bc/get_bc_register.c")
 
-        .file("efm32-common/kits/common/drivers/tftdirect.c")
-        .file("efm32-common/kits/common/drivers/tftspi.c")
-
         .include("efm32-common/reptile/glib/")
         .file("efm32-common/reptile/glib/dmd/ssd2119/dmd_ssd2119_direct.c")
 }

@@ -2,7 +2,7 @@
 #![crate_type="lib"]
 #![crate_name="emlib"]
 #![allow(warnings)]
-#![feature(lang_items, no_std, asm)]
+#![feature(lang_items, no_std)]
 #![feature(core, collections, convert)]
 #![feature(slice_patterns)]
 
@@ -37,16 +37,13 @@ pub mod rtc;
 pub mod timer;
 pub mod usart;
 
-// emlib driver bindings
-pub mod emdrv;
-
 // higher-level modules depending on the bindings
 pub mod modules;
 
 // drivers for Silabs sensors
 pub mod sensors;
 
-// Temporary kit dependencies
+// About to remove this as it is dependent on emdrv
 #[cfg(feature = "dk3750")]
 pub mod dk;
 

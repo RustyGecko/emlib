@@ -112,9 +112,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/leuart/get_leuart.c")
 
         .include("efm32-common/kits/common/drivers")
-        .file("efm32-common/kits/common/drivers/nandflash.c")
         .file("efm32-common/kits/common/drivers/dmactrl.c")
-        .file("efm32-common/kits/common/drivers/retargetio.c")
 }
 
 fn test_config(config: &mut Config) -> &mut Config {
