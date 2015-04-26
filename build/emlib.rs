@@ -4,9 +4,6 @@ extern crate submodules;
 use gcc::Config;
 
 use std::env;
-use std::fs::File;
-use std::io;
-use std::io::prelude::*;
 
 #[cfg(feature = "dk3750")] use dk3750 as kit;
 #[cfg(feature = "stk3700")] use stk3700 as kit;
@@ -19,7 +16,7 @@ fn main() {
     submodules::update()
         .init()
         .recursive()
-        .runt();
+        .run();
 
     compile_emlib_library();
 }
