@@ -13,6 +13,9 @@ keywords = ["emlib", "bindings"]
 
 build = "build/emlib.rs"
 
+[build-dependencies]
+submodules = "0.1"
+
 [build-dependencies.gcc]
 git = "https://github.com/sondrele/gcc-rs.git"
 

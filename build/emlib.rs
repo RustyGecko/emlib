@@ -1,4 +1,5 @@
 extern crate gcc;
+extern crate submodules;
 
 use gcc::Config;
 
@@ -15,6 +16,11 @@ use std::io::prelude::*;
 #[cfg(feature = "stk3700")] mod stk3700;
 
 fn main() {
+    submodules::update()
+        .init()
+        .recursive()
+        .run();
+
     compile_emlib_library();
 
     match write_emlib_hash() {
