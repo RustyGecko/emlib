@@ -1,16 +1,13 @@
 language: rust
+sudo: required
+
+install:
+  - sh ./.travis.install.deps.sh
 
 before_script:
-  - sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded -y
-  - sudo apt-get update -q
-  - sudo apt-get install gcc-arm-none-eabi
-  - git clone https://github.com/RustyGecko/cargo-linkargs
-  - cd cargo-linkargs
-  - cargo build
-  - export PATH=$PATH:`pwd`/target/debug
-  - cd ..
-  - echo $PATH
+  - export PATH=$PATH:`pwd`/cargo-linkargs/target/debug
   - pwd
+  - echo $PATH
 
 script:
   - make test
