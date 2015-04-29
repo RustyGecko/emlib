@@ -1,6 +1,5 @@
 use core::prelude::*;
-use core::num::from_str_radix;
-use core::default::Default;
+use core::str::FromStr;
 
 use collections::vec::Vec;
 use collections::string::String;
@@ -71,11 +70,11 @@ fn parse(line: String) -> Cmd {
     let tokens: Vec<&str> = line.as_ref().split(' ').collect();
 
     match tokens.as_ref() {
-        ["w", num] => match from_str_radix::<u32>(num, 10) {
+        ["w", num] => match FromStr::from_str(num) {
             Ok(num) => Cmd::Write(num),
             _ => Cmd::Unknown
         },
-        ["r", num] => match from_str_radix::<u32>(num, 10) {
+        ["r", num] => match FromStr::from_str(num) {
             Ok(num) => Cmd::Read(num),
             _ => Cmd::Unknown
         },

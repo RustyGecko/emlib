@@ -4,9 +4,10 @@
 
 extern crate emlib;
 extern crate core;
+extern crate cmsis;
 
 use core::default::Default;
-use emlib::cmsis::nvic;
+use cmsis::nvic;
 use emlib::{acmp, cmu, gpio, irq, lesense, emu, rtc};
 
 // ACMP

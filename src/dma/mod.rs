@@ -1,24 +1,18 @@
 #![allow(dead_code)]
-
-
 use core::intrinsics::transmute;
-use core::slice::SliceExt;
-use core::cmp::min;
+use libc::c_void;
 
-#[repr(u8)]
-    #[derive(Copy, Clone)]
-#[allow(non_camel_case_types)]
-pub enum c_void {
-    __variant1,
-    __variant2,
-}
-
+pub const REQ_ADC0_SINGLE: u32    = ((8 << 16) + 0);
+pub const REQ_ADC0_SCAN: u32      = ((8 << 16) + 1);
+pub const REQ_USART1_RXDATAV: u32 = ((13 << 16) + 0);
+pub const REQ_USART1_TXBL: u32    = ((13 << 15) + 1);
 pub const DMAREQ_TIMER0_UFOF: u32 = ((24 << 16) + 0);
 
-pub type FuncPtr = extern fn(channel: u32, primary: bool, user: u32);
+pub type FuncPtr = extern fn(channel: u32, primary: bool, user: *mut c_void);
+
 
 #[derive(Copy, Clone)]
-pub struct DMA { channel: u32 }
+pub struct DMA { pub channel: u32 }
 
 impl DMA {
     pub fn channel0() -> DMA {
@@ -33,19 +27,77 @@ impl DMA {
         unsafe { DMA_CfgDescr(self.channel, primary, cfg) }
     }
 
-    pub fn activate_auto<T>(&self, primary: bool, dst: &'static mut[T], src: &'static mut[T]) {
+    pub fn activate_auto<T>(&self, primary: bool, dst: *mut c_void, src: *mut c_void, n: u32) {
         unsafe {
-
-            let n = min(dst.len(), src.len()) as u32;
 
             DMA_ActivateAuto(
                 self.channel,
                 primary,
-                transmute(dst.as_ptr()),
-                transmute(src.as_ptr()),
+                dst,
+                src,
                 n - 1
             );
         }
+    }
+
+    pub fn activate_basic<T>(&self, primary: bool, use_burst: bool, dst: *mut c_void, src: *mut c_void, n_minus_1: u32) {
+
+        unsafe {
+            DMA_ActivateBasic(
+                self.channel,
+                primary,
+                use_burst,
+                dst,
+                src,
+                n_minus_1
+            );
+        }
+    }
+
+    pub fn activate_ping_pong<T>(
+        &self,
+        use_burst: bool,
+        prim_dst: *mut c_void,
+        prim_src: *mut c_void,
+        prim_n_minus_1: u32,
+        alt_dst: *mut c_void,
+        alt_src: *mut c_void,
+        alt_n_minus_1: u32) {
+
+        unsafe {
+            DMA_ActivatePingPong(
+                self.channel,
+                use_burst,
+                prim_dst,
+                prim_src,
+                prim_n_minus_1,
+                alt_dst,
+                alt_src,
+                alt_n_minus_1
+            );
+        };
+    }
+
+    pub fn refresh_ping_pong<T>(
+        &self,
+        primary: bool,
+        use_burst: bool,
+        dst: *mut c_void,
+        src: *mut c_void,
+        n_minus_1: u32,
+        stop: bool) {
+
+        unsafe {
+            DMA_RefreshPingPong(
+                self.channel,
+                primary,
+                use_burst,
+                dst,
+                src,
+                n_minus_1,
+                stop
+            );
+        };
     }
 }
 
@@ -90,7 +142,7 @@ pub struct Descriptor {
 #[repr(C)]
 pub struct CB {
     pub cb_func: FuncPtr,
-    pub user_ptr: u32,
+    pub user_ptr: *const c_void,
     pub primary: u8,
 }
 
@@ -135,6 +187,9 @@ pub fn dma_control_block() -> &'static Descriptor {
     unsafe { transmute(GET_DMA_CONTROL_BLOCK()) }
 }
 
+pub fn null_cb() -> &'static CB {
+    unsafe { transmute(0 as *const CB) }
+}
 
 #[allow(warnings)]
 extern {
@@ -147,8 +202,36 @@ extern {
     fn DMA_CfgDescr(channel: u32, primary: bool, cfg: *const CfgDescriptor);
     fn DMA_ActivateAuto(
         channel: u32,
+        primary: bool,
+        dst: *mut c_void,
+        src: *mut c_void,
+        n_minus_1: u32);
+
+    fn DMA_ActivateBasic(
+        channel: u32,
+        primary: bool,
         use_burst: bool,
         dst: *mut c_void,
         src: *mut c_void,
         n_minus_1: u32);
+
+    fn DMA_ActivatePingPong(
+        channel: u32,
+        use_burst: bool,
+        prim_dst: *mut c_void,
+        prim_src: *mut c_void,
+        prim_n_minus_1: u32,
+        alt_dst: *mut c_void,
+        alt_src: *mut c_void,
+        alt_n_minus_1: u32);
+
+    fn DMA_RefreshPingPong(
+        channel: u32,
+        primary: bool,
+        use_burst: bool,
+        dst: *mut c_void,
+        src: *mut c_void,
+        n_minus_1: u32,
+        stop: bool);
+
 }

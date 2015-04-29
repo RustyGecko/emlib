@@ -1,58 +1,43 @@
-CC      = arm-none-eabi-gcc
-AR      = arm-none-eabi-ar
-AS      = arm-none-eabi-as
 OBJCOPY = arm-none-eabi-objcopy
 
+TARGET = thumbv7m-none-eabi
+KIT    = stk3700
+
+# emlib examples
+DIR = examples
+OUT = buttons_int
+
+# cargo directories
+TARGET_DIR   = target/$(TARGET)/debug
+TARGET_OUT   = $(TARGET_DIR)/$(OUT)
+EXAMPLES_DIR = $(TARGET_DIR)/examples
+EXAMPLES_OUT = $(EXAMPLES_DIR)/$(OUT)
+
+# cargo config
+LINKARGS  = -mthumb -mcpu=cortex-m3 -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
+LINKARGS += --specs=nosys.specs -lgcc -lc -lnosys -lm
+
+FEATURES  = --features $(KIT)
+RSFLAGS   = --target $(TARGET) $(FEATURES) --verbose
+
+# flash config
 BINARY_NAME   = out
 BINARY_FORMAT = hex
 
-DEVICE=EFM32GG990F1024
-TARGET=thumbv7m-none-eabi
-
-DIR = examples
-EXAMPLES    = $(wildcard $(DIR)/*.rs)
-MAIN          = buttons_int
-
-TEST_DIR = test
-
-RUSTC = rustc
-FLASH = eACommander
-
--include .emlib_hash
-
-TARGET_DIR = target/$(TARGET)/debug
-TARGET_OUT = $(TARGET_DIR)/$(MAIN)
-
-.PHONY: all setup proj flash test clean
-
-all:    proj
-proj:   $(MAIN).elf $(TARGET_OUT).hex $(TARGET_OUT).bin
-
-AFLAGS   = -mthumb -mcpu=cortex-m3
-LDFLAGS  = $(AFLAGS) -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
-LDFLAGS += --specs=nosys.specs
-LDFLAGS += -lgcc -lc -lnosys -lm
-LDFLAGS += -Wl,--start-group -lnosys -lgcc -lc -lm -Wl,--start-group
-
-KIT = stk3700
-FEATURES = --features $(KIT)
-
--include Makefile.user
-
-RUSTFLAGS  = --target $(TARGET) --crate-type bin
-RUSTFLAGS += -g -C link-args="$(LDFLAGS)"
-RUSTFLAGS += -L $(TARGET_DIR) -L $(TARGET_DIR)/deps -L $(TARGET_DIR)/build/emlib-$(HASH)/out
-RUSTFLAGS += --emit=dep-info,link --verbose
-
+FLASH      = eACommander
 FLASHFLAGS = --verify --reset
 
--include test/Makefile
+.PHONY: all example test build-tests run-tests flash burn clean clean-emlib mock-dir
+
+all: example
+
+lib:
+	cargo linkargs "$(LINKARGS)" $(RSFLAGS) --lib
+
+example: $(OUT).elf $(EXAMPLES_OUT).hex $(EXAMPLES_OUT).bin $(EXAMPLES_OUT).axf
 
 %.elf: $(DIR)/$(@:.elf=.rs)
-	BUILD_ENV=prod cargo build --target thumbv7m-none-eabi --verbose $(FEATURES)
-	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
-	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
-	$(RUSTC) $<$(@:.elf=.rs) $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name $(@:.elf=)
+	cargo linkargs "$(LINKARGS)" $(RSFLAGS) --example $(@:.elf=)
 
 %.hex: %
 	$(OBJCOPY) -O ihex $< $@
@@ -60,29 +45,34 @@ FLASHFLAGS = --verify --reset
 %.bin: %
 	$(OBJCOPY) -O binary $< $@
 
+%.axf: %
+	$(OBJCOPY) $< $@
+
+test:
+	cargo linkargs "$(LINKARGS)" $(RSFLAGS) --build-examples
+
+-include test/Makefile
+build-tests: mock-dir mocks
+	BUILD_ENV=test cargo linkargs "$(LINKARGS)" $(RSFLAGS)
+
+run-tests: build-tests
+	$(OBJCOPY) -O ihex $(TARGET_DIR)/run_all_tests $(TARGET_DIR)/$(BINARY_NAME).$(BINARY_FORMAT)
+	JLinkExe -commanderscript .execute.jlink || echo ""
+
 flash: all
-	cp $(TARGET_DIR)/$(MAIN).$(BINARY_FORMAT) $(TARGET_DIR)/$(BINARY_NAME).$(BINARY_FORMAT)
+	cp $(EXAMPLES_DIR)/$(OUT).$(BINARY_FORMAT) $(TARGET_DIR)/$(BINARY_NAME).$(BINARY_FORMAT)
 	JLinkExe -commanderscript .execute.jlink || echo ""
 
 burn: all
 	$(FLASH) --flash $(TARGET_OUT).bin $(FLASHFLAGS)
-
-test: $(notdir $(EXAMPLES:.rs=.elf))
-	@echo Done
-
-run-tests: $(TEST_DIR)/run_all_tests.rs mocks
-	@mkdir -p test/mocks
-	rm -rf target/build/emlib-$(HASH)
-	BUILD_ENV=test cargo build --target thumbv7m-none-eabi --verbose $(FEATURES)
-	@$(AR) -x $(TARGET_DIR)/libemlib-$(HASH).rlib
-	@mv *.o emlib-$(HASH).0.bytecode.deflate rust.metadata.bin $(TARGET_DIR)
-	$(RUSTC) $(TEST_DIR)/run_all_tests.rs $(RUSTFLAGS) --out-dir $(TARGET_DIR) --crate-name run_all_tests
-	$(OBJCOPY) -O ihex $(TARGET_DIR)/run_all_tests $(TARGET_DIR)/out.hex
-	JLinkExe -commanderscript .execute.jlink || echo ""
 	@echo Done
 
 clean:
-	@rm -rf $(TARGET_DIR)/build/emlib*
-
-clean-all:
 	@cargo clean
+
+clean-emlib:
+	@find target/ -iname "*emlib-*" -type d -exec rm -r {} +
+	@rm -f $(TARGET_DIR)/run_all_tests;
+
+mock-dir:
+	@mkdir -p test/mocks

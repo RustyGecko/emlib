@@ -53,6 +53,8 @@ fn common_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/Device/EFM32GG/Source/GCC/startup_efm32gg.S")
         .file("efm32-common/Device/EFM32GG/Source/system_efm32gg.c")
 
+        .file("efm32-common/kits/common/bsp/bsp_trace.c")
+
         .file("efm32-common/emlib/src/em_cmu.c")
         .file("efm32-common/emlib/src/em_gpio.c")
         .file("efm32-common/emlib/src/em_usart.c")
@@ -65,6 +67,8 @@ fn common_config(config: &mut Config) -> &mut Config {
         .flag("-mthumb")
         .flag("-mcpu=cortex-m3")
         .flag(&format!("-fdebug-prefix-map={}=.", path))
+        .flag(&format!("-fdebug-prefix-map=/home/vagrant=."))
+
 }
 
 fn prod_config(config: &mut Config) -> &mut Config {
@@ -83,13 +87,14 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/emlib/src/em_i2c.c")
         .file("efm32-common/emlib/src/em_leuart.c")
         .file("efm32-common/emlib/src/em_lesense.c")
+        .file("efm32-common/emlib/src/em_prs.c")
         .file("efm32-common/emlib/src/em_rtc.c")
         .file("efm32-common/emlib/src/em_system.c")
         .file("efm32-common/emlib/src/em_timer.c")
 
         .file("src/adc/adc.c")
         .file("src/chip/chip.c")
-        .file("src/cmsis/cmsis.c")
+        .file("src/ebi/ebi.c")
         .file("src/emu/emu.c")
         .file("src/dma/dma.c")
         .file("src/gpio/gpio.c")
@@ -125,7 +130,6 @@ fn test_config(config: &mut Config) -> &mut Config {
         .include("src/adc")
 
         .file("src/chip/chip.c")
-        .file("src/cmsis/cmsis.c")
         .file("src/gpio/gpio.c")
         .file("src/irq/irq.c")
         .file("src/usart/usart.c")

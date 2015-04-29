@@ -14,6 +14,8 @@ extern crate libc;
 
 extern crate collections;
 
+extern crate cmsis;
+
 // emlib library utilities
 pub mod utils;
 
@@ -22,6 +24,7 @@ pub mod acmp;
 pub mod adc;
 pub mod chip;
 pub mod cmu;
+pub mod ebi;
 pub mod emu;
 pub mod dma;
 pub mod gpio;
@@ -29,6 +32,7 @@ pub mod i2c;
 pub mod irq;
 pub mod leuart;
 pub mod lesense;
+pub mod prs;
 pub mod rtc;
 pub mod timer;
 pub mod usart;
@@ -36,11 +40,11 @@ pub mod usart;
 // emlib driver bindings
 pub mod emdrv;
 
-// cmsis bindings
-pub mod cmsis;
-
 // higher-level modules depending on the bindings
 pub mod modules;
+
+// drivers for Silabs sensors
+pub mod sensors;
 
 // Temporary kit dependencies
 #[cfg(feature = "dk3750")]

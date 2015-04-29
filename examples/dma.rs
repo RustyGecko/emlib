@@ -3,18 +3,15 @@
 #![feature(core, no_std)]
 
 extern crate core;
+extern crate libc;
 extern crate emlib;
+
+use core::intrinsics::transmute;
 
 use emlib::{chip, dma};
 
 static mut DATA_SRC: [u16; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 static mut DATA_DST: [u16; 8] = [0, 0, 0, 0, 0, 0, 0, 0];
-
-static CB: dma::CB = dma::CB {
-    cb_func: transfer_complete,
-    user_ptr: 0,
-    primary: 0
-};
 
 #[no_mangle]
 pub extern fn main() {
@@ -24,12 +21,10 @@ pub extern fn main() {
     setup_dma();
 
     let dma0 = dma::DMA::channel0();
-    unsafe { dma0.activate_auto(true, &mut DATA_DST, &mut DATA_SRC); }
+    unsafe { dma0.activate_auto::<u16>(true, transmute(&mut DATA_DST), transmute(&mut DATA_SRC), 8); }
 
     loop {}
 }
-
-extern fn transfer_complete(_channel: u32, _primary: bool, _user: u32) {}
 
 fn setup_dma() {
 
@@ -41,9 +36,9 @@ fn setup_dma() {
     let dma0 = dma::DMA::channel0();
     dma0.configure_channel(&dma::CfgChannel {
         high_pri: false,
-        enable_int: true,
+        enable_int: false,
         select: 0,
-        cb: &CB,
+        cb: dma::null_cb()
     });
     dma0.configure_descriptor(true, &dma::CfgDescriptor {
         dst_inc: dma::DataInc::Inc4,

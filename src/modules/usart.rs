@@ -1,5 +1,4 @@
 use core::prelude::*;
-use core::default::Default;
 
 use collections::vec::Vec;
 use collections::string::String;
@@ -93,6 +92,12 @@ impl Usart {
 
         // Enable Usart
         self.usart.enable(usart::Enable::Enable);
+    }
+
+    pub fn newline(&self) {
+        self.putc('\0' as u8);
+        self.putc('\n' as u8);
+        self.putc('\r' as u8);
     }
 
     /// Performs a blocking send of one `char`.

@@ -1,5 +1,6 @@
 #![no_std]
 #![no_main]
+#![feature(step_by)]
 #![feature(core, no_std, collections)]
 
 extern crate core;
@@ -9,8 +10,6 @@ extern crate collections;
 
 use core::prelude::*;
 use core::str::from_utf8;
-use core::default::Default;
-use core::iter::range_step_inclusive;
 
 use emlib::cmu;
 use emlib::emdrv::flash;
@@ -61,7 +60,7 @@ fn print_page(page: &[u8]) {
 
     let usart: Usart = Default::default();
 
-    for i in range_step_inclusive(0, PAGE_SIZE, LINE_WIDTH) {
+    for i in (0 .. PAGE_SIZE).step_by(PAGE_SIZE) {
 
         let line = &unsafe { DATA }[i .. i+LINE_WIDTH];
 
@@ -96,7 +95,7 @@ fn read(page_num: u32) {
     flash::read(addr, unsafe { &mut DATA });
 
 
-    print_page(unsafe { DATA }.as_slice());
+    print_page(unsafe { &DATA });
 
 
 }
