@@ -19,8 +19,9 @@ if [ "${TRAVIS}" = "true" ] && [ "${target}" = "unknown-linux-gnu" ]; then
 fi
 
 # Install cargo-linkargs in same directory
-git clone https://github.com/RustyGecko/cargo-linkargs
-cd cargo-linkargs
-cargo build
+wget https://github.com/RustyGecko/cargo-linkargs/releases/download/v0.1.0-tmp/cargo-linkargs -q
+chmod +x cargo-linkargs
+sudo mv cargo-linkargs /usr/local/bin/
+which cargo-linkargs
 
 set +x
