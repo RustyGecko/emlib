@@ -16,6 +16,9 @@ if [ "${TRAVIS}" = "true" ] && [ "${target}" = "unknown-linux-gnu" ]; then
     sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded -y
     sudo apt-get update -q
     sudo apt-get install gcc-arm-none-eabi
+
+    # Requried by cargo-linkargs
+    sudo apt-get install libc6
 fi
 
 # Install cargo-linkargs in same directory
