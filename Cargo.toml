@@ -23,6 +23,9 @@ git = "https://github.com/sondrele/gcc-rs.git"
 stk3700 = []
 dk3750 = []
 
+[target.thumbv7m-none-eabi.dependencies.startup]
+git = "https://github.com/RustyGecko/startup.git"
+
 [target.thumbv7m-none-eabi.dependencies.cmsis]
 git = "https://github.com/RustyGecko/cmsis.git"
 

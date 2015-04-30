@@ -2,12 +2,13 @@
 #![crate_type="lib"]
 #![crate_name="emlib"]
 #![allow(warnings)]
-#![feature(lang_items, no_std)]
+#![feature(no_std)]
 #![feature(core, collections, convert)]
 #![feature(slice_patterns)]
 
 #[macro_use]
 extern crate core;
+extern crate startup;
 
 extern crate rlibc;
 extern crate libc;
@@ -15,9 +16,6 @@ extern crate libc;
 extern crate collections;
 
 extern crate cmsis;
-
-// emlib library utilities
-pub mod utils;
 
 // emlib bindings
 pub mod acmp;

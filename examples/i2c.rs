@@ -1,5 +1,4 @@
 #![no_std]
-#![no_main]
 #![feature(lang_items, core, no_std)]
 
 extern crate core;
@@ -36,8 +35,7 @@ enum Mode {
 
 static mut MODE: Mode = Mode::Idle;
 
-#[no_mangle]
-pub extern fn main() {
+fn main() {
 
     chip::init();
 

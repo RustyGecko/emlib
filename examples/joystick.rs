@@ -1,5 +1,4 @@
 #![no_std]
-#![no_main]
 #![feature(lang_items, start, core, no_std)]
 
 extern crate core;
@@ -8,8 +7,7 @@ extern crate emlib;
 use emlib::{chip, cmu, adc};
 use core::default::Default;
 
-#[no_mangle]
-pub extern fn main() {
+fn main() {
 
     chip::init();
 
@@ -19,7 +17,7 @@ pub extern fn main() {
 
     loop {
 
-        let y = get_sample(adc_y);
+        let _y = get_sample(adc_y);
 
     }
 }

@@ -1,5 +1,4 @@
 #![no_std]
-#![no_main]
 #![feature(core, no_std)]
 
 extern crate core;
@@ -52,8 +51,7 @@ fn gpio_setup() {
     gpio::int_config(gpio::Port::B, PB1, false, true, true);
 }
 
-#[no_mangle]
-pub extern fn main() {
+fn main() {
     chip::init();
 
     gpio_setup();

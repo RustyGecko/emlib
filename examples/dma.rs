@@ -1,5 +1,4 @@
 #![no_std]
-#![no_main]
 #![feature(core, no_std)]
 
 extern crate core;
@@ -13,8 +12,7 @@ use emlib::{chip, dma};
 static mut DATA_SRC: [u16; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 static mut DATA_DST: [u16; 8] = [0, 0, 0, 0, 0, 0, 0, 0];
 
-#[no_mangle]
-pub extern fn main() {
+fn main() {
 
     chip::init();
 

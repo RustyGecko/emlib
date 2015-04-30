@@ -1,5 +1,4 @@
 #![no_std]
-#![no_main]
 #![feature(core, no_std)]
 
 extern crate emlib;
@@ -182,8 +181,7 @@ fn setup_lesense() {
     lesense::scan_start();
 }
 
-#[no_mangle]
-pub extern fn main() {
+fn main() {
     irq::disable();
     setup_cmu();
     setup_acmp();

@@ -1,5 +1,4 @@
 #![no_std]
-#![no_main]
 #![feature(core, no_std)]
 
 extern crate core;
@@ -21,8 +20,7 @@ pub extern fn TIMER0_IRQHandler() {
     gpio::pin_out_toggle(gpio::Port::E, 2);
 }
 
-#[no_mangle]
-pub extern fn main() {
+fn main() {
     chip::init();
 
     cmu::clock_enable(cmu::Clock::HFPER, true);

@@ -1,5 +1,4 @@
 #![no_std]
-#![no_main]
 #![feature(core, no_std)]
 
 extern crate core;
@@ -49,8 +48,7 @@ fn gpio_setup() {
     gpio::pin_out_clear(gpio::Port::E, 2);
 }
 
-#[no_mangle]
-pub extern fn main() {
+fn main() {
     chip::init();
 
     rtc_setup();
