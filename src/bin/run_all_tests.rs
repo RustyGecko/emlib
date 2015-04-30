@@ -1,6 +1,5 @@
 #![no_std]
-#![no_main]
-#![feature(lang_items, start, core, no_std)]
+#![feature(core, no_std)]
 
 extern crate core;
 extern crate emlib;
@@ -11,8 +10,7 @@ use core::default::Default;
 #[path = "../../test/tests/mod.rs"]
 mod tests;
 
-#[no_mangle]
-pub extern fn main() {
+fn main() {
 
     setup_leds();
     setup_usart1();
