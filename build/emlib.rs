@@ -1,11 +1,9 @@
 extern crate gcc;
+extern crate submodules;
 
 use gcc::Config;
 
 use std::env;
-use std::fs::File;
-use std::io;
-use std::io::prelude::*;
 
 #[cfg(feature = "dk3750")] use dk3750 as kit;
 #[cfg(feature = "stk3700")] use stk3700 as kit;
@@ -15,12 +13,12 @@ use std::io::prelude::*;
 #[cfg(feature = "stk3700")] mod stk3700;
 
 fn main() {
-    compile_emlib_library();
+    submodules::update()
+        .init()
+        .recursive()
+        .run();
 
-    match write_emlib_hash() {
-        Ok(_) => (),
-        Err(e) => panic!("{}", e)
-    }
+    compile_emlib_library();
 }
 
 fn compile_emlib_library() {
@@ -128,7 +126,6 @@ fn test_config(config: &mut Config) -> &mut Config {
         .include("src/adc")
 
         .file("src/chip/chip.c")
-        .file("src/cmsis/cmsis.c")
         .file("src/gpio/gpio.c")
         .file("src/irq/irq.c")
         .file("src/usart/usart.c")
@@ -152,17 +149,3 @@ fn test_config(config: &mut Config) -> &mut Config {
         .file("test/tests/timer.c")
 }
 
-fn write_emlib_hash() -> Result<(), io::Error> {
-    // Get OUT_DIR and convert it from OsString to String
-    let out_dir = env::var("OUT_DIR").ok().unwrap();
-    // Extract the hash
-    let hash_token: String = out_dir.rsplitn(3, '/').nth(1).unwrap()
-                                    .rsplit('-').nth(0).unwrap().to_string();
-    let emlib_hash = format!("HASH={}", hash_token);
-    println!("{}", emlib_hash);
-
-    // Write to .emlib_hash file
-    let emlib_hash_file = env::var("CARGO_MANIFEST_DIR").ok().unwrap() + "/.emlib_hash";
-    let mut f = try!(File::create(&emlib_hash_file));
-    f.write_all(emlib_hash.as_bytes())
-}
