@@ -35,19 +35,6 @@ pub mod rtc;
 pub mod timer;
 pub mod usart;
 
-// higher-level modules depending on the bindings
-pub mod modules;
-
-// drivers for Silabs sensors
-pub mod sensors;
-
-// About to remove this as it is dependent on emdrv
-#[cfg(feature = "dk3750")]
-pub mod dk;
-
-#[cfg(feature = "stk3700")]
-pub mod stk;
-
 mod std {
     pub use core::*;
 }
