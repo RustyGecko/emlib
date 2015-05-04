@@ -2,6 +2,7 @@
 use core::intrinsics::transmute;
 use libc::c_void;
 
+
 pub const REQ_ADC0_SINGLE: u32    = ((8 << 16) + 0);
 pub const REQ_ADC0_SCAN: u32      = ((8 << 16) + 1);
 pub const REQ_USART1_RXDATAV: u32 = ((13 << 16) + 0);
@@ -137,6 +138,13 @@ pub struct Descriptor {
     pub USER: u32,
 }
 
+pub const DMA_CONTROL_BLOCK_INIT: Descriptor = Descriptor {
+    SRCEND: 0,
+    DSTEND: 0,
+    CTRL: 0,
+    USER: 0
+};
+
 // FIXME: Removed derive_Copy because it requires Clone, and FuncPtr cant inherit Clone. We need to
 // figure out what to do here...
 #[repr(C)]
@@ -183,17 +191,12 @@ pub fn init(init: &Init) {
     unsafe { DMA_Init(init) }
 }
 
-pub fn dma_control_block() -> &'static Descriptor {
-    unsafe { transmute(GET_DMA_CONTROL_BLOCK()) }
-}
-
 pub fn null_cb() -> &'static CB {
     unsafe { transmute(0 as *const CB) }
 }
 
 #[allow(warnings)]
 extern {
-    fn GET_DMA_CONTROL_BLOCK() -> &'static Descriptor;
 
     fn DMA_Init(init: *const Init);
 

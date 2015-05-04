@@ -94,7 +94,6 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/chip/chip.c")
         .file("src/ebi/ebi.c")
         .file("src/emu/emu.c")
-        .file("src/dma/dma.c")
         .file("src/gpio/gpio.c")
         .file("src/i2c/i2c.c")
         .file("src/irq/irq.c")
@@ -109,8 +108,6 @@ fn prod_config(config: &mut Config) -> &mut Config {
         .file("src/timer/get_timer.c")
         .file("src/leuart/get_leuart.c")
 
-        .include("efm32-common/kits/common/drivers")
-        .file("efm32-common/kits/common/drivers/dmactrl.c")
 }
 
 fn test_config(config: &mut Config) -> &mut Config {
@@ -148,4 +145,3 @@ fn test_config(config: &mut Config) -> &mut Config {
         .file("test/tests/adc.c")
         .file("test/tests/timer.c")
 }
-
