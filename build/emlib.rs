@@ -34,7 +34,7 @@ fn compile_emlib_library() {
         _ => prod_config(&mut config)
     };
 
-    config.compile("libcompiler-rt.a");
+    config.compile("libemlib.a");
 }
 
 fn common_config(config: &mut Config) -> &mut Config {
