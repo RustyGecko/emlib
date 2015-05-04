@@ -69,7 +69,6 @@ fn common_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/emlib/src/em_ebi.c")
         .file("efm32-common/emlib/src/em_int.c")
 
-        .flag("-g")
         .flag("-Wall")
         .flag("-mthumb")
         .flag("-mcpu=cortex-m3")
