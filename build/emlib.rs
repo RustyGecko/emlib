@@ -5,13 +5,6 @@ use gcc::Config;
 
 use std::env;
 
-#[cfg(feature = "dk3750")] use dk3750 as kit;
-#[cfg(feature = "stk3700")] use stk3700 as kit;
-
-// Kit-specific gcc configuration
-#[cfg(feature = "dk3750")] mod dk3750;
-#[cfg(feature = "stk3700")] mod stk3700;
-
 fn main() {
     submodules::update()
         .init()
@@ -27,6 +20,7 @@ fn compile_emlib_library() {
     env::set_var("AR", "arm-none-eabi-ar");
 
     let mut config = Config::new();
+    common_config(&mut config);
 
     let config = match env::var("BUILD_ENV") {
         Ok(ref val) if &val[..] == "prod" => prod_config(&mut config),
@@ -45,13 +39,12 @@ fn common_config(config: &mut Config) -> &mut Config {
 
         .include("efm32-common/CMSIS/Include")
         .include("efm32-common/Device/EFM32GG/Include")
-        .include("efm32-common/kits/common/bsp")
         .include("efm32-common/emlib/inc")
 
         .file("efm32-common/Device/EFM32GG/Source/GCC/startup_efm32gg.S")
         .file("efm32-common/Device/EFM32GG/Source/system_efm32gg.c")
 
-        .file("efm32-common/kits/common/bsp/bsp_trace.c")
+
 
         .file("efm32-common/emlib/src/em_cmu.c")
         .file("efm32-common/emlib/src/em_gpio.c")
@@ -71,7 +64,7 @@ fn common_config(config: &mut Config) -> &mut Config {
 
 fn prod_config(config: &mut Config) -> &mut Config {
 
-    kit::kit_config(config)
+    config
 
         .include("efm32-common/kits/common/bsp")
         .include("src/timer")
@@ -112,7 +105,7 @@ fn prod_config(config: &mut Config) -> &mut Config {
 
 fn test_config(config: &mut Config) -> &mut Config {
 
-    kit::kit_config(config)
+    config
 
         .flag("-DUNITY_OUTPUT_CHAR=print_char")
         .flag("-DNULL=0")

@@ -17,8 +17,7 @@ EXAMPLES_OUT = $(EXAMPLES_DIR)/$(OUT)
 LINKARGS  = -mthumb -mcpu=cortex-m3 -Tefm32-common/Device/EFM32GG/Source/GCC/efm32gg.ld
 LINKARGS += --specs=nosys.specs -lgcc -lc -lnosys -lm
 
-FEATURES  = --features $(KIT)
-RSFLAGS   = --target $(TARGET) $(FEATURES) --verbose
+RSFLAGS   = --target $(TARGET) --verbose
 
 # flash config
 BINARY_NAME   = out

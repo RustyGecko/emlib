@@ -19,10 +19,6 @@ submodules = "0.1"
 [build-dependencies.gcc]
 git = "https://github.com/sondrele/gcc-rs.git"
 
-[features]
-stk3700 = []
-dk3750 = []
-
 [target.thumbv7m-none-eabi.dependencies.startup]
 git = "https://github.com/RustyGecko/startup.git"
 
