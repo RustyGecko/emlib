@@ -1,5 +1,11 @@
+#![feature(rustc_private)]
+
 extern crate gcc;
 extern crate submodules;
+extern crate rustc;
+
+use rustc::session::config::OptLevel;
+use rustc::session::config::OptLevel::{No, Less, Default, Aggressive};
 
 use gcc::Config;
 
@@ -21,6 +27,9 @@ fn compile_emlib_library() {
 
     let mut config = Config::new();
     common_config(&mut config);
+
+    set_opt_level(&mut config);
+    set_debug(&mut config);
 
     let config = match env::var("BUILD_ENV") {
         Ok(ref val) if &val[..] == "prod" => prod_config(&mut config),
@@ -53,7 +62,6 @@ fn common_config(config: &mut Config) -> &mut Config {
         .file("efm32-common/emlib/src/em_ebi.c")
         .file("efm32-common/emlib/src/em_int.c")
 
-        .flag("-g")
         .flag("-Wall")
         .flag("-mthumb")
         .flag("-mcpu=cortex-m3")
@@ -137,4 +145,39 @@ fn test_config(config: &mut Config) -> &mut Config {
         // Tests
         .file("test/tests/adc.c")
         .file("test/tests/timer.c")
+}
+
+fn set_opt_level(config: &mut Config) {
+
+    let opt_level = get_opt_level();
+
+    match opt_level {
+        No => config.flag("-O0"),
+        Less => config.flag("-O1"),
+        Default => config.flag("-O2"),
+        Aggressive => config.flag("-O3")
+    };
+
+}
+
+fn set_debug(config: &mut Config) {
+    let debug_flag = env::var("PROFILE").ok().unwrap_or("debug".to_string());
+
+    if debug_flag == "debug" {
+        config.flag("-g");
+    }
+
+}
+
+fn get_opt_level() -> OptLevel {
+
+    let opt_level = env::var("OPT_LEVEL").ok().unwrap_or("0".to_string());
+
+    match opt_level.as_ref() {
+        "0" => No,
+        "1" => Less,
+        "2" => Default,
+        "3" => Aggressive,
+        _ => No
+    }
 }

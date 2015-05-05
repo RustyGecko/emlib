@@ -28,21 +28,21 @@ pub const CTRL_AUTOSN:  u32 = (0x1 << 4);
 #[repr(C)]
 #[allow(non_snake_case)]
 pub struct I2C {
-  pub CTRL: u32,
-  pub CMD: u32,
-  pub STATE: u32,
-  pub STATUS: u32,
-  pub CLKDIV: u32,
-  pub SADDR: u32,
-  pub SADDRMASK: u32,
-  pub RXDATA: u32,
-  pub RXDATAP: u32,
-  pub TXDATA: u32,
-  pub IF: u32,
-  pub IFS: u32,
-  pub IFC: u32,
-  pub IEN: u32,
-  pub ROUTE: u32,
+    pub CTRL: u32,
+    pub CMD: u32,
+    pub STATE: u32,
+    pub STATUS: u32,
+    pub CLKDIV: u32,
+    pub SADDR: u32,
+    pub SADDRMASK: u32,
+    pub RXDATA: u32,
+    pub RXDATAP: u32,
+    pub TXDATA: u32,
+    pub IF: u32,
+    pub IFS: u32,
+    pub IFC: u32,
+    pub IEN: u32,
+    pub ROUTE: u32,
 }
 
 impl I2C {
@@ -105,12 +105,15 @@ impl Default for Init {
     }
 }
 
+#[repr(u8)]
 pub enum ClockHLR {
     Standard = 0x0,
     Asymmetric = 0x1,
     Fast = 0x2,
 }
 
+
+#[repr(C)]
 pub struct TransferSeq {
     pub addr: u16,
     pub flags: u16,
@@ -118,14 +121,15 @@ pub struct TransferSeq {
     pub buf1: &'static str,
 }
 
+#[repr(i8)]
 pub enum TransferReturn {
-  InProgress =  1,
-  Done       =  0,
-  Nack       = -1,
-  BusErr     = -2,
-  ArbLost    = -3,
-  UsageFault = -4,
-  SwFault    = -5
+    InProgress =  1,
+    Done       =  0,
+    Nack       = -1,
+    BusErr     = -2,
+    ArbLost    = -3,
+    UsageFault = -4,
+    SwFault    = -5
 }
 
 
