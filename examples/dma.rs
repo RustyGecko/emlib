@@ -1,5 +1,4 @@
 #![no_std]
-#![no_main]
 #![feature(core, no_std)]
 
 extern crate core;
@@ -13,8 +12,9 @@ use emlib::{chip, dma};
 static mut DATA_SRC: [u16; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 static mut DATA_DST: [u16; 8] = [0, 0, 0, 0, 0, 0, 0, 0];
 
-#[no_mangle]
-pub extern fn main() {
+static mut DMA_CONTROL_BLOCK: dma::Descriptor = dma::DMA_CONTROL_BLOCK_INIT;
+
+fn main() {
 
     chip::init();
 
@@ -30,7 +30,7 @@ fn setup_dma() {
 
     dma::init(&dma::Init{
         hprot: 0,
-        control_block: dma::dma_control_block(),
+        control_block: unsafe { &mut DMA_CONTROL_BLOCK },
     });
 
     let dma0 = dma::DMA::channel0();

@@ -1,5 +1,4 @@
 #![no_std]
-#![no_main]
 #![feature(core, no_std)]
 
 extern crate core;
@@ -8,8 +7,7 @@ extern crate emlib;
 use emlib::{cmu, gpio, usart};
 use core::default::Default;
 
-#[no_mangle]
-pub extern fn main() {
+fn main() {
 
     setup_usart1();
 

@@ -1,15 +1,13 @@
 #![no_std]
-#![no_main]
-#![feature(start, no_std, alloc)]
+#![feature(no_std, alloc)]
 
 // for lang_items, memmove and memalign
-extern crate emlib;
 extern crate alloc;
+extern crate emlib;
 
 use alloc::boxed::Box;
 
-#[no_mangle]
-pub extern fn main() {
+fn main() {
 
     let _a = 1;
     let _b = &2;

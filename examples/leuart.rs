@@ -1,5 +1,4 @@
 #![no_std]
-#![no_main]
 #![feature(core, no_std)]
 
 extern crate core;
@@ -10,8 +9,7 @@ use emlib::{chip, cmu, emu, gpio, leuart};
 use cmsis::nvic;
 use core::default::Default;
 
-#[no_mangle]
-pub extern fn main() {
+fn main() {
 
     setup_leuart();
 

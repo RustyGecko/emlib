@@ -1,5 +1,4 @@
 #![no_std]
-#![no_main]
 #![feature(lang_items, core, no_std)]
 
 extern crate core;
@@ -8,7 +7,6 @@ extern crate cmsis;
 
 use emlib::{chip, cmu, gpio, i2c};
 use cmsis::nvic;
-use emlib::emdrv::gpioint;
 
 use core::default::Default;
 use core::intrinsics::{volatile_load};
@@ -37,8 +35,7 @@ enum Mode {
 
 static mut MODE: Mode = Mode::Idle;
 
-#[no_mangle]
-pub extern fn main() {
+fn main() {
 
     chip::init();
 
@@ -59,7 +56,23 @@ pub extern fn main() {
     }
 }
 
-fn button_callback(_: u8) {
+#[no_mangle]
+#[allow(non_snake_case)]
+pub extern fn GPIO_ODD_IRQHandler() {
+
+    gpio::int_clear(gpio::int_get_enabled());
+    button_callback();
+}
+
+#[no_mangle]
+#[allow(non_snake_case)]
+pub extern fn GPIO_EVEN_IRQHandler() {
+
+    gpio::int_clear(gpio::int_get_enabled());
+    button_callback();
+}
+
+fn button_callback() {
 
     match unsafe { MODE } {
 
@@ -154,10 +167,10 @@ fn setup_gpio() {
     gpio::pin_mode_set(gpio::Port::B, PB0, gpio::Mode::Input, 0);
     gpio::pin_mode_set(gpio::Port::B, PB1, gpio::Mode::Input, 0);
 
-    gpioint::init();
-
-    gpioint::register(PB0 as u8, button_callback);
-    gpioint::register(PB1 as u8, button_callback);
+    nvic::clear_pending_irq(nvic::IRQn::GPIO_ODD);
+    nvic::enable_irq(nvic::IRQn::GPIO_ODD);
+    nvic::clear_pending_irq(nvic::IRQn::GPIO_EVEN);
+    nvic::enable_irq(nvic::IRQn::GPIO_EVEN);
 
     gpio::int_config(gpio::Port::B, PB0, false, true, true);
     gpio::int_config(gpio::Port::B, PB1, false, true, true);
