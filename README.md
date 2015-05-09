@@ -27,7 +27,7 @@ $ sudo apt-get install gcc-arm-none-eabi
 ```
 
 ## Compiling the examples
-The project uses `make` to invoke `cargo-linkargs` and compile the library and the different 
+The project uses `make` to invoke `cargo` and compile the library and the different 
 [examples](https://github.com/RustyGecko/emlib/tree/master/examples).
 
 Some common usage is shown below, look to the Makefile for all options.
