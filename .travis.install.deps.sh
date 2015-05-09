@@ -18,9 +18,4 @@ if [ "${TRAVIS}" = "true" ] && [ "${target}" = "unknown-linux-gnu" ]; then
     sudo apt-get install gcc-arm-none-eabi
 fi
 
-# Install cargo-linkargs in same directory
-git clone https://github.com/RustyGecko/cargo-linkargs
-cd cargo-linkargs
-cargo build
-
 set +x

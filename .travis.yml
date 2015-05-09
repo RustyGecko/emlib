@@ -5,11 +5,10 @@ install:
   - sh ./.travis.install.deps.sh
 
 before_script:
-  - export PATH=$PATH:`pwd`/cargo-linkargs/target/debug
   - pwd
   - echo $PATH
 
 script:
-  - make test
+  - make examples
   - make clean-emlib
   - make build-tests

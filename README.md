@@ -14,12 +14,6 @@ The library have been tested on the following development kits:
 
 # Compiling emlib
 `emlib` requires the following tools to build:
-* `curl` - required by `cargo-linkargs`, in order to compile Cargo itself
-* `cmake` - required by `cargo-linkargs`, in order to compile Cargo itself
-* `pkg-config` - required by `cargo-linkargs`, in order to compile Cargo itself
-* OpenSSL headers (`libssl-dev` package on ubuntu)
-* [cargo-linkargs](https://github.com/RustyGecko/cargo-linkargs) - A Cargo subcommand used to link 
-with an EFM32 linker script
 * [ARM GCC Embedded Toolchain](https://launchpad.net/gcc-arm-embedded) - Used to build 
 Silicon Labs emlib for the EFM32.
 * [SEGGER JLink](https://www.segger.com/jlink-software.html) - Used for GDB debugging and to 
@@ -41,7 +35,7 @@ Some common usage is shown below, look to the Makefile for all options.
 $ make lib           # Compiles the library only
 $ make               # Compiles the library and the default `buttons_int` example
 $ make OUT=rtc_blink # Compiles the library and the `rtc_blink` example
-$ make test          # Compiles the library and all examples
+$ make examples      # Compiles the library and all examples
 ```
 
 # Testing
