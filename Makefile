@@ -6,6 +6,8 @@ KIT    = stk3700
 # emlib examples
 DIR = examples
 OUT = buttons_int
+EXAMPLES = $(wildcard $(DIR)/*.rs)
+NAMES = $(EXAMPLES:$(DIR)/%.rs=%)
 
 # cargo directories
 TARGET_DIR   = target/$(TARGET)/debug
@@ -26,17 +28,17 @@ BINARY_FORMAT = hex
 FLASH      = eACommander
 FLASHFLAGS = --verify --reset
 
-.PHONY: all example test build-tests run-tests flash burn clean clean-emlib mock-dir
+.PHONY: all example examples build-tests run-tests flash burn clean clean-emlib mock-dir
 
 all: example
 
 lib:
-	cargo linkargs "$(LINKARGS)" $(RSFLAGS) --lib
+	cargo rustc $(RSFLAGS) --lib -- -C link-args="$(LINKARGS)"
 
 example: $(OUT).elf $(EXAMPLES_OUT).hex $(EXAMPLES_OUT).bin $(EXAMPLES_OUT).axf
 
 %.elf: $(DIR)/$(@:.elf=.rs)
-	cargo linkargs "$(LINKARGS)" $(RSFLAGS) --example $(@:.elf=)
+	cargo rustc $(RSFLAGS) --example $(@:.elf=) -- -C link-args="$(LINKARGS)"
 
 %.hex: %
 	$(OBJCOPY) -O ihex $< $@
@@ -47,12 +49,11 @@ example: $(OUT).elf $(EXAMPLES_OUT).hex $(EXAMPLES_OUT).bin $(EXAMPLES_OUT).axf
 %.axf: %
 	$(OBJCOPY) $< $@
 
-test:
-	cargo linkargs "$(LINKARGS)" $(RSFLAGS) --build-examples
+examples: $(NAMES:=.elf)
 
 -include test/Makefile
 build-tests: mock-dir mocks
-	BUILD_ENV=test cargo linkargs "$(LINKARGS)" $(RSFLAGS)
+	BUILD_ENV=test cargo rustc $(RSFLAGS) --lib -- -C link-args="$(LINKARGS)"
 
 run-tests: build-tests
 	$(OBJCOPY) -O ihex $(TARGET_DIR)/run_all_tests $(TARGET_DIR)/$(BINARY_NAME).$(BINARY_FORMAT)

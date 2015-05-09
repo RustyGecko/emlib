@@ -10,6 +10,6 @@ before_script:
   - echo $PATH
 
 script:
-  - make test
+  - make examples
   - make clean-emlib
   - make build-tests
